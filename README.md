@@ -1,4 +1,6 @@
 # eg
+[![Clojars Project](https://img.shields.io/clojars/v/eg.svg)](https://clojars.org/eg)
+
 A maximal reduction of noise for tests using `clojure.test` as backend.
 
 Examples as data, and functions as test definitions, are core ideas inspiring *eg*.
