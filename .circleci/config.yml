@@ -1,0 +1,9 @@
+version: 2
+jobs:
+  build:
+    docker:
+      - image: naartjie/alpine-lein-node
+    steps:
+      - checkout
+      - run: lein clj-test-pass
+      - run: lein cljs-test-pass
