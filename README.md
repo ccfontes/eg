@@ -18,6 +18,11 @@ The core ideas behind *eg* are examples as data, and function like test definiti
 
 `eg` stands for *e.g.* (short for example), and `ge` is just `eg` reversed. Reversed example: `(ge inc 1 [0])`.
 
+Let's try *eg*! Start a REPL session and then require `eg` and `ge`:
+```clj
+=> (require [eg.core :refer [eg ge]])
+```
+
 Each *eg* test tests one function using examples. Think of it as a function test definition:
 ```clj
   (eg not   ; testing clojure.core/not
