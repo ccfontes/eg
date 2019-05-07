@@ -3,7 +3,9 @@
 
 A maximal reduction of noise for tests using `clojure.test` as backend.
 
-Examples as data, and functions as test definitions, are core ideas inspiring *eg*.
+> (eg inc [0] 1)
+
+The core ideas behind *eg* are examples as data, and function like test definitions.
 
 *eg* targets both Clojure and ClojureScript JVM. Untested for ClojureScript JS.
 
@@ -13,7 +15,7 @@ Examples as data, and functions as test definitions, are core ideas inspiring *e
 
 *eg* uses `eg` or `ge` macros, to generate `deftest` tests of clojure.test.
 
-`eg` stands for *e.g.* (short for example), and `ge` is just `eg` reversed. See examples below to understand what this means.
+`eg` stands for *e.g.* (short for example), and `ge` is just `eg` reversed. Reversed example: `(ge inc 1 [0])`.
 
 Each *eg* test tests one function using examples. Think of it as a function test definition:
 ```clj
@@ -42,7 +44,7 @@ Predicates can also be used in place of an expected value:
 (eg dec [4] integer?)
 ```
 
-Finally run tests was you would normally do with `clojure.test`.
+Finally, run your tests as you would normally do with `clojure.test`.
 
 For Clojure in the REPL:
 ```clj
@@ -63,12 +65,16 @@ For ClojureScript in the REPL:
 (cljs.test/run-tests some.ns)
 ```
 
-**Limitation:** There can only be one instance of `ge` or `eg` per function to be tested. For example, don't do this:
+Between `eg`, and `ge`, choose the form that is most convenient for your combination of function examples and use it only once for testing a function. For example, don't do this:
 ```clj
 (ge inc [1] 2)
 (ge inc [0] 1)
 ```
-So, between `eg`, and `ge`, choose the form that is most convenient for your combination of function examples.
+or this:
+```clj
+(eg inc [1] 2)
+(ge inc [0] 1)
+```
 
 ## Run eg's own tests
 Run tests expected to pass, targeting Clojure:
