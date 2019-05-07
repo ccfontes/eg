@@ -71,13 +71,21 @@ For ClojureScript in the REPL:
 So, between `eg`, and `ge`, choose the form that is most convenient for your combination of function examples.
 
 ## Run eg's own tests
-Run tests expected to pass targeting Clojure and ClojureScript JVM->nodejs:
+Run tests expected to pass, targeting Clojure:
 ```clj
-lein test-pass
+lein clj-test-pass
 ```
-Run tests expected to fail targeting Clojure and ClojureScript JVM->nodejs:
+Run tests expected to pass, targeting ClojureScript JVM->nodejs:
 ```clj
-lein test-fail
+lein cljs-test-pass
+```
+Run tests expected to fail, targeting Clojure:
+```clj
+lein clj-test-fail
+```
+Run tests expected to fail, targeting ClojureScript JVM->nodejs:
+```clj
+lein cljs-test-fail
 ```
 
 ## Roadmap

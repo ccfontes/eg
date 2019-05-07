@@ -10,25 +10,33 @@
   :source-paths ["src/cljc"]
   :test-paths ["test/pass/cljc" "test/fail/cljc"]
   :deploy-repositories [["releases" :clojars]]
-  :profiles {:dev {:dependencies [[org.clojure/clojure "1.10.0"]
-                                  [org.clojure/clojurescript "1.10.520" :scope "provided"]]}}
-  :aliases {"test-pass" ["do" ["test" "eg.test.pass"] ["cljsbuild" "test" "pass-node"]]
-            "test-fail" ["do" ["test" "eg.test.fail"] ["cljsbuild" "test" "fail-node"]]}
+  :aliases {"clj-test-pass" ["test" "eg.test.pass"]
+            "cljs-test-pass" ["with-profiles" "+test-pass" "cljsbuild" "test"]
+            "clj-test-fail" ["test" "eg.test.fail"]
+            "cljs-test-fail" ["with-profiles" "+test-fail" "cljsbuild" "test"]}
   :plugins [[lein-cljsbuild "1.1.7"]]
-  :cljsbuild {:test-commands {"pass-node" ["node" "target/out/test/pass/runner.js"]
-                              "fail-node" ["node" "target/out/test/fail/runner.js"]}
-              :builds {:pass-test
-                        {:source-paths   ["src/cljc" "test/pass/cljc" "test/pass/cljs"]
-                         :compiler       {:target         :nodejs
-                                          :main           eg.test.pass.runner
-                                          :output-to      "target/out/test/pass/runner.js"
-                                          :output-dir     "target/out/test/pass"
-                                          :optimizations  :none}}
-                       :fail-test
-                         {:source-paths   ["src/cljc" "test/fail/cljc" "test/fail/cljs"]
-                          :compiler       {:target         :nodejs
-                                           :main           eg.test.fail.runner
-                                           :output-to      "target/out/test/fail/runner.js"
-                                           :output-dir     "target/out/test/fail"
-                                           :optimizations  :none}}}})
-
+  :profiles
+    {:dev {:dependencies [[org.clojure/clojure "1.10.0"]
+                          [org.clojure/clojurescript "1.10.520" :scope "provided"]]}
+     :test-pass
+      {:cljsbuild
+        {:test-commands {"pass-node" ["node" "target/out/test/pass/runner.js"]}
+         :builds
+          {:test
+            {:source-paths ["src/cljc" "test/pass/cljc" "test/pass/cljs"]
+             :compiler     {:target        :nodejs
+                            :main          eg.test.pass.runner
+                            :output-to     "target/out/test/pass/runner.js"
+                            :output-dir    "target/out/test/pass"
+                            :optimizations :none}}}}}
+     :test-fail
+      {:cljsbuild
+        {:test-commands {"fail-node" ["node" "target/out/test/fail/runner.js"]}
+         :builds
+          {:test
+            {:source-paths ["src/cljc" "test/fail/cljc" "test/fail/cljs"]
+             :compiler     {:target        :nodejs
+                            :main          eg.test.fail.runner
+                            :output-to     "target/out/test/fail/runner.js"
+                            :output-dir    "target/out/test/fail"
+                            :optimizations :none}}}}}})
