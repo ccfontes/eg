@@ -1,5 +1,6 @@
 # eg
 [![Clojars Project](https://img.shields.io/clojars/v/eg.svg)](https://clojars.org/eg)
+[![CircleCI](https://circleci.com/gh/ccfontes/eg.svg?style=svg)](https://circleci.com/gh/ccfontes/eg)
 
 A maximal reduction of noise for tests using `clojure.test` as backend.
 
