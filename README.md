@@ -83,7 +83,7 @@ lein test
 ; or
 (cljs.test/run-tests some.ns)
 ```
-
+## Caveats
 Between `eg`, and `ge`, choose the form that is most convenient for your combination of function examples and use it only once for testing a function. For example, don't do this:
 ```clj
 (ge inc [1] 2)
@@ -113,11 +113,10 @@ Run tests expected to fail, targeting ClojureScript JVM->nodejs:
 lein cljs-test-fail
 ```
 ## Features on top of clojure.test
-  * One to one mapping between a function and a test definition
-  * Multiple examples per test definition
+  * Intuitive one to one mapping between a function and a test definition
   * Examples as data for trivial tool integration
   * No repetition of function calls for multiple examples of the same function
-  * Able to switch example order from input->output to output->input
+  * No `is`, just data, in and out
 
 ## Roadmap
   1. Support macro test definitions
