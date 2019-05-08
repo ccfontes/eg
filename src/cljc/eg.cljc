@@ -1,5 +1,5 @@
-(ns eg.core
-  #?(:cljs (:require-macros [eg.core :refer [eg ge]]))
+(ns eg
+  #?(:cljs (:require-macros [eg :refer [eg ge]]))
   (:require
     #?(:clj [clojure.test :as test]
        :cljs [cljs.test :include-macros true])))

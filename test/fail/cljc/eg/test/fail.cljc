@@ -1,5 +1,5 @@
 (ns eg.test.fail
-  (:require [eg.core :refer [eg ge]]))
+  (:require [eg :refer [eg ge]]))
 
 (eg not [(not true)] false)
 

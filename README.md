@@ -26,7 +26,7 @@ Clojure CLI/deps.edn
 ```
 eg {:mvn/version "0.1.0-alpha"}
 ```
-For more install options, look here: [![Clojars Project](https://img.shields.io/clojars/v/eg.svg)](https://clojars.org/eg)
+For Gradle or Maven install options, look here: [![Clojars Project](https://img.shields.io/clojars/v/eg.svg)](https://clojars.org/eg)
 
 ## Usage
 
@@ -36,7 +36,7 @@ For more install options, look here: [![Clojars Project](https://img.shields.io/
 
 Let's try *eg*! Start by creating a REPL session and then requiring `eg` and `ge`:
 ```clj
-(require '[eg.core :refer [eg ge]])
+(require '[eg :refer [eg ge]])
 ```
 
 Each *eg* test tests one function using examples. You could think of it as a function test definition:
