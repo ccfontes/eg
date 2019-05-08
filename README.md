@@ -2,11 +2,15 @@
 [![Clojars Project](https://img.shields.io/clojars/v/eg.svg)](https://clojars.org/eg)
 [![CircleCI](https://circleci.com/gh/ccfontes/eg.svg?style=svg)](https://circleci.com/gh/ccfontes/eg)
 
-A maximal reduction of noise for tests using `clojure.test` as backend.
+A maximal noise reduction for creating `clojure.test` tests when testing functions.
 
-> (eg inc [0] 1)
+This code `(eg inc [0] 1)` generates:
+```clj
+(deftest inc-test
+  (is (= (inc 0) 1)))
+```
 
-The core ideas behind *eg* are examples as data, and function like test definitions.
+The core idea behind *eg* is examples as data for function like test definitions.
 
 *eg* targets both Clojure and ClojureScript JVM. Untested for ClojureScript JS.
 
@@ -84,6 +88,8 @@ lein test
 (cljs.test/run-tests some.ns)
 ```
 ## Caveats
+
+### Calling eg on same function multiple times
 Between `eg`, and `ge`, choose the form that is most convenient for your combination of function examples and use it only once for testing a function. For example, don't do this:
 ```clj
 (ge inc [1] 2)
@@ -94,6 +100,9 @@ or this:
 (eg inc [1] 2)
 (ge inc [0] 1)
 ```
+
+### eg's scope
+*eg* use is limited to testing functions. If you want to test macros or literals, `clojure.test` could be used for that.
 
 ## Run eg's own tests
 Run tests expected to pass, targeting Clojure:
@@ -119,12 +128,11 @@ lein cljs-test-fail
   * No `is`, just data, in and out
 
 ## Roadmap
-  1. Support macro test definitions
-  2. Add optional `=>` as in/out separator for readability between examples that are asymmetrical in length
-  3. Spec API macros `eg` and `ge`
-  4. Test against ClojureScript JS
-  5. Create API to access example data for i.e. tool use
-  6. Document dev flow using clipboard
+  1. Add optional `=>` as in/out separator for readability between examples that are asymmetrical in length
+  2. Spec API macros `eg` and `ge`
+  3. Test against ClojureScript JS
+  4. Create API to access example data for i.e. tool use
+  5. Document dev flow using clipboard
 
 ## [License](LICENSE.md)
 Copyright (c) 2019 Carlos da Cunha Fontes
