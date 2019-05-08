@@ -12,6 +12,18 @@ The core ideas behind *eg* are examples as data, and function like test definiti
 
 **Disclaimer:** *eg* is work-in-progress. Use it at your own risk!
 
+## Install
+Leiningen/Boot
+```
+[eg "0.1.0-alpha"]
+```
+Clojure CLI/deps.edn
+```
+eg {:mvn/version "0.1.0-alpha"}
+```
+For more install options, look here: [![Clojars Project](https://img.shields.io/clojars/v/eg.svg)](https://clojars.org/eg)
+
+
 ## Usage
 
 *eg* uses `eg` or `ge` macros, to generate `deftest` tests of clojure.test.
@@ -102,10 +114,11 @@ lein cljs-test-fail
 
 ## Roadmap
   1. support regex return check
-  2. spec API macros
-  3. test against ClojureScript JS
-  4. create API to access example data
-  5. document dev flow using clipboard
+  2. add optional `=>` as in/out separator for readability on long in/out
+  3. spec API macros
+  4. test against ClojureScript JS
+  5. create API to access example data
+  6. document dev flow using clipboard
 
 ## [License](LICENSE.md)
 Copyright (c) 2019 Carlos da Cunha Fontes
