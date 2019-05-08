@@ -14,7 +14,7 @@
             "cljs-test-pass" ["with-profiles" "+test-pass" "cljsbuild" "test"]
             "clj-test-fail" ["test" "eg.test.fail"]
             "cljs-test-fail" ["with-profiles" "+test-fail" "cljsbuild" "test"]}
-  :plugins [[lein-cljsbuild "1.1.7"]]
+  :plugins [[lein-cljsbuild "1.1.7"] [lein-cloverage "1.1.1"]]
   :profiles
     {:dev {:dependencies [[org.clojure/clojure "1.10.0"]
                           [org.clojure/clojurescript "1.10.520" :scope "provided"]]}

@@ -1,6 +1,7 @@
 # eg
 [![Clojars Project](https://img.shields.io/clojars/v/eg.svg)](https://clojars.org/eg)
 [![CircleCI](https://circleci.com/gh/ccfontes/eg.svg?style=svg)](https://circleci.com/gh/ccfontes/eg)
+[![codecov](https://codecov.io/gh/ccfontes/eg/branch/master/graph/badge.svg)](https://codecov.io/gh/ccfontes/eg)
 
 A maximal noise reduction for creating `clojure.test` tests when testing functions.
 
