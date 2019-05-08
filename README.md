@@ -20,11 +20,11 @@ The core idea behind *eg* is examples as data for function like test definitions
 ## Install
 Leiningen/Boot
 ```
-[eg "0.1.0-alpha"]
+[eg "0.2.0-alpha"]
 ```
 Clojure CLI/deps.edn
 ```
-eg {:mvn/version "0.1.0-alpha"}
+eg {:mvn/version "0.2.0-alpha"}
 ```
 For Gradle or Maven install options, look here: [![Clojars Project](https://img.shields.io/clojars/v/eg.svg)](https://clojars.org/eg)
 
