@@ -39,8 +39,8 @@
     `(deftest ~test-name
        ~@(map (fn [[param-vec ret]]
                 `(if (fn? ~ret)
-                  (is (~ret (apply ~fn-sym ~param-vec)))
-                  (is (= ~ret (apply ~fn-sym ~param-vec)))))
+                  (is (~ret (~fn-sym ~@param-vec)))
+                  (is (= ~ret (~fn-sym ~@param-vec)))))
               example-pairs))))
 
 (defmacro eg [fn-sym & examples]

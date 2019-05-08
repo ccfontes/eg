@@ -134,6 +134,7 @@ lein cljs-test-fail
   3. Test against ClojureScript JS
   4. Create API to access example data for i.e. tool use
   5. Document dev flow using clipboard
+  6. reduce clojure and clojurescript requirements
 
 ## [License](LICENSE.md)
 Copyright (c) 2019 Carlos da Cunha Fontes
