@@ -112,6 +112,12 @@ Run tests expected to fail, targeting ClojureScript JVM->nodejs:
 ```clj
 lein cljs-test-fail
 ```
+## Features on top of clojure.test
+  * One to one mapping between a function and a test definition
+  * Multiple examples per test definition
+  * Examples as data for trivial tool integration
+  * No repetition of function calls for multiple examples of the same function
+  * Able to switch example order from input->output to output->input
 
 ## Roadmap
   1. Support macro test definitions
