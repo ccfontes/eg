@@ -1,8 +1,5 @@
 version: 2.1
 
-orbs:
-  codecov: codecov/codecov@1.0.2
-
 jobs:
   build:
     docker:
@@ -34,5 +31,4 @@ jobs:
       - run: lein cljs-test-pass
       # test coverage only for: lein clj-test-pass
       - run: CLOVERAGE_VERSION=1.1.1 lein cloverage --codecov
-      - codecov/upload:
-          file: {{ target/coverage/codecov.json }}
+      - run: curl -s https://codecov.io/bash | bash -s - -f target/coverage/codecov.json
