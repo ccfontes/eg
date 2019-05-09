@@ -3,25 +3,25 @@
 [![CircleCI](https://circleci.com/gh/ccfontes/eg.svg?style=svg)](https://circleci.com/gh/ccfontes/eg)
 [![codecov](https://codecov.io/gh/ccfontes/eg/branch/master/graph/badge.svg)](https://codecov.io/gh/ccfontes/eg)
 
-eg generates `clojure.test` function tests with conciseness.
+eg delivers `clojure.test` function tests with conciseness.
 
-This code `(eg inc [0] 1)` generates:
+e.g., `(eg inc [0] 1)` generates `clojure.test` boilerplate:
 ```clj
 (deftest inc-test
   (is (= (inc 0) 1)))
 ```
 
 The core ideas driving *eg* are:
-  - conciseness – less typing
-  - flexibility - switch order of examples
-  - examples as data for simple tool support - it's just data!
-  - function like test definitions - like spec, but for tests
+  - conciseness – spend less time writing test boilerplate
+  - flexibility - switch order of examples to improve readability
+  - examples as data - for trivial tool support, it's just data!
+  - function like test definitions - akin to `clojure.spec/fdef`, but for tests
 
 *eg* targets both Clojure and ClojureScript JVM. Untested for ClojureScript JS.
 
+## Install
 **Disclaimer:** *eg* is work-in-progress. Use it at your own risk!
 
-## Install
 Leiningen/Boot
 ```
 [eg "0.2.0-alpha"]
@@ -33,9 +33,6 @@ eg {:mvn/version "0.2.0-alpha"}
 For Gradle or Maven install options, look here: [![Clojars Project](https://img.shields.io/clojars/v/eg.svg)](https://clojars.org/eg)
 
 ## Usage
-
-*eg* uses `eg` or `ge` macros, to generate `deftest` tests of clojure.test.
-
 `eg` stands for *e.g.* (short for example), and `ge` is just `eg` reversed. Reversed example: `(ge inc 1 [0])`.
 
 Let's try *eg*! Start by creating a REPL session and then requiring `eg` and `ge`:
@@ -43,7 +40,7 @@ Let's try *eg*! Start by creating a REPL session and then requiring `eg` and `ge
 (require '[eg :refer [eg ge]])
 ```
 
-Each *eg* test tests one function using examples. You could think of it as a function test definition:
+Each *eg* test tests one function using examples. You could think of it as a function's test definition:
 ```clj
   (eg not   ; testing clojure.core/not
     [false] ; with input parameters vector `[false]`
@@ -115,6 +112,7 @@ lein test
   4. Create API to access example data for i.e. tool use
   5. Document dev flow using clipboard
   6. reduce clojure and clojurescript requirements
+  7. Create extension interface for expected form
 
 ## Run eg's own tests
 Run tests expected to pass, targeting Clojure:
