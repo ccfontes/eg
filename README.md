@@ -3,7 +3,7 @@
 [![CircleCI](https://circleci.com/gh/ccfontes/eg.svg?style=svg)](https://circleci.com/gh/ccfontes/eg)
 [![codecov](https://codecov.io/gh/ccfontes/eg/branch/master/graph/badge.svg)](https://codecov.io/gh/ccfontes/eg)
 
-A maximal noise reduction for creating `clojure.test` tests when testing functions.
+eg generates `clojure.test` function tests with conciseness.
 
 This code `(eg inc [0] 1)` generates:
 ```clj
@@ -11,7 +11,11 @@ This code `(eg inc [0] 1)` generates:
   (is (= (inc 0) 1)))
 ```
 
-The core idea behind *eg* is examples as data for function like test definitions.
+The core ideas driving *eg* are:
+  - conciseness – less typing
+  - flexibility - switch order of examples
+  - examples as data for simple tool support - it's just data!
+  - function like test definitions - like spec, but for tests
 
 *eg* targets both Clojure and ClojureScript JVM. Untested for ClojureScript JS.
 
@@ -66,32 +70,8 @@ Predicates can also be used in place of an expected value:
 (eg dec [4] integer?)
 ```
 
-## Run your tests
-Finally, run your tests as you normally would with `clojure.test`.
-
-### Run your Clojure tests
-In the REPL:
-```clj
-(clojure.test/run-all-tests)
-; or
-(clojure.test/run-tests some.ns)
-```
-
-In the terminal:
-```
-lein test
-```
-
-### Run your ClojureScript tests
-```clj
-(cljs.test/run-all-tests)
-; or
-(cljs.test/run-tests some.ns)
-```
-## Caveats
-
 ### Calling eg on same function multiple times
-Between `eg`, and `ge`, choose the form that is most convenient for your combination of function examples and use it only once for testing a function. For example, don't do this:
+Between `eg`, and `ge`, choose the form that is most convenient for your combination of function examples and use it only once for testing a function. For example, **don't do this**:
 ```clj
 (ge inc [1] 2)
 (ge inc [0] 1)
@@ -102,8 +82,39 @@ or this:
 (ge inc [0] 1)
 ```
 
-### eg's scope
-*eg* use is limited to testing functions. If you want to test macros or literals, `clojure.test` could be used for that.
+### Test only functions
+*eg* use is limited to testing functions. If you want to test macros or literals, `clojure.test` could be used for that purpose.
+
+## Run your tests
+Finally, run your tests as you normally would with `clojure.test`.
+
+### Run your Clojure tests
+in the REPL:
+```clj
+(clojure.test/run-all-tests)
+; or
+(clojure.test/run-tests some.ns)
+```
+
+or in the terminal:
+```
+lein test
+```
+
+### Run your ClojureScript tests in the REPL
+```clj
+(cljs.test/run-all-tests)
+; or
+(cljs.test/run-tests some.ns)
+```
+
+## Roadmap
+  1. Add optional `=>` as in/out separator for readability between examples that are asymmetrical in length
+  2. Spec API macros `eg` and `ge`
+  3. Test against ClojureScript JS
+  4. Create API to access example data for i.e. tool use
+  5. Document dev flow using clipboard
+  6. reduce clojure and clojurescript requirements
 
 ## Run eg's own tests
 Run tests expected to pass, targeting Clojure:
@@ -122,19 +133,6 @@ Run tests expected to fail, targeting ClojureScript JVM->nodejs:
 ```clj
 lein cljs-test-fail
 ```
-## Features on top of clojure.test
-  * Intuitive one to one mapping between a function and a test definition
-  * Examples as data for trivial tool integration
-  * No repetition of function calls for multiple examples of the same function
-  * No `is`, just data, in and out
-
-## Roadmap
-  1. Add optional `=>` as in/out separator for readability between examples that are asymmetrical in length
-  2. Spec API macros `eg` and `ge`
-  3. Test against ClojureScript JS
-  4. Create API to access example data for i.e. tool use
-  5. Document dev flow using clipboard
-  6. reduce clojure and clojurescript requirements
 
 ## [License](LICENSE.md)
 Copyright (c) 2019 Carlos da Cunha Fontes
