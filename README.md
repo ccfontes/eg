@@ -5,17 +5,19 @@
 
 eg delivers `clojure.test` function tests with conciseness.
 
-e.g., `(eg inc [0] 1)` generates `clojure.test` boilerplate:
+e.g., `(eg inc [0] 1)` generates this `clojure.test` boilerplate:
 ```clj
 (deftest inc-test
-  (is (= (inc 0) 1)))
+  (is (= 1 (inc 0))))
 ```
 
 The core ideas driving *eg* are:
-  - conciseness – spend less time writing test boilerplate
-  - flexibility - switch order of examples to improve readability
-  - examples as data - for trivial tool support, it's just data!
-  - function like test definitions - akin to `clojure.spec/fdef`, but for tests
+  - **conciseness** – spend less time writing test boilerplate
+  - **flexibility**:
+    - switch order of examples to improve readability
+    - use predicates or literals in place of expected values
+  - **examples as data** - for trivial tool support, it's just data!
+  - **function like test definitions** - akin to `clojure.spec/fdef`, but for tests
 
 *eg* targets both Clojure and ClojureScript JVM. Untested for ClojureScript JS.
 
@@ -24,11 +26,11 @@ The core ideas driving *eg* are:
 
 Leiningen/Boot
 ```
-[eg "0.2.0-alpha"]
+[eg "0.2.1-alpha"]
 ```
 Clojure CLI/deps.edn
 ```
-eg {:mvn/version "0.2.0-alpha"}
+eg {:mvn/version "0.2.1-alpha"}
 ```
 For Gradle or Maven install options, look here: [![Clojars Project](https://img.shields.io/clojars/v/eg.svg)](https://clojars.org/eg)
 
@@ -79,6 +81,15 @@ or this:
 (ge inc [0] 1)
 ```
 
+`=>` or `<=` delimiters between input parameters and expected value can be used to improve readability, or
+override the default order of `eg` or `ge`.
+```clj
+(eg hash-map
+  [:d 1] {:d 1}
+  [:a 1 :b 2 :c 3 :d 4] => {:a 1 :b 2 :c 3 :d 4}
+  map? <= {:a 1 :b 2 :c 3 :d 4})
+```
+
 ### Test only functions
 *eg* use is limited to testing functions. If you want to test macros or literals, `clojure.test` could be used for that purpose.
 
@@ -106,13 +117,14 @@ lein test
 ```
 
 ## Roadmap
-  1. Add optional `=>` as in/out separator for readability between examples that are asymmetrical in length
-  2. Spec API macros `eg` and `ge`
-  3. Test against ClojureScript JS
-  4. Create API to access example data for i.e. tool use
-  5. Document dev flow using clipboard
-  6. reduce clojure and clojurescript requirements
-  7. Create extension interface for expected form
+  1. Able to focus on some tests using metadata
+  2. Support literal testing
+  3. Spec API macros `eg` and `ge`
+  4. Test against ClojureScript JS
+  5. Create API to access example data for i.e. tool use
+  6. Document dev flow using clipboard
+  7. Create focus of test partial example using don't care generator(s) for the rest
+  8. Reduce clojure and clojurescript requirements
 
 ## Run eg's own tests
 Run tests expected to pass, targeting Clojure:

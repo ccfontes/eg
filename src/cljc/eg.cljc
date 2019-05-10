@@ -1,52 +1,52 @@
-(ns eg
-  #?(:cljs (:require-macros [eg :refer [eg ge]]))
-  (:require
-    #?(:clj [clojure.test :as test]
-       :cljs [cljs.test :include-macros true])))
+(ns eg ^{:author "Carlos da Cunha Fontes"
+         :license {:name "The Universal Permissive License (UPL), Version 1.0"
+                   :url "https://github.com/ccfontes/eg/blob/master/LICENSE.md"}}
+  (:require [eg.platform :refer [deftest is]])
+  #?(:cljs (:require-macros [eg :refer [eg ge]])))
 
 (defonce registry-ref (atom {}))
 
-(defn cljs-env?
-  "Take the &env from a macro, and tell whether we are expanding into cljs.
-  source: http://blog.nberger.com.ar/blog/2015/09/18/more-portable-complex-macro-musing"
-  [env]
-  (boolean (:ns env)))
+(defn ->examples [egge-body]
+  (first
+    (reduce
+      (fn [[parts part] token]
+        (let [new-part (conj part token)]
+          (if (#{'=> '<=} token)
+            (if (= (count part) 2)
+              [(conj parts new-part) []]
+              [parts new-part])
+            (if (empty? part)
+              [parts new-part]
+              [(conj parts new-part) []]))))
+      [[] []]
+      egge-body)))
 
-(defmacro if-cljs
-  "Return then if we are generating cljs code and else for Clojure code.
-  source: http://blog.nberger.com.ar/blog/2015/09/18/more-portable-complex-macro-musing"
-  [then else]
-  (if (cljs-env? &env) then else))
+(defn parse-examples [examples & [ge?]]
+  (map #(if (= (count %) 3)
+          (let [pair [(first %) (last %)]]
+            (if (= (nth % 1) '<=) (reverse pair) pair))
+          (if (= (count %) 1)
+            (let [egge (str (if ge? "ge" "eg"))]
+              (throw (#?(:cljs js/Error. :clj Exception.
+                      (str egge " examples need to come in pairs.")))))
+            (if ge? (reverse %) %)))
+       examples))
 
-(defmacro is
-  "source: http://blog.nberger.com.ar/blog/2015/09/18/more-portable-complex-macro-musing"
-  [& args]
-  `(if-cljs
-     (cljs.test/is ~@args)
-     (clojure.test/is ~@args)))
-
-(defmacro deftest
-  "source: http://blog.nberger.com.ar/blog/2015/09/18/more-portable-complex-macro-musing"
-  [& args]
-  `(if-cljs
-     (cljs.test/deftest ~@args)
-     (clojure.test/deftest ~@args)))
-
-(defmacro example [fn-sym example-pairs]
+(defmacro ->example-test [fn-sym examples]
   (let [test-name (-> fn-sym name (str "-test") symbol)
-        fully-qualified-fn-name `fn-sym]
-    (swap! registry-ref assoc fully-qualified-fn-name example-pairs)
+        qualified-fn-name `fn-sym]
+    (swap! registry-ref assoc qualified-fn-name examples)
     `(deftest ~test-name
        ~@(map (fn [[param-vec ret]]
                 `(if (fn? ~ret)
                   (is (~ret (~fn-sym ~@param-vec)))
                   (is (= ~ret (~fn-sym ~@param-vec)))))
-              example-pairs))))
+              examples))))
 
-(defmacro eg [fn-sym & examples]
-  (let [example-pairs (->> examples (partition 2))]
-   `(example ~fn-sym ~example-pairs)))
+(defmacro eg [fn-sym & body]
+  (let [examples (-> body ->examples parse-examples)]
+   `(->example-test ~fn-sym ~examples)))
 
-(defmacro ge [fn-sym & examples]
-  (let [example-pairs (->> examples (partition 2) (map reverse))]
-   `(example ~fn-sym ~example-pairs)))
+(defmacro ge [fn-sym & body]
+  (let [examples (-> body ->examples (parse-examples true))]
+   `(->example-test ~fn-sym ~examples)))
