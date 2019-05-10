@@ -18,7 +18,10 @@
   :plugins [[lein-cljsbuild "1.1.7"]]
   :profiles
     {:dev {:dependencies [[org.clojure/clojure "1.10.0"]
-                          [org.clojure/clojurescript "1.10.520" :scope "provided"]]}
+                          [org.clojure/clojurescript "1.10.520" :scope "provided"]
+                          [pjstadig/humane-test-output "0.9.0"]]
+           :injections [(require 'pjstadig.humane-test-output)
+                        (pjstadig.humane-test-output/activate!)]}
      :cloverage {:plugins [[lein-cloverage "1.1.1"]]
                  :cloverage {:test-ns-regex [#"^eg\.test\.pass$"]}}
      :cljs-test-pass

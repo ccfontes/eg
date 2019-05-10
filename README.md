@@ -3,7 +3,7 @@
 [![CircleCI](https://circleci.com/gh/ccfontes/eg.svg?style=svg)](https://circleci.com/gh/ccfontes/eg)
 [![codecov](https://codecov.io/gh/ccfontes/eg/branch/master/graph/badge.svg)](https://codecov.io/gh/ccfontes/eg)
 
-eg delivers `clojure.test` function tests with conciseness.
+*eg* delivers `clojure.test` function tests with conciseness.
 
 e.g., `(eg inc [0] 1)` generates this `clojure.test` boilerplate:
 ```clj
@@ -12,12 +12,13 @@ e.g., `(eg inc [0] 1)` generates this `clojure.test` boilerplate:
 ```
 
 The core ideas driving *eg* are:
-  - **conciseness** – spend less time writing test boilerplate
+  - **conciseness** – spend less time reading and writing test boilerplate
   - **flexibility**:
     - switch order of examples to improve readability
     - use predicates or literals in place of expected values
   - **examples as data** - for trivial tool support, it's just data!
   - **function like test definitions** - akin to `clojure.spec/fdef`, but for tests
+  - **compatibility with clojure.test** - along with excelent tool support
 
 *eg* targets both Clojure and ClojureScript JVM. Untested for ClojureScript JS.
 
@@ -69,8 +70,17 @@ Predicates can also be used in place of an expected value:
 (eg dec [4] integer?)
 ```
 
+`=>` or `<=` delimiters between input parameters and expected value can be used to improve readability, or
+override the default order of `eg` or `ge`.
+```clj
+(eg hash-map
+  [:d 1] {:d 1}
+  [:a 1 :b 2 :c 3 :d 4] => {:a 1 :b 2 :c 3 :d 4}
+  map? <= {:a 1 :b 2 :c 3 :d 4})
+```
+
 ### Calling eg on same function multiple times
-Between `eg`, and `ge`, choose the form that is most convenient for your combination of function examples and use it only once for testing a function. For example, **don't do this**:
+Between `eg`, and `ge`, choose the form that is most convenient for your combination of function examples and use it **only once** for testing a function. For example, **don't do this**:
 ```clj
 (ge inc [1] 2)
 (ge inc [0] 1)
@@ -79,15 +89,6 @@ or this:
 ```clj
 (eg inc [1] 2)
 (ge inc [0] 1)
-```
-
-`=>` or `<=` delimiters between input parameters and expected value can be used to improve readability, or
-override the default order of `eg` or `ge`.
-```clj
-(eg hash-map
-  [:d 1] {:d 1}
-  [:a 1 :b 2 :c 3 :d 4] => {:a 1 :b 2 :c 3 :d 4}
-  map? <= {:a 1 :b 2 :c 3 :d 4})
 ```
 
 ### Test only functions
@@ -117,14 +118,15 @@ lein test
 ```
 
 ## Roadmap
-  1. Able to focus on some tests using metadata
-  2. Support literal testing
-  3. Spec API macros `eg` and `ge`
-  4. Test against ClojureScript JS
-  5. Create API to access example data for i.e. tool use
-  6. Document dev flow using clipboard
-  7. Create focus of test partial example using don't care generator(s) for the rest
-  8. Reduce clojure and clojurescript requirements
+  1. Able to focus on a test
+  2. Able to skip a test
+  3. Support literal testing
+  4. Spec API macros `eg` and `ge`
+  5. Test against ClojureScript JS
+  6. Create API to access example data for i.e. tool use
+  7. Document dev flow using clipboard
+  8. Create focus of test partial example using don't care generator(s) for the rest
+  9. Reduce clojure and clojurescript requirements
 
 ## Run eg's own tests
 Run tests expected to pass, targeting Clojure:
@@ -143,6 +145,9 @@ Run tests expected to fail, targeting ClojureScript JVM->nodejs:
 ```clj
 lein cljs-test-fail
 ```
+
+## Software that works great with eg
+  * [humane-test-output](https://github.com/pjstadig/humane-test-output) - Humane test output for clojure.test
 
 ## [License](LICENSE.md)
 Copyright (c) 2019 Carlos da Cunha Fontes
