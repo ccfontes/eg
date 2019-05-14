@@ -4,6 +4,9 @@
     #?(:clj [clojure.test :as clj.test]
        :cljs [cljs.test :include-macros true])))
 
+(defn cross-throw [msg]
+  (#?(:cljs js/Error. :clj Exception. msg)))
+
 (defn cljs-env?
   "Take the &env from a macro, and tell whether we are expanding into cljs.
   Source: http://blog.nberger.com.ar/blog/2015/09/18/more-portable-complex-macro-musing"

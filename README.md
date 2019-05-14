@@ -5,35 +5,38 @@
 
 *eg* delivers `clojure.test` function tests with conciseness.
 
-e.g., `(eg inc [0] 1)` generates this `clojure.test` boilerplate:
 ```clj
 (deftest inc-test
   (is (= 1 (inc 0))))
+```
+in *eg* becomes:
+```clj
+(eg inc [0] 1)
 ```
 
 The core ideas driving *eg* are:
   - **conciseness** – spend less time reading and writing test boilerplate
   - **flexibility**:
     - switch order of examples to improve readability
-    - use predicates or literals in place of expected values
+    - check return against a predicate or equality relative to other data types
+    - focus on specific tests while developing
   - **examples as data** - for trivial tool support, it's just data!
   - **function like test definitions** - akin to `clojure.spec/fdef`, but for tests
-  - **compatibility with clojure.test** - along with excelent tool support
+  - **compatibility with clojure.test** - along with its excelent tooling support
 
 *eg* targets both Clojure and ClojureScript JVM. Untested for ClojureScript JS.
 
-## Install
+## Installation
 **Disclaimer:** *eg* is work-in-progress. Use it at your own risk!
 
-Leiningen/Boot
+**Leiningen/Boot**
+```clj
+[eg "0.2.2-alpha"]
 ```
-[eg "0.2.1-alpha"]
+**Clojure CLI/deps.edn**
+```clj
+eg {:mvn/version "0.2.2-alpha"}
 ```
-Clojure CLI/deps.edn
-```
-eg {:mvn/version "0.2.1-alpha"}
-```
-For Gradle or Maven install options, look here: [![Clojars Project](https://img.shields.io/clojars/v/eg.svg)](https://clojars.org/eg)
 
 ## Usage
 `eg` stands for *e.g.* (short for example), and `ge` is just `eg` reversed. Reversed example: `(ge inc 1 [0])`.
@@ -79,38 +82,41 @@ override the default order of `eg` or `ge`.
   map? <= {:a 1 :b 2 :c 3 :d 4})
 ```
 
-### Calling eg on same function multiple times
+It's possible to run only selected tests by using metadata `^:focus` on `eg` or `ge`:
+```clj
+(eg ^:focus false? [false] true)
+```
+There are some caveats to consider when using `^:focus`:
+  1. The tests report counts towards non focused tests, although assertions under such tests are not executed.
+  2. Assertions for tests defined directly with `clojure.test/deftest` will be executed, despite the presence of focused `eg`, or `ge` tests. 
+
 Between `eg`, and `ge`, choose the form that is most convenient for your combination of function examples and use it **only once** for testing a function. For example, **don't do this**:
 ```clj
 (ge inc [1] 2)
 (ge inc [0] 1)
 ```
-or this:
+**or this:**
 ```clj
 (eg inc [1] 2)
 (ge inc [0] 1)
 ```
 
-### Test only functions
-*eg* use is limited to testing functions. If you want to test macros or literals, `clojure.test` could be used for that purpose.
-
 ## Run your tests
 Finally, run your tests as you normally would with `clojure.test`.
 
-### Run your Clojure tests
-in the REPL:
+**Clojure tests in the REPL:**
 ```clj
 (clojure.test/run-all-tests)
 ; or
 (clojure.test/run-tests some.ns)
 ```
 
-or in the terminal:
+**Clojure tests in the terminal:**
 ```
-lein test
+> lein test
 ```
 
-### Run your ClojureScript tests in the REPL
+**ClojureScript tests in the REPL:**
 ```clj
 (cljs.test/run-all-tests)
 ; or
@@ -118,32 +124,37 @@ lein test
 ```
 
 ## Roadmap
-  1. Able to focus on a test
-  2. Able to skip a test
-  3. Support literal testing
-  4. Spec API macros `eg` and `ge`
-  5. Test against ClojureScript JS
-  6. Create API to access example data for i.e. tool use
-  7. Document dev flow using clipboard
-  8. Create focus of test partial example using don't care generator(s) for the rest
-  9. Reduce clojure and clojurescript requirements
+  1. Fix test name to support qualified symbols
+  2. Document being able to skip a test with vanilla clojure
+  3. Suffix test name with '-slow' when using ':slow' selector
+  4. Mention:
+     - leiningen `test-selectors` for use of metadata
+     - https://github.com/weavejester/eftest
+  5. Support expression testing
+  6. Spec API macros `eg` and `ge`
+  7. Test against ClojureScript JS
+  8. Create API to access example data for i.e. tool use
+  9. Document dev flow using clipboard
+  10. Create focus of test partial example using don't care generator(s) for the rest
+  11. Reduce clojure and clojurescript requirements
+  12. Provide workaround to remove warning of eg being a single segment ns
 
 ## Run eg's own tests
 Run tests expected to pass, targeting Clojure:
 ```clj
-lein clj-test-pass
+> lein clj-test-pass
 ```
 Run tests expected to pass, targeting ClojureScript JVM->nodejs:
 ```clj
-lein cljs-test-pass
+> lein cljs-test-pass
 ```
 Run tests expected to fail, targeting Clojure:
 ```clj
-lein clj-test-fail
+> lein clj-test-fail
 ```
 Run tests expected to fail, targeting ClojureScript JVM->nodejs:
 ```clj
-lein cljs-test-fail
+> lein cljs-test-fail
 ```
 
 ## Software that works great with eg
