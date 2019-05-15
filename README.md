@@ -20,7 +20,7 @@ The core ideas driving *eg* are:
     - switch order of examples to improve readability
     - check return against a predicate or equality relative to other data types
     - focus on specific tests while developing
-  - **examples as data** - for trivial tool support, it's just data!
+  - **examples as data** - for trivial tool support, examples are just data!
   - **function like test definitions** - akin to `clojure.spec/fdef`, but for tests
   - **compatibility with clojure.test** - along with its excelent tooling support
 
@@ -86,7 +86,7 @@ It's possible to run only selected tests by using metadata `^:focus` on `eg` or 
 ```clj
 (eg ^:focus false? [false] true)
 ```
-There are some caveats to consider when using `^:focus`:
+There are some caveats to consider when using `^:focus` **with ClojureScript**:
   1. The tests report counts towards non focused tests, although assertions under such tests are not executed.
   2. Assertions for tests defined directly with `clojure.test/deftest` will be executed, despite the presence of focused `eg`, or `ge` tests. 
 

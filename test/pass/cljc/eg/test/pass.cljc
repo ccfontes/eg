@@ -38,11 +38,11 @@
 ; this test will not run its assertions because other tests are focused
 (eg true? [true] true)
 
-(eg ^:focus not [(not true)] true)
+(eg not [(not true)] true)
 
-(ge ^:focus * #(= 9 %) [3 3])
+(ge * #(= 9 %) [3 3])
 
-(eg ^:focus -
+(eg -
   [1 2]       integer?
   [1 2]    => -1
   integer? <= [1 2])
@@ -51,4 +51,3 @@
   3          [1 2]
   [1 2]    => #(integer? %)
   integer? <= [1 2])
-

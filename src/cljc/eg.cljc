@@ -1,10 +1,12 @@
 (ns eg ^{:author "Carlos da Cunha Fontes"
          :license {:name "The Universal Permissive License (UPL), Version 1.0"
                    :url "https://github.com/ccfontes/eg/blob/master/LICENSE.md"}}
-  (:require [eg.platform :refer [deftest is cross-throw]])
+  (:require [eg.platform :refer [deftest is cross-throw alter-test-var-root]])
   #?(:cljs (:require-macros [eg :refer [eg ge]])))
 
 (defonce focus-metas (atom {}))
+
+(defonce test-var-altered? (atom false))
 
 (defn ->examples [egge-body]
   (first
@@ -40,13 +42,14 @@
 
 (defmacro ->example-test [fn-sym examples focus-metas- focus?]
   (let [test-name (-> fn-sym name (str "-test") symbol)]
-    `(deftest ~test-name
-      (when (test? ~focus-metas- ~focus?)
-        ~@(map (fn [[param-vec ret]]
-                 `(if (fn? ~ret)
-                   (is (~ret (~fn-sym ~@param-vec)))
-                   (is (= ~ret (~fn-sym ~@param-vec)))))
-               examples)))))
+    `(do (deftest ~test-name
+           (when (test? ~focus-metas- ~focus?)
+             ~@(map (fn [[param-vec ret]]
+                      `(if (fn? ~ret)
+                        (is (~ret (~fn-sym ~@param-vec)))
+                        (is (= ~ret (~fn-sym ~@param-vec)))))
+                    examples)))
+         (alter-meta! (var ~test-name) #(assoc % :focus ~focus?)))))
 
 (defn assoc-focus-metas [focus-metas- fn-meta fn-sym]
   (let [fn-ns-name (-> fn-meta :ns str)
@@ -54,10 +57,22 @@
         focus? (:focus fn-meta)]
     (assoc focus-metas- qualified-fn-kw focus?)))
 
+(defn ->alter-test-var-update-fn [focus-metas-]
+  (fn [test-v]
+    (fn [v]
+      (println "focus meta" (-> v meta :focus))
+      (println "meta" (meta v))
+      (let [focus? (-> v meta :focus)]
+        (if (test? focus-metas- focus?)
+          (test-v v))))))
+
 (defmacro eg [fn-sym & body]
   (let [examples (-> body ->examples parse-examples)
         fn-meta (meta fn-sym)
         focus? (:focus fn-meta)]
+    (when-not @test-var-altered?
+      (alter-test-var-root (->alter-test-var-update-fn focus-metas))
+      (reset! test-var-altered? true))
     `(do (swap! focus-metas assoc-focus-metas ~fn-meta ~fn-sym)
          (->example-test ~fn-sym ~examples focus-metas ~focus?))))
 
@@ -65,5 +80,8 @@
   (let [examples (-> body ->examples (parse-examples true))
         fn-meta (meta fn-sym)
         focus? (:focus fn-meta)]
+    (when-not @test-var-altered?
+      (alter-test-var-root (->alter-test-var-update-fn focus-metas))
+      (reset! test-var-altered? true))
     `(do (swap! focus-metas assoc-focus-metas ~fn-meta ~fn-sym)
          (->example-test ~fn-sym ~examples focus-metas ~focus?))))
