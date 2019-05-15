@@ -31,11 +31,11 @@ The core ideas driving *eg* are:
 
 **Leiningen/Boot**
 ```clj
-[eg "0.2.2-alpha"]
+[eg "0.2.3-alpha"]
 ```
 **Clojure CLI/deps.edn**
 ```clj
-eg {:mvn/version "0.2.2-alpha"}
+eg {:mvn/version "0.2.3-alpha"}
 ```
 
 ## Usage
