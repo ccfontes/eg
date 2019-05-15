@@ -60,8 +60,6 @@
 (defn ->alter-test-var-update-fn [focus-metas-]
   (fn [test-v]
     (fn [v]
-      (println "focus meta" (-> v meta :focus))
-      (println "meta" (meta v))
       (let [focus? (-> v meta :focus)]
         (if (test? focus-metas- focus?)
           (test-v v))))))

@@ -47,7 +47,7 @@
   [1 2]    => -1
   integer? <= [1 2])
 
-(ge ^:focus +
+(ge +
   3          [1 2]
   [1 2]    => #(integer? %)
   integer? <= [1 2])
