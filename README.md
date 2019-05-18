@@ -31,11 +31,11 @@ Core ideas driving *eg*:
 
 **Leiningen/Boot**
 ```clj
-[eg "0.2.3-alpha"]
+[eg "0.2.4-alpha"]
 ```
 **Clojure CLI/deps.edn**
 ```clj
-eg {:mvn/version "0.2.3-alpha"}
+eg {:mvn/version "0.2.4-alpha"}
 ```
 
 ## Usage

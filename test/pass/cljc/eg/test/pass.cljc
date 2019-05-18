@@ -51,3 +51,10 @@
   3          [1 2]
   [1 2]    => #(integer? %)
   integer? <= [1 2])
+
+; uncomment below after supporting expression testing
+; 'ex' name is likely to change
+#_(let [test-eg-ret (eg inc [0] 1)]
+  (ex test-eg-ret         fn?
+      (:test test-eg-ret) boolean
+      (:test test-eg-ret) fn?))

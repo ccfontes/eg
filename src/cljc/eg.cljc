@@ -43,14 +43,17 @@
 
 (defmacro ->example-test [fn-sym examples focus-metas- focus?]
   (let [test-name (-> fn-sym name (str "-test") symbol)]
-    `(do (deftest ~test-name
-           (when (test? ~focus-metas- ~focus?)
-             ~@(map (fn [[param-vec ret]]
-                      `(if (fn? ~ret)
-                        (is (~ret (~fn-sym ~@param-vec)))
-                        (is (= ~ret (~fn-sym ~@param-vec)))))
-                    examples)))
-         (alter-meta! (var ~test-name) #(assoc % :focus ~focus?)))))
+    `(let [test# (deftest ~test-name
+                   (when (test? ~focus-metas- ~focus?)
+                     ~@(map (fn [[param-vec ret]]
+                              `(if (fn? ~ret)
+                                (is (~ret (~fn-sym ~@param-vec)))
+                                (is (= ~ret (~fn-sym ~@param-vec)))))
+                            examples)))]
+      ; passing down ^:focus meta to clojure.test: see alter-test-var-update-fn
+      ; FIXME not associng in cljs
+      (alter-meta! (var ~test-name) #(assoc % :focus ~focus?))
+      test#)))
 
 (defn assoc-focus-metas [focus-metas- fn-meta fn-sym]
   (let [fn-ns-name (-> fn-meta :ns str)
@@ -58,6 +61,7 @@
         focus? (:focus fn-meta)]
     (assoc focus-metas- qualified-fn-kw focus?)))
 
+; FIXME function not executing in cljs
 (defn alter-test-var-update-fn [test-v]
   (fn [v]
     (let [focus? (-> v meta :focus)]
@@ -78,7 +82,8 @@
     `(do (swap! focus-metas assoc-focus-metas ~fn-meta ~fn-sym)
          (->example-test ~fn-sym ~examples focus-metas ~focus?))))
 
-#?(:clj (alter-var-root (var clj.test/test-var) alter-test-var-update-fn))
+#?(:clj
+  (alter-var-root (var clj.test/test-var) alter-test-var-update-fn))
 
-#?(:cljs
+#?(:cljs ; this is not redefining 'test-var'
   (set! cljs.test/test-var (alter-test-var-update-fn cljs.test/test-var)))
