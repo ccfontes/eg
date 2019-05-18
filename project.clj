@@ -15,7 +15,6 @@
             "clj-test-fail"  ["test" "eg.test.fail"]
             "cljs-test-fail" ["with-profiles" "+cljs-test-fail" "cljsbuild" "test"]
             "coverage"       ["with-profiles" "+cloverage" "cloverage" "--codecov"]}
-  :dependencies [[alter-cljs "0.2.0"]]
   :plugins [[lein-cljsbuild "1.1.7"]]
   :profiles
     {:dev {:dependencies [[org.clojure/clojure "1.10.0"]

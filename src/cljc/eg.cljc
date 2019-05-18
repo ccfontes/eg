@@ -1,12 +1,13 @@
 (ns eg ^{:author "Carlos da Cunha Fontes"
          :license {:name "The Universal Permissive License (UPL), Version 1.0"
                    :url "https://github.com/ccfontes/eg/blob/master/LICENSE.md"}}
-  (:require [eg.platform :refer [deftest is cross-throw alter-test-var-root]])
+  #?(:cljs (:require [eg.platform :refer [deftest is cross-throw]]
+                     [cljs.test :include-macros true]))
+  #?(:clj (:require [clojure.test :as clj.test]
+                    [eg.platform :refer [deftest is cross-throw]]))
   #?(:cljs (:require-macros [eg :refer [eg ge]])))
 
 (defonce focus-metas (atom {}))
-
-(defonce test-var-altered? (atom false))
 
 (defn ->examples [egge-body]
   (first
@@ -57,20 +58,16 @@
         focus? (:focus fn-meta)]
     (assoc focus-metas- qualified-fn-kw focus?)))
 
-(defn ->alter-test-var-update-fn [focus-metas-]
-  (fn [test-v]
-    (fn [v]
-      (let [focus? (-> v meta :focus)]
-        (if (test? focus-metas- focus?)
-          (test-v v))))))
+(defn alter-test-var-update-fn [test-v]
+  (fn [v]
+    (let [focus? (-> v meta :focus)]
+      (if (test? focus-metas focus?)
+        (test-v v)))))
 
 (defmacro eg [fn-sym & body]
   (let [examples (-> body ->examples parse-examples)
         fn-meta (meta fn-sym)
         focus? (:focus fn-meta)]
-    (when-not @test-var-altered?
-      (alter-test-var-root (->alter-test-var-update-fn focus-metas))
-      (reset! test-var-altered? true))
     `(do (swap! focus-metas assoc-focus-metas ~fn-meta ~fn-sym)
          (->example-test ~fn-sym ~examples focus-metas ~focus?))))
 
@@ -78,8 +75,10 @@
   (let [examples (-> body ->examples (parse-examples true))
         fn-meta (meta fn-sym)
         focus? (:focus fn-meta)]
-    (when-not @test-var-altered?
-      (alter-test-var-root (->alter-test-var-update-fn focus-metas))
-      (reset! test-var-altered? true))
     `(do (swap! focus-metas assoc-focus-metas ~fn-meta ~fn-sym)
          (->example-test ~fn-sym ~examples focus-metas ~focus?))))
+
+#?(:clj (alter-var-root (var clj.test/test-var) alter-test-var-update-fn))
+
+#?(:cljs
+  (set! cljs.test/test-var (alter-test-var-update-fn cljs.test/test-var)))

@@ -14,7 +14,7 @@ in *eg* becomes:
 (eg inc [0] 1)
 ```
 
-The core ideas driving *eg* are:
+Core ideas driving *eg*:
   - **conciseness** – spend less time reading and writing test boilerplate
   - **flexibility**:
     - switch order of examples to improve readability

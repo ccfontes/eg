@@ -1,12 +1,7 @@
 (ns eg.platform
-  #?(:cljs (:require-macros [eg.platform :refer [deftest is testing]]
-                            [alter-cljs.core :refer [alter-var-root]]))
-  #?(:clj (:refer-clojure :exclude [alter-var-root]))
-  #?(:clj (:require [clojure.test :as clj.test]
-                    [alter-cljs.core :refer [alter-var-root]]))
+  #?(:cljs (:require-macros [eg.platform :refer [deftest is testing]]))
+  #?(:clj (:require [clojure.test :as clj.test]))
   #?(:cljs (:require [cljs.test :include-macros true])))
-
-#?(:cljs (enable-console-print!))
 
 (defn cross-throw [msg]
   (#?(:cljs js/Error. :clj Exception. msg)))
@@ -41,7 +36,3 @@
   `(if-cljs
      (cljs.test/testing ~@args)
      (clj.test/testing ~@args)))
-
-(defn alter-test-var-root [var-root-update-fn]
-  (alter-var-root (var #?(:cljs cljs.test/test-var :clj clj.test/test-var))
-                  var-root-update-fn))
