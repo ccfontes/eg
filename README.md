@@ -124,18 +124,18 @@ Finally, run your tests as you normally would with `clojure.test`.
 ```
 
 ## Roadmap
-  1. Fix test name to support qualified symbols
-  2. Document being able to skip a test with vanilla clojure
-  3. Suffix test name with '-slow' when using ':slow' selector
-  4. Mention:
+  1. Support expression testing
+  2. Fix broken :^focus in cljs after changing its algo - revert to using external dep
+  3. document clipboard dev flow
+  4. Create focus of test using don't-cares
+  5. Document being able to skip a test with vanilla clojure
+  6. Suffix test name with '-slow' when using ':slow' selector
+  7. Mention:
      - leiningen `test-selectors` for use of metadata
      - https://github.com/weavejester/eftest
-  5. Support expression testing
-  6. Spec API macros `eg` and `ge`
-  7. Test against ClojureScript JS
-  8. Create API to access example data for i.e. tool use
-  9. Document dev flow using clipboard
-  10. Create focus of test partial example using don't care generator(s) for the rest
+  8. Spec API macros `eg` and `ge`
+  9. Test against ClojureScript JS
+  10. Create API to access example data for i.e. tool use
   11. Reduce clojure and clojurescript requirements
   12. Provide workaround to remove warning of eg being a single segment ns
 

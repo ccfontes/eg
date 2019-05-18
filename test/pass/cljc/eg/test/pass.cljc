@@ -58,3 +58,5 @@
   (ex test-eg-ret         fn?
       (:test test-eg-ret) boolean
       (:test test-eg-ret) fn?))
+
+(eg clojure.core/false? [false] true)

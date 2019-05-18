@@ -85,5 +85,5 @@
 #?(:clj
   (alter-var-root (var clj.test/test-var) alter-test-var-update-fn))
 
-#?(:cljs ; this is not redefining 'test-var'
+#?(:cljs ; FIXME this is not redefining 'test-var'
   (set! cljs.test/test-var (alter-test-var-update-fn cljs.test/test-var)))
