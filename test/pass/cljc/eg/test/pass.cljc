@@ -1,7 +1,7 @@
 (ns eg.test.pass
   (:require
     [eg.platform :refer [deftest is testing]]
-    [eg :refer [eg ge ex ->examples parse-examples test? assoc-focus-metas]]))
+    [eg :refer [eg ge ex ->examples parse-examples test? assoc-focus-metas fill-dont-cares]]))
 
 (deftest ->examples-test
   (is (= '([[2] 1]) (->examples '([2] 1))))
@@ -12,9 +12,9 @@
 
 (deftest parse-examples-test
   (testing "should be in order: input->output"
-    (is (= '([[2] 1]) (parse-examples '([[2] 1]))))
-    (is (= '([[2] 1]) (parse-examples '([[2] => 1]))))
-    (is (= '([[2] 1]) (parse-examples '([1 <= [2]]))))))
+    (is (= '([[2] 1]) (parse-examples '([[2] 1]) false)))
+    (is (= '([[2] 1]) (parse-examples '([[2] => 1]) false)))
+    (is (= '([[2] 1]) (parse-examples '([1 <= [2]]) false)))))
 
 (deftest test?-test
   (is (= true  (boolean (test? (atom {:clojure.core/some false :clojure.core/any? nil})   true))))
@@ -29,6 +29,12 @@
            (assoc-focus-metas {} inc-w-focus-meta 'seq)))
     (is (= {#?(:clj :clojure.core/seq :cljs :cljs.core/seq) nil}
            (assoc-focus-metas {} inc-meta 'seq)))))
+
+(deftest fill-dont-cares-test
+  (let [examples [[[1 2] :a] [['$ 4] :b] [[5 6] :c]]
+        dreg-examples [[[1 2] :a] [['$ 4] :b] [[5] :c]]]
+    (is (= [[[1 2] :a] [[1 4] :b] [[5 6] :c]] (fill-dont-cares examples)))
+    (is (= [[[1 2] :a] [[1 4] :b] [[5] :c]] (fill-dont-cares dreg-examples)))))
 
 ; only Clojure can metadata from a function using 'meta'
 #?(:clj (defmacro macro-fn-meta-fixture [f] (meta f)))
@@ -62,3 +68,8 @@
 (ex (true? false) => false)
 
 (eg clojure.core/false? [false] true)
+
+(eg vector
+  [1 2 3 4] [1 2 3 4]
+  [5 6 $ 8] [5 6 3 8]
+  [4 $ 5]   [4 2 5])

@@ -1,4 +1,4 @@
-(defproject eg "0.2.5-alpha"
+(defproject eg "0.2.6-alpha"
   :description "A maximal reduction of noise for tests using clojure.test"
   :license {:name "The Universal Permissive License (UPL), Version 1.0"
             :url "https://opensource.org/licenses/UPL"}

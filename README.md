@@ -32,11 +32,11 @@ Core ideas driving *eg*:
 
 **Leiningen/Boot**
 ```clj
-[eg "0.2.5-alpha"]
+[eg "0.2.6-alpha"]
 ```
 **Clojure CLI/deps.edn**
 ```clj
-eg {:mvn/version "0.2.5-alpha"}
+eg {:mvn/version "0.2.6-alpha"}
 ```
 
 ## Usage
@@ -97,6 +97,18 @@ override the default order of `eg` or `ge`.
   (ex (true? false) => false) ;=> eg-test-<nano-id>
 ```
 
+There are times when we just want to test a certain input parameter value, but fill the
+rest of the mandatory input parameters nevertheless. *eg* provides a *don't care* placeholder – '$',
+for these cases:
+```clj
+(eg vector
+  [1 2 3 4] [1 2 3 4]
+  [5 6 $ 8] [5 6 3 8]
+  [4 $ 5]   [4 2 5])
+```
+When writing the assertion, *don't cares* enable us to spend less time doing fillers, and the reader is able to better understand the focus
+of the assertion.
+
 It's possible to run only selected tests by using metadata `^:focus` on `eg` or `ge`:
 ```clj
 (eg ^:focus false? [false] true)
@@ -139,21 +151,19 @@ Finally, run your tests as you normally would with `clojure.test`.
 ```
 
 ## Roadmap
-  1. Fix broken `^:focus` in cljs after changing its algo - revert to using external dep
-  2. Support `^:focus` in `ex`
-  3. Create focus of test using don't-cares
-  4. Adapt failed assertions report to *eg*'s data capture capability
-  5. document clipboard dev flow
-  6. Document being able to skip a test with vanilla clojure
-  7. Suffix test name with '-slow' when using ':slow' selector
-  8. Mention:
+  1. Document being able to skip a test with vanilla clojure
+  2. Suffix test name with '-slow' when using ':slow' selector
+  3. Mention:
      - leiningen `test-selectors` for use of metadata
      - https://github.com/weavejester/eftest
-  9. Spec API macros `eg` and `ge`
-  10. Test against ClojureScript JS
-  11. Create API to access example data for i.e. tool use
-  12. Reduce clojure and clojurescript requirements
-  13. Provide workaround to remove warning of eg being a single segment ns
+  4. Test against ClojureScript JS
+  5. Spec API macros `eg`, `ge`, and `ex`
+  6. Create API to access example data for i.e. tool use
+  7. document clipboard dev flow
+  8. Reduce clojure and clojurescript requirements
+  9. Provide workaround to remove warning of eg being a single segment ns
+  10. Solve `^:focus` caveats in ClojureScript
+  11. Adapt failed assertions report to *eg*'s data capture capability
 
 ## Run eg's own tests
 Run tests expected to pass, targeting Clojure:
