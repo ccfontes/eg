@@ -1,5 +1,5 @@
 (ns eg.test.fail
-  (:require [eg :refer [eg ge]]))
+  (:require [eg :refer [eg ge ex]]))
 
 (eg not [(not true)] false)
 
@@ -12,3 +12,7 @@
 (ge -
   1 [1]
   2 [2 4])
+
+(ex (true? true) => false)
+
+(ex string? <= (ex (inc 0) 1))

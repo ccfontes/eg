@@ -16,26 +16,27 @@ in *eg* becomes:
 
 Core ideas driving *eg*:
   - **conciseness** – spend less time reading and writing test boilerplate
+  - **function like test definitions** - akin to `clojure.spec/fdef`, but for tests
   - **flexibility**:
     - switch order of examples to improve readability
     - check return against a predicate or equality relative to other data types
+    - specialized on function testing, but able to test arbitrary expressions as well
     - focus on specific tests while developing
   - **examples as data** - for trivial tool support, examples are just data!
-  - **function like test definitions** - akin to `clojure.spec/fdef`, but for tests
-  - **compatibility with clojure.test** - along with its excelent tooling support
-
-*eg* targets both Clojure and ClojureScript JVM. Untested for ClojureScript JS.
+  - **reach**:
+    - supports clojure.test - along with its excelent tooling support
+    - supports Clojure and ClojureScript JVM (next will be ClojureScript JS)
 
 ## Installation
 **Disclaimer:** *eg* is work-in-progress. Use it at your own risk!
 
 **Leiningen/Boot**
 ```clj
-[eg "0.2.4-alpha"]
+[eg "0.2.5-alpha"]
 ```
 **Clojure CLI/deps.edn**
 ```clj
-eg {:mvn/version "0.2.4-alpha"}
+eg {:mvn/version "0.2.5-alpha"}
 ```
 
 ## Usage
@@ -82,6 +83,20 @@ override the default order of `eg` or `ge`.
   map? <= {:a 1 :b 2 :c 3 :d 4})
 ```
 
+`ex` makes it possible to test the result of calling an arbitrary form **ex**pression. Typical scenarios include testing the result of calling a macro (`eg`, and `ge` only support function testing), or decomposing the assertion of different properties or values from calling a form:
+```clj
+(let [test-eg-ret (ex (inc 0) 1)
+      f-len (count "eg-test-")]
+  ; arrows are compulsory
+  (ex var? <= test-eg-ret
+      (-> test-eg-ret meta :test) => boolean
+      (-> test-eg-ret meta :test) => fn?
+      (-> test-eg-ret meta :name name (subs f-len)) => not-empty))
+  ;=> eg-test-<nano-id>
+
+  (ex (true? false) => false) ;=> eg-test-<nano-id>
+```
+
 It's possible to run only selected tests by using metadata `^:focus` on `eg` or `ge`:
 ```clj
 (eg ^:focus false? [false] true)
@@ -124,20 +139,21 @@ Finally, run your tests as you normally would with `clojure.test`.
 ```
 
 ## Roadmap
-  1. Support expression testing
-  2. Fix broken :^focus in cljs after changing its algo - revert to using external dep
-  3. document clipboard dev flow
-  4. Create focus of test using don't-cares
-  5. Document being able to skip a test with vanilla clojure
-  6. Suffix test name with '-slow' when using ':slow' selector
-  7. Mention:
+  1. Fix broken `^:focus` in cljs after changing its algo - revert to using external dep
+  2. Support `^:focus` in `ex`
+  3. Create focus of test using don't-cares
+  4. Adapt failed assertions report to *eg*'s data capture capability
+  5. document clipboard dev flow
+  6. Document being able to skip a test with vanilla clojure
+  7. Suffix test name with '-slow' when using ':slow' selector
+  8. Mention:
      - leiningen `test-selectors` for use of metadata
      - https://github.com/weavejester/eftest
-  8. Spec API macros `eg` and `ge`
-  9. Test against ClojureScript JS
-  10. Create API to access example data for i.e. tool use
-  11. Reduce clojure and clojurescript requirements
-  12. Provide workaround to remove warning of eg being a single segment ns
+  9. Spec API macros `eg` and `ge`
+  10. Test against ClojureScript JS
+  11. Create API to access example data for i.e. tool use
+  12. Reduce clojure and clojurescript requirements
+  13. Provide workaround to remove warning of eg being a single segment ns
 
 ## Run eg's own tests
 Run tests expected to pass, targeting Clojure:

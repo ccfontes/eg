@@ -34,6 +34,16 @@
             (if ge? (reverse %) %)))
        examples))
 
+(defn parse-expressions [exprs]
+  (map #(let [parsed [(first %) (last %)]
+              arrow (nth % 1)]
+         (if (= arrow '=>)
+           parsed
+           (if (= arrow '<=)
+             (reverse parsed)
+             (cross-throw (str "Was expecting a row, but found '" arrow "' instead..")))))
+       exprs))
+
 (defn test? [focus-metas focus?]
   (let [focuses (vals @focus-metas)
         focuses? (some true? focuses)]
@@ -53,6 +63,17 @@
       ; passing down ^:focus meta to clojure.test: see alter-test-var-update-fn
       ; FIXME not associng in cljs
       (alter-meta! (var ~test-name) #(assoc % :focus ~focus?))
+      test#)))
+
+(defmacro ->expression-test [examples]
+  (let [rand-id (int (* (rand) 100000))
+        test-name (symbol (str "eg-test-" rand-id))]
+    `(let [test# (deftest ~test-name
+                   ~@(map (fn [[res expected]]
+                            `(if (fn? ~expected)
+                              (is (~expected ~res))
+                              (is (= ~expected ~res))))
+                          examples))]
       test#)))
 
 (defn assoc-focus-metas [focus-metas- fn-meta fn-sym]
@@ -81,6 +102,10 @@
         focus? (:focus fn-meta)]
     `(do (swap! focus-metas assoc-focus-metas ~fn-meta ~fn-sym)
          (->example-test ~fn-sym ~examples focus-metas ~focus?))))
+
+(defmacro ex [& body]
+  (let [examples (->> body (partition 3) parse-expressions)]
+    `(->expression-test ~examples)))
 
 #?(:clj
   (alter-var-root (var clj.test/test-var) alter-test-var-update-fn))
