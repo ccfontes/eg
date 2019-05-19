@@ -21,7 +21,9 @@ Core ideas driving *eg*:
     - switch order of examples to improve readability
     - check return against a predicate or equality relative to other data types
     - specialized on function testing, but able to test arbitrary expressions as well
+  - **focus**:
     - focus on specific tests while developing
+    - understand the focus of an assertion by using input *don't cares*
   - **examples as data** - for trivial tool support, examples are just data!
   - **reach**:
     - supports clojure.test - along with its excelent tooling support
@@ -98,7 +100,7 @@ override the default order of `eg` or `ge`.
 ```
 
 There are times when we just want to test a certain input parameter value, but fill the
-rest of the mandatory input parameters nevertheless. *eg* provides a *don't care* placeholder – '$',
+rest of the mandatory input parameters nevertheless. *eg* provides a *don't care* placeholder – `$`,
 for these cases:
 ```clj
 (eg vector
