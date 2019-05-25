@@ -16,7 +16,9 @@
             "cljs-test-fail" ["with-profiles" "+cljs-test-fail" "cljsbuild" "test"]
             "coverage"       ["with-profiles" "+cloverage" "cloverage" "--codecov"]}
   :plugins [[lein-cljsbuild "1.1.7"]]
-  :repl-options {:welcome (println "To run all tests, run: (run-tests)")}
+  :repl-options {:init (clojure.tools.namespace.repl/refresh)
+                 :welcome (do (println "To refresh all namespaces, run: (refresh)")
+                              (println "To run all tests, run: (run-tests)"))}
   :profiles
     {:dev {:source-paths ["dev"]
            :dependencies [[org.clojure/clojure "1.10.0"]
