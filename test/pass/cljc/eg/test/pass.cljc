@@ -31,8 +31,8 @@
            (assoc-focus-metas {} inc-meta 'seq)))))
 
 (deftest fill-dont-cares-test
-  (let [examples [[[1 2] :a] [['$ 4] :b] [[5 6] :c]]
-        dreg-examples [[[1 2] :a] [['$ 4] :b] [[5] :c]]]
+  (let [examples [[[1 2] :a] [['_ 4] :b] [[5 6] :c]]
+        dreg-examples [[[1 2] :a] [['_ 4] :b] [[5] :c]]]
     (is (= [[[1 2] :a] [[1 4] :b] [[5 6] :c]] (fill-dont-cares examples)))
     (is (= [[[1 2] :a] [[1 4] :b] [[5] :c]] (fill-dont-cares dreg-examples)))))
 
@@ -71,5 +71,5 @@
 
 (eg vector
   [1 2 3 4] [1 2 3 4]
-  [5 6 $ 8] [5 6 3 8]
-  [4 $ 5]   [4 2 5])
+  [5 6 _ 8] [5 6 3 8]
+  [4 _ 5]   [4 2 5])

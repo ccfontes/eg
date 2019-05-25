@@ -94,19 +94,19 @@ override the default order of `eg` or `ge`.
       (-> test-eg-ret meta :test) => boolean
       (-> test-eg-ret meta :test) => fn?
       (-> test-eg-ret meta :name name (subs f-len)) => not-empty))
-  ;=> eg-test-<nano-id>
+  ;=> eg-test-<rand-id>
 
-  (ex (true? false) => false) ;=> eg-test-<nano-id>
+  (ex (true? false) => false) ;=> eg-test-<rand-id>
 ```
 
 There are times when we just want to test a certain input parameter value, but fill the
-rest of the mandatory input parameters nevertheless. *eg* provides a *don't care* placeholder – `$`,
+remainder input parameters nevertheless. *eg* provides a *don't care* placeholder – `$`,
 for these cases:
 ```clj
 (eg vector
   [1 2 3 4] [1 2 3 4]
-  [5 6 $ 8] [5 6 3 8]
-  [4 $ 5]   [4 2 5])
+  [5 6 _ 8] [5 6 3 8]
+  [4 _ 5]   [4 2 5])
 ```
 When writing the assertion, *don't cares* enable us to spend less time doing fillers, and the reader is able to better understand the focus
 of the assertion.

@@ -53,7 +53,7 @@
            parsed
            (if (= arrow '<=)
              (reverse parsed)
-             (cross-throw (str "Was expecting a row, but found '" arrow "' instead..")))))
+             (cross-throw (str "Was expecting an arrow, but found '" arrow "' instead..")))))
        exprs))
 
 (defn test? [focus-metas focus?]
@@ -102,11 +102,11 @@
 
 (defn fill-dont-cares [examples]
   (let [input-examples (map first examples)
-        choices-per-param (apply map-dregs #(->> %& (remove #{'$}) vec) input-examples)
+        choices-per-param (apply map-dregs #(->> %& (remove #{'_}) vec) input-examples)
         fo (fn [[params exp]]
             ; OPTIMIZE to choose at random
             (let [fi (fn [param choices]
-                       (if (= param '$)
+                       (if (= param '_)
                          (if-let [choice (first choices)]
                            choice
                            (cross-throw "No choices found for don't care"))
