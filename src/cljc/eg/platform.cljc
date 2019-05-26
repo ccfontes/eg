@@ -4,7 +4,8 @@
   #?(:cljs (:require [cljs.test :include-macros true])))
 
 (defn cross-throw [msg]
-  (#?(:cljs js/Error. :clj Exception. msg)))
+  (throw #?(:cljs (js/Error. msg)
+            :clj (Exception. msg))))
 
 (defn cljs-env?
   "Take the &env from a macro, and tell whether we are expanding into cljs.

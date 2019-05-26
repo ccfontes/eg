@@ -1,7 +1,13 @@
 (ns eg.test.pass
   (:require
-    [eg.platform :refer [deftest is testing]]
+    [eg.platform :refer [deftest is testing cross-throw]]
     [eg :refer [eg ge ex ->examples parse-examples test? assoc-focus-metas fill-dont-cares]]))
+
+(deftest cross-throw-test
+  (is (= "BOOM" (try
+                  (cross-throw "BOOM")
+                  (catch Exception e
+                    (-> e Throwable->map :cause))))))
 
 (deftest ->examples-test
   (is (= '([[2] 1]) (->examples '([2] 1))))
@@ -54,7 +60,7 @@
   integer? <= [1 2])
 
 (ge +
-  3          [1 2]
+  3           [1 2]
   [1 2]    => #(integer? %)
   integer? <= [1 2])
 
