@@ -2,12 +2,16 @@
          :license {:name "The Universal Permissive License (UPL), Version 1.0"
                    :url "https://github.com/ccfontes/eg/blob/master/LICENSE.md"}}
   #?(:cljs (:require [eg.platform :refer [deftest is cross-throw]]
-                     [cljs.test :include-macros true]))
-  #?(:clj (:require [clojure.test :as clj.test]
-                    [eg.platform :refer [deftest is cross-throw]]))
+                     [cljs.test :include-macros true]
+                     [clojure.walk :refer [postwalk]]))
+  #?(:clj (:require [eg.platform :refer [deftest is cross-throw]]
+                    [clojure.test :as clj.test]
+                    [clojure.walk :refer [postwalk]]))
   #?(:cljs (:require-macros [eg :refer [eg ge ex]])))
 
 (defonce focus-metas (atom {}))
+
+(def bound-dont-cares #{'$1 '$2 '$3 '$4 '$5 '$6 '$7 '$8 '$9})
 
 (defn map-dregs [f & colls]
   "Like map but when there is a different count between colls, applies input fn
@@ -102,16 +106,20 @@
 
 (defn fill-dont-cares [examples]
   (let [input-examples (map first examples)
-        choices-per-param (apply map-dregs #(->> %& (remove #{'_}) vec) input-examples)
+        dont-cares (conj bound-dont-cares '_) ; lets add more, if there is a need
+        choices-per-param (apply map-dregs #(->> %& (remove dont-cares) vec) input-examples)
         fo (fn [[params exp]]
-            ; OPTIMIZE to choose at random
-            (let [fi (fn [param choices]
-                       (if (= param '_)
-                         (if-let [choice (first choices)]
-                           choice
-                           (cross-throw "No choices found for don't care"))
-                         param))]
-              [(map fi params choices-per-param) exp]))]
+             ; OPTIMIZE to choose at random
+             (let [fi (fn [[param-acc exp] [param choices]]
+                        (if (dont-cares param)
+                          (if-let [choice (first choices)]
+                            (let [bound-dont-care (bound-dont-cares param)
+                                  pw-f #(if (= bound-dont-care %) choice %)]
+                              [(concat param-acc [choice])
+                               (if bound-dont-care (postwalk pw-f exp) exp)])
+                            (cross-throw "No choices found for don't care"))
+                          [(concat param-acc [param]) exp]))]
+               (reduce fi [[] exp] (map #(vec %&) params choices-per-param))))]
     (map fo examples)))
 
 (defmacro eg-helper [[fn-sym & body] ge?]

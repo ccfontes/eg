@@ -4,11 +4,10 @@
     [eg :refer [eg ge ex ->examples parse-examples test? assoc-focus-metas fill-dont-cares]]))
 
 (deftest cross-throw-test
-  (is (= "BOOM" (try
-                  (cross-throw "BOOM")
+  (is (= "BOOM" (try (cross-throw "BOOM")
                   (catch #?(:clj Exception :cljs :default) e
                     #?(:clj (-> e Throwable->map :cause))
-                    #?(:cljs (-> e .-message)))))))
+                    #?(:cljs (.-message e)))))))
 
 (deftest ->examples-test
   (is (= '([[2] 1]) (->examples '([2] 1))))
@@ -38,10 +37,17 @@
            (assoc-focus-metas {} inc-meta 'seq)))))
 
 (deftest fill-dont-cares-test
-  (let [examples [[[1 2] :a] [['_ 4] :b] [[5 6] :c]]
-        dreg-examples [[[1 2] :a] [['_ 4] :b] [[5] :c]]]
-    (is (= [[[1 2] :a] [[1 4] :b] [[5 6] :c]] (fill-dont-cares examples)))
-    (is (= [[[1 2] :a] [[1 4] :b] [[5] :c]] (fill-dont-cares dreg-examples)))))
+  (is (= [[[1 2] :a] [[1 4] :b] [[5 6] :c]]
+         (fill-dont-cares [[[1 2] :a] [['_ 4] :b] [[5 6] :c]])))
+  (is (= [[[1 2] :a] [[1 4] :b] [[5] :c]]
+         (fill-dont-cares [[[1 2] :a] [['_ 4] :b] [[5] :c]])))
+  (is (= [[[5 2] :b] [[5 2] [{:a 5} 5]]]
+         (fill-dont-cares [[[5 2] :b] [['$1 2] [{:a '$1} '$1]]])))
+  #_(is (= "No choices found for don't care"
+         (try (fill-dont-cares [[['_ 4] :b]])
+           (catch #?(:clj Exception :cljs :default) e
+             #?(:clj (-> e Throwable->map :cause))
+             #?(:cljs (.-message e)))))))
 
 ; only Clojure can metadata from a function using 'meta'
 #?(:clj (defmacro macro-fn-meta-fixture [f] (meta f)))
@@ -77,6 +83,10 @@
 (eg clojure.core/false? [false] true)
 
 (eg vector
-  [1 2 3 4] [1 2 3 4]
-  [5 6 _ 8] [5 6 3 8]
-  [4 _ 5]   [4 2 5])
+  [5 6 _ 8] vector?
+  [4 _ 5]   vector?
+  [$1 $2]   [$1 $2])
+
+(eg assoc-in
+  [{} [:a :b] {:eggs "boiled"}] => {:a {:b {:eggs "boiled"}}}
+  [_ _ $1] => {:a {:b $1}})

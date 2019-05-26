@@ -100,13 +100,19 @@ override the default order of `eg` or `ge`.
 ```
 
 There are times when we just want to test a certain input parameter value, but fill the
-remainder input parameters nevertheless. *eg* provides a *don't care* placeholder – `$`,
+remainder input parameters nevertheless. *eg* provides a *don't care* placeholder – `_`,
 for these cases:
 ```clj
 (eg vector
   [1 2 3 4] [1 2 3 4]
-  [5 6 _ 8] [5 6 3 8]
-  [4 _ 5]   [4 2 5])
+  [5 6 _ 8] vector?
+  [4 _ 5]   vector?)
+
+We can map *don't care* inputs to matching parts of the expected result, by using *bound don't cares*:
+```clj
+(eg assoc-in
+  [{} [:a :b] {:eggs "boiled"}] => {:a {:b {:eggs "boiled"}}}
+  [_ _ $1] => {:a {:b $1}})
 ```
 When writing the assertion, *don't cares* enable us to spend less time doing fillers, and the reader is able to better understand the focus
 of the assertion.
@@ -153,19 +159,21 @@ Finally, run your tests as you normally would with `clojure.test`.
 ```
 
 ## Roadmap
-  1. Document being able to skip a test with vanilla clojure
-  2. Suffix test name with '-slow' when using ':slow' selector
-  3. Mention:
+  1. throw on multiple bound don't care inputs using same symbol
+  2. Create setter to intern eg, ge, & ex globally
+  3. Document being able to skip a test with vanilla clojure
+  4. Suffix test name with '-slow' when using ':slow' selector
+  5. Mention:
      - leiningen `test-selectors` for use of metadata
      - https://github.com/weavejester/eftest
-  4. Test against ClojureScript JS
-  5. Spec API macros `eg`, `ge`, and `ex`
-  6. Create API to access example data for i.e. tool use
-  7. document clipboard dev flow
-  8. Reduce clojure and clojurescript requirements
-  9. Provide workaround to remove warning of eg being a single segment ns
-  10. Solve `^:focus` caveats in ClojureScript
-  11. Adapt failed assertions report to *eg*'s data capture capability
+  6. Test against ClojureScript JS
+  7. Spec API macros `eg`, `ge`, and `ex`
+  8. Create API to access example data for i.e. tool use
+  9. document clipboard dev flow
+  10. Reduce clojure and clojurescript requirements
+  11. Provide workaround to remove warning of eg being a single segment ns
+  12. Solve `^:focus` caveats in ClojureScript
+  13. Adapt failed assertions report to *eg*'s data capture capability
 
 ## Run eg's own tests
 Run tests expected to pass, targeting Clojure:

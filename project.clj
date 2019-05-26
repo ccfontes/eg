@@ -1,5 +1,5 @@
 (defproject eg "0.2.6-alpha"
-  :description "A maximal reduction of noise for tests using clojure.test"
+  :description "eg delivers clojure.test function tests with conciseness."
   :license {:name "The Universal Permissive License (UPL), Version 1.0"
             :url "https://opensource.org/licenses/UPL"}
   :url "https://github.com/ccfontes/eg"
