@@ -100,14 +100,14 @@ override the default order of `eg` or `ge`.
 ```
 
 There are times when we just want to test a certain input parameter value, but fill the
-remainder input parameters nevertheless. *eg* provides a *don't care* placeholder – `_`,
+remainder input parameters nevertheless. *eg* provides a *don't care* placeholder `_`,
 for these cases:
 ```clj
 (eg vector
   [1 2 3 4] [1 2 3 4]
   [5 6 _ 8] vector?
   [4 _ 5]   vector?)
-
+```
 We can map *don't care* inputs to matching parts of the expected result, by using *bound don't cares*:
 ```clj
 (eg assoc-in
