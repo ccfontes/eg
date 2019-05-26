@@ -6,8 +6,9 @@
 (deftest cross-throw-test
   (is (= "BOOM" (try
                   (cross-throw "BOOM")
-                  (catch Exception e
-                    (-> e Throwable->map :cause))))))
+                  (catch #?(:clj Exception :cljs :default) e
+                    #?(:clj (-> e Throwable->map :cause))
+                    #?(:cljs (-> e .-message)))))))
 
 (deftest ->examples-test
   (is (= '([[2] 1]) (->examples '([2] 1))))
