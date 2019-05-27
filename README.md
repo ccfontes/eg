@@ -108,11 +108,12 @@ for these cases:
   [5 6 _ 8] vector?
   [4 _ 5]   vector?)
 ```
-We can map *don't care* inputs to matching parts of the expected result, by using *bound don't cares*:
+We can arbitrarily name a *don't care* parameter by prefixing its name with `$`. A *named don't care* can also be bound with parts on the expected result:
 ```clj
 (eg assoc-in
   [{} [:a :b] {:eggs "boiled"}] => {:a {:b {:eggs "boiled"}}}
-  [_ _ $1] => {:a {:b $1}})
+  [_ $spam _] => map?
+  [_ _ $eggs] => {:a {:b $eggs}})
 ```
 When writing the assertion, *don't cares* enable us to spend less time doing fillers, and the reader is able to better understand the focus
 of the assertion.

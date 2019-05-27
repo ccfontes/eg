@@ -11,8 +11,6 @@
 
 (defonce focus-metas (atom {}))
 
-(def bound-dont-cares #{'$1 '$2 '$3 '$4 '$5 '$6 '$7 '$8 '$9})
-
 (defn map-dregs [f & colls]
   "Like map but when there is a different count between colls, applies input fn
    to the coll values until the biggest coll is empty."
@@ -104,19 +102,23 @@
       (if (test? focus-metas focus?)
         (test-v v)))))
 
+(defn named-dont-care? [thing]
+  (and (symbol? thing)
+       (= \$ (-> thing name first))))
+
+(def dont-care? (some-fn #{'_} named-dont-care?))
+
 (defn fill-dont-cares [examples]
   (let [input-examples (map first examples)
-        dont-cares (conj bound-dont-cares '_) ; lets add more, if there is a need
-        choices-per-param (apply map-dregs #(->> %& (remove dont-cares) vec) input-examples)
+        choices-per-param (apply map-dregs #(->> %& (remove dont-care?) vec) input-examples)
         fo (fn [[params exp]]
              ; OPTIMIZE to choose at random
              (let [fi (fn [[param-acc exp] [param choices]]
-                        (if (dont-cares param)
+                        (if (dont-care? param)
                           (if-let [choice (first choices)]
-                            (let [bound-dont-care (bound-dont-cares param)
-                                  pw-f #(if (= bound-dont-care %) choice %)]
+                            (let [pw-f #(if (= param %) choice %)]
                               [(concat param-acc [choice])
-                               (if bound-dont-care (postwalk pw-f exp) exp)])
+                               (if (named-dont-care? param) (postwalk pw-f exp) exp)])
                             (cross-throw "No choices found for don't care"))
                           [(concat param-acc [param]) exp]))]
                (reduce fi [[] exp] (map #(vec %&) params choices-per-param))))]

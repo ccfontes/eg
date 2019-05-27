@@ -1,7 +1,7 @@
 (ns eg.test.pass
   (:require
     [eg.platform :refer [deftest is testing cross-throw]]
-    [eg :refer [eg ge ex ->examples parse-examples test? assoc-focus-metas fill-dont-cares]]))
+    [eg :refer [eg ge ex ->examples parse-examples test? assoc-focus-metas named-dont-care? fill-dont-cares]]))
 
 (deftest cross-throw-test
   (is (= "BOOM" (try (cross-throw "BOOM")
@@ -54,6 +54,11 @@
 #?(:clj (deftest macro-fn-meta-simulated-test
     (is (= {:focus true} (macro-fn-meta-fixture ^:focus inc)))))
 
+(deftest named-dont-care-test
+  (is (named-dont-care? '$thing))
+  (is (not (named-dont-care? 'thing)))
+  (is (not (named-dont-care? "thing"))))
+
 ; this test will not run its assertions because other tests are focused
 (eg true? [true] true)
 
@@ -83,10 +88,12 @@
 (eg clojure.core/false? [false] true)
 
 (eg vector
-  [5 6 _ 8] vector?
-  [4 _ 5]   vector?
-  [$1 $2]   [$1 $2])
+  [5 6 _ 8]   vector?
+  [4 _ 5]     vector?
+  [3 $mono]   vector?
+  [$thing $2] [$thing $2])
 
 (eg assoc-in
   [{} [:a :b] {:eggs "boiled"}] => {:a {:b {:eggs "boiled"}}}
-  [_ _ $1] => {:a {:b $1}})
+  [_ $spam _] => map?
+  [_ _ $eggs] => {:a {:b $eggs}})
