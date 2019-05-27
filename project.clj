@@ -1,4 +1,4 @@
-(defproject eg "0.3.0-alpha"
+(defproject eg "0.4.0-alpha"
   :description "eg delivers clojure.test function tests with conciseness."
   :license {:name "The Universal Permissive License (UPL), Version 1.0"
             :url "https://opensource.org/licenses/UPL"}
