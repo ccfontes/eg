@@ -34,11 +34,11 @@ Core ideas driving *eg*:
 
 **Leiningen/Boot**
 ```clj
-[eg "0.4.0-alpha"]
+[eg "0.4.1-alpha"]
 ```
 **Clojure CLI/deps.edn**
 ```clj
-eg {:mvn/version "0.4.0-alpha"}
+eg {:mvn/version "0.4.1-alpha"}
 ```
 
 ## Usage
@@ -126,7 +126,7 @@ As a personal experience, writing tests often becomes an afterthought, because c
 ```
 Now use `eg`, `ge`, `ge` anywhere you want to create new tests!
 
-PS - Only Clojure supports this functionality.
+PS - This functionality is only supported in Clojure.
 
 When writing the assertion, *don't cares* enable us to spend less time doing fillers, and the reader is able to better understand the focus
 of the assertion.
