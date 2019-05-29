@@ -116,6 +116,8 @@ We can arbitrarily name a *don't care* parameter by prefixing its name with `$`.
   [_ $spam _] => map?
   [_ _ $eggs] => {:a {:b $eggs}})
 ```
+When writing the assertion, *don't cares* enable us to spend less time doing fillers, and the reader is able to better understand the focus
+of the assertion.
 
 As a personal experience, writing tests often becomes an afterthought, because creating test boilerblate like a new test namespace, requiring test forms and functions under test is too much of a hassle, while being immersed on writting code. It makes sense to have test forms globally available that we use almost as often as `defn`. Introducing `set-eg!`! Call it at the development entrypoint of your program:
 ```clj
@@ -127,9 +129,6 @@ As a personal experience, writing tests often becomes an afterthought, because c
 Now use `eg`, `ge`, `ge` anywhere you want to create new tests!
 
 PS - This functionality is only supported in Clojure.
-
-When writing the assertion, *don't cares* enable us to spend less time doing fillers, and the reader is able to better understand the focus
-of the assertion.
 
 It's possible to run only selected tests by using metadata `^:focus` on `eg` or `ge`:
 ```clj
