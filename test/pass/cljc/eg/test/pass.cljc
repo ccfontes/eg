@@ -1,7 +1,7 @@
 (ns eg.test.pass
   (:require
     [eg.platform :refer [deftest is testing cross-throw]]
-    [eg :refer [eg ge ex ->examples parse-examples test? assoc-focus-metas named-dont-care? fill-dont-cares]]))
+    [eg :refer [eg ge ex ->examples parse-examples test? assoc-focus-metas named-dont-care? fill-dont-cares set-eg!]]))
 
 (deftest cross-throw-test
   (is (= "BOOM" (try (cross-throw "BOOM")
@@ -97,3 +97,8 @@
   [{} [:a :b] {:eggs "boiled"}] => {:a {:b {:eggs "boiled"}}}
   [_ $spam _] => map?
   [_ _ $eggs] => {:a {:b $eggs}})
+
+(ex (let [set-eg-ret (set-eg!)]
+      #(every? (comp :macro meta) %) <= set-eg-ret
+      #(every? (comp #{"clojure.core"} :ns meta) %) <= set-eg-ret
+      #{'eg 'ge 'ex} <= (set (map (comp :name meta) set-eg-ret))))

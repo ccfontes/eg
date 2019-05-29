@@ -16,6 +16,7 @@
             "cljs-test-fail" ["with-profiles" "+cljs-test-fail" "cljsbuild" "test"]
             "coverage"       ["with-profiles" "+cloverage" "cloverage" "--codecov"]}
   :plugins [[lein-cljsbuild "1.1.7"]]
+  :dependencies [[org.clojure/tools.namespace "0.3.0-alpha4"]]
   :repl-options {:init (clojure.tools.namespace.repl/refresh)
                  :welcome (do (println "To refresh all namespaces, run: (refresh)")
                               (println "To run all tests, run: (run-tests)"))}
@@ -23,7 +24,6 @@
     {:dev {:source-paths ["dev"]
            :dependencies [[org.clojure/clojure "1.10.0"]
                           [org.clojure/clojurescript "1.10.520" :scope "provided"]
-                          [org.clojure/tools.namespace "0.3.0-alpha4"]
                           [pjstadig/humane-test-output "0.9.0"]]
            :injections [(require 'pjstadig.humane-test-output)
                         (pjstadig.humane-test-output/activate!)]}

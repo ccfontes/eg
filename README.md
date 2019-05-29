@@ -108,6 +108,7 @@ for these cases:
   [5 6 _ 8] vector?
   [4 _ 5]   vector?)
 ```
+
 We can arbitrarily name a *don't care* parameter by prefixing its name with `$`. A *named don't care* can also be bound with parts on the expected result:
 ```clj
 (eg assoc-in
@@ -115,6 +116,18 @@ We can arbitrarily name a *don't care* parameter by prefixing its name with `$`.
   [_ $spam _] => map?
   [_ _ $eggs] => {:a {:b $eggs}})
 ```
+
+As a personal experience, writing tests often becomes an afterthought, because creating test boilerblate like a new test namespace, requiring test forms and functions under test is too much of a hassle, while being immersed on writting code. It makes sense to have test forms globally available that we use almost as often as `defn`. Introducing `set-eg!`! Call it at the development entrypoint of your program:
+```clj
+(require '[eg :refer [set-eg!]])
+(set-eg!)
+;=> :reloading ()
+;=> #{#'clojure.core/eg #'clojure.core/ex #'clojure.core/ge}
+```
+Now use `eg`, `ge`, `ge` anywhere you want to create new tests!
+
+PS - Only Clojure supports this functionality.
+
 When writing the assertion, *don't cares* enable us to spend less time doing fillers, and the reader is able to better understand the focus
 of the assertion.
 
@@ -160,14 +173,14 @@ Finally, run your tests as you normally would with `clojure.test`.
 ```
 
 ## Roadmap
-  1. throw on multiple bound don't care inputs using same symbol
-  2. Create setter to intern eg, ge, & ex globally
-  3. Document being able to skip a test with vanilla clojure
-  4. Suffix test name with '-slow' when using ':slow' selector
-  5. Mention:
+  1. Support checkers in arbitrary places
+  2. Support docstring for `ex`
+  3. Test against ClojureScript JS
+  4. Document being able to skip a test with vanilla clojure
+  5. Suffix test name with '-slow' when using ':slow' selector
+  6. Mention:
      - leiningen `test-selectors` for use of metadata
      - https://github.com/weavejester/eftest
-  6. Test against ClojureScript JS
   7. Spec API macros `eg`, `ge`, and `ex`
   8. Create API to access example data for i.e. tool use
   9. document clipboard dev flow

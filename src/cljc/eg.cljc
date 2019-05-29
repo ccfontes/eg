@@ -6,7 +6,8 @@
                      [clojure.walk :refer [postwalk]]))
   #?(:clj (:require [eg.platform :refer [deftest is cross-throw]]
                     [clojure.test :as clj.test]
-                    [clojure.walk :refer [postwalk]]))
+                    [clojure.walk :refer [postwalk]]
+                    [clojure.tools.namespace.repl]))
   #?(:cljs (:require-macros [eg :refer [eg ge ex]])))
 
 (defonce focus-metas (atom {}))
@@ -144,3 +145,11 @@
 
 #?(:cljs ; FIXME this is not redefining 'test-var'
   (set! cljs.test/test-var (alter-test-var-update-fn cljs.test/test-var)))
+
+#?(:clj
+  (defn set-eg! []
+    (let [eg-var (intern 'clojure.core (with-meta 'eg {:macro true}) @#'eg)
+          ge-var (intern 'clojure.core (with-meta 'ge {:macro true}) @#'ge)
+          ex-var (intern 'clojure.core (with-meta 'ex {:macro true}) @#'ex)]
+      (clojure.tools.namespace.repl/refresh)
+      #{eg-var ge-var ex-var})))
