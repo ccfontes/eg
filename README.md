@@ -27,7 +27,7 @@ Core ideas driving *eg*:
   - **examples as data** - for trivial tool support, examples are just data!
   - **reach**:
     - supports clojure.test - along with its excelent tooling support
-    - supports Clojure and ClojureScript JVM (next will be ClojureScript JS)
+    - supports Clojure, ClojureScript JVM, and ClojureScript JS
 
 ## Installation
 **Disclaimer:** *eg* is work-in-progress. Use it at your own risk!
@@ -126,7 +126,7 @@ As a personal experience, writing tests often becomes an afterthought, because c
 ;=> :reloading ()
 ;=> #{#'clojure.core/eg #'clojure.core/ex #'clojure.core/ge}
 ```
-Now use `eg`, `ge`, `ge` anywhere you want to create new tests!
+Now use `eg`, `ge`, and `ex` anywhere you want to create new tests!
 
 PS - This functionality is only supported in Clojure.
 
@@ -172,9 +172,9 @@ Finally, run your tests as you normally would with `clojure.test`.
 ```
 
 ## Roadmap
-  1. Support checkers in arbitrary places
-  2. Support docstring for `ex`
-  3. Test against ClojureScript JS
+  1. Provide workaround to remove warning of eg being a single segment ns
+  2. Support checkers in arbitrary places
+  3. Support docstring for `ex`
   4. Document being able to skip a test with vanilla clojure
   5. Suffix test name with '-slow' when using ':slow' selector
   6. Mention:
@@ -184,9 +184,8 @@ Finally, run your tests as you normally would with `clojure.test`.
   8. Create API to access example data for i.e. tool use
   9. document clipboard dev flow
   10. Reduce clojure and clojurescript requirements
-  11. Provide workaround to remove warning of eg being a single segment ns
-  12. Solve `^:focus` caveats in ClojureScript
-  13. Adapt failed assertions report to *eg*'s data capture capability
+  11. Solve `^:focus` caveats in ClojureScript
+  12. Adapt failed assertions report to *eg*'s data capture capability
 
 ## Run eg's own tests
 Run tests expected to pass, targeting Clojure:
@@ -204,6 +203,12 @@ Run tests expected to fail, targeting Clojure:
 Run tests expected to fail, targeting ClojureScript JVM->nodejs:
 ```clj
 > lein cljs-test-fail
+```
+Run tests expected to pass, targeting ClojureScript JS:
+```sh
+> lein tach planck
+# or
+> lein tach lumo
 ```
 
 ## Software that works great with eg

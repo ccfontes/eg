@@ -15,11 +15,14 @@
             "clj-test-fail"  ["test" "eg.test.fail"]
             "cljs-test-fail" ["with-profiles" "+cljs-test-fail" "cljsbuild" "test"]
             "coverage"       ["with-profiles" "+cloverage" "cloverage" "--codecov"]}
-  :plugins [[lein-cljsbuild "1.1.7"]]
+  :plugins [[lein-cljsbuild "1.1.7"] [lein-tach "1.0.0"]]
   :dependencies [[org.clojure/tools.namespace "0.3.0-alpha4"]]
   :repl-options {:init (clojure.tools.namespace.repl/refresh)
                  :welcome (do (println "To refresh all namespaces, run: (refresh)")
                               (println "To run all tests, run: (run-tests)"))}
+  :tach {:test-runner-ns eg.test.pass.runner
+         :source-paths ["src/cljc" "test/pass/cljc" "test/pass/cljs"]
+         :force-non-zero-exit-on-test-failure? true}
   :profiles
     {:dev {:source-paths ["dev"]
            :dependencies [[org.clojure/clojure "1.10.0"]

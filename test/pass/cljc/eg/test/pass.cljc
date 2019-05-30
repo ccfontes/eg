@@ -1,7 +1,11 @@
 (ns eg.test.pass
-  (:require
-    [eg.platform :refer [deftest is testing cross-throw]]
-    [eg :refer [eg ge ex ->examples parse-examples test? assoc-focus-metas named-dont-care? fill-dont-cares set-eg!]]))
+  #?(:cljs
+    (:require [eg.platform :refer [deftest is testing cross-throw]]
+              [eg :refer [eg ge ex ->examples parse-examples test? assoc-focus-metas named-dont-care? fill-dont-cares]]))
+  #?(:clj
+    (:require [eg :refer [set-eg!]]
+              [eg.platform :refer [deftest is testing cross-throw]]
+              [eg :refer [eg ge ex ->examples parse-examples test? assoc-focus-metas named-dont-care? fill-dont-cares]])))
 
 (deftest cross-throw-test
   (is (= "BOOM" (try (cross-throw "BOOM")
