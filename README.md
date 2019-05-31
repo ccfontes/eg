@@ -149,6 +149,15 @@ Between `eg`, and `ge`, choose the form that is most convenient for your combina
 (ge inc [0] 1)
 ```
 
+Remove `WARNING: eg is a single segment namespace` warning with the compiler option `single-segment-namespace`:
+```clj
+{:cljsbuild
+  {:builds
+    [{:compiler
+       {:warnings
+         {:single-segment-namespace false}}}]}}
+```
+
 ## Run your tests
 Finally, run your tests as you normally would with `clojure.test`.
 
@@ -172,20 +181,19 @@ Finally, run your tests as you normally would with `clojure.test`.
 ```
 
 ## Roadmap
-  1. Provide workaround to remove warning of eg being a single segment ns
+  1. Document being able to skip a test with vanilla clojure
   2. Support checkers in arbitrary places
   3. Support docstring for `ex`
-  4. Document being able to skip a test with vanilla clojure
-  5. Suffix test name with '-slow' when using ':slow' selector
-  6. Mention:
+  4. Suffix test name with '-slow' when using ':slow' selector
+  5. Mention:
      - leiningen `test-selectors` for use of metadata
      - https://github.com/weavejester/eftest
-  7. Spec API macros `eg`, `ge`, and `ex`
-  8. Create API to access example data for i.e. tool use
-  9. document clipboard dev flow
-  10. Reduce clojure and clojurescript requirements
-  11. Solve `^:focus` caveats in ClojureScript
-  12. Adapt failed assertions report to *eg*'s data capture capability
+  6. Spec API macros `eg`, `ge`, and `ex`
+  7. Create API to access example data for i.e. tool use
+  8. document clipboard dev flow
+  9. Reduce Clojure and ClojureScript requirements
+  10. Solve `^:focus` caveats in ClojureScript
+  11. Adapt failed assertions report to *eg*'s data capture capability
 
 ## Run eg's own tests
 Run tests expected to pass, targeting Clojure:
