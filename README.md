@@ -138,6 +138,13 @@ There are some caveats to consider when using `^:focus` **with ClojureScript**:
   1. The tests report counts towards non focused tests, although assertions under such tests are not executed.
   2. Assertions for tests defined directly with `clojure.test/deftest` will be executed, despite the presence of focused `eg`, or `ge` tests. 
 
+Skip running certain tests using vanilla Clojure(Script) code:
+```clj
+#_(eg count ['(9 8 7)]
+            3)
+; (eg count ['(9 8 7)] 3)
+```
+
 Between `eg`, and `ge`, choose the form that is most convenient for your combination of function examples and use it **only once** for testing a function. For example, **don't do this**:
 ```clj
 (ge inc [1] 2)
@@ -181,19 +188,18 @@ Finally, run your tests as you normally would with `clojure.test`.
 ```
 
 ## Roadmap
-  1. Document being able to skip a test with vanilla clojure
+  1. Mention:
+     - leiningen `test-selectors` for use of metadata
+     - https://github.com/weavejester/eftest
   2. Support checkers in arbitrary places
   3. Support docstring for `ex`
   4. Suffix test name with '-slow' when using ':slow' selector
-  5. Mention:
-     - leiningen `test-selectors` for use of metadata
-     - https://github.com/weavejester/eftest
-  6. Spec API macros `eg`, `ge`, and `ex`
-  7. Create API to access example data for i.e. tool use
-  8. document clipboard dev flow
-  9. Reduce Clojure and ClojureScript requirements
-  10. Solve `^:focus` caveats in ClojureScript
-  11. Adapt failed assertions report to *eg*'s data capture capability
+  5. Spec API macros `eg`, `ge`, and `ex`
+  6. Create API to access example data for i.e. tool use
+  7. document clipboard dev flow
+  8. Reduce Clojure and ClojureScript requirements
+  9. Solve `^:focus` caveats in ClojureScript
+  10. Adapt failed assertions report to *eg*'s data capture capability
 
 ## Run eg's own tests
 Run tests expected to pass, targeting Clojure:
