@@ -143,11 +143,14 @@ There are some caveats to consider when using `^:focus` **with ClojureScript**:
   1. The tests report counts towards non focused tests, although assertions under such tests are not executed.
   2. Assertions for tests defined directly with `clojure.test/deftest` will be executed, despite the presence of focused `eg`, or `ge` tests. 
 
-Skip running certain tests using vanilla Clojure(Script) code:
+Skip running certain tests or assertions using vanilla Clojure(Script) code:
 ```clj
 #_(eg count ['(9 8 7)]
             3)
-; (eg count ['(9 8 7)] 3)
+
+(eg count
+ ; ['(9 8 7)] 3
+ ['(9 8 7 6)] 4)
 ```
 
 Between `eg`, and `ge`, choose the form that is most convenient for your combination of function examples and use it **only once** for testing a function. For example, **don't do this**:
@@ -195,7 +198,6 @@ Finally, run your tests as you normally would with `clojure.test`.
 ## Roadmap
   1. Mention:
      - leiningen `test-selectors` for use of metadata
-     - https://github.com/weavejester/eftest
   2. Support checkers in arbitrary places
   3. Support docstring for `ex`
   4. Suffix test name with '-slow' when using ':slow' selector
@@ -230,7 +232,8 @@ Run tests expected to pass, targeting ClojureScript JS:
 > lein tach lumo
 ```
 
-## Software that works great with eg
+## Test libraries that works great with eg
+  * [eftest](https://github.com/weavejester/eftest) – Eftest is a fast and pretty Clojure test runner.
   * [humane-test-output](https://github.com/pjstadig/humane-test-output) - Humane test output for clojure.test
 
 ## [License](LICENSE.md)

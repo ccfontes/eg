@@ -127,7 +127,7 @@
                    (reduce examples-acc [[] []])
                    (first)
                    (map #(parse-example % ge?))
-                   fill-dont-cares)
+                   (fill-dont-cares))
         fn-meta (meta fn-sym)
         focus? (:focus fn-meta)]
     `(do (swap! focus-metas assoc-focus-metas ~fn-meta ~fn-sym)
