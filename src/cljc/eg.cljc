@@ -1,13 +1,10 @@
 (ns eg ^{:author "Carlos da Cunha Fontes"
          :license {:name "The Universal Permissive License (UPL), Version 1.0"
                    :url "https://github.com/ccfontes/eg/blob/master/LICENSE.md"}}
-  #?(:cljs (:require [eg.platform :refer [deftest is cross-throw]]
-                     [cljs.test :include-macros true]
-                     [clojure.walk :refer [postwalk]]))
-  #?(:clj (:require [eg.platform :refer [deftest is cross-throw]]
-                    [clojure.test :as clj.test]
-                    [clojure.walk :refer [postwalk]]
-                    [clojure.tools.namespace.repl]))
+  (:require #?(:cljs [cljs.test :include-macros true])
+            #?(:clj [clojure.test :as clj.test])
+            [eg.platform :refer [deftest is cross-throw]]
+            [clojure.walk :refer [postwalk]])
   #?(:cljs (:require-macros [eg :refer [eg ge ex]])))
 
 (defonce focus-metas (atom {}))
