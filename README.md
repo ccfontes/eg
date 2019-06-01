@@ -14,20 +14,7 @@ in *eg* becomes:
 (eg inc 0 1)
 ```
 
-Core ideas driving *eg*:
-  - **conciseness** – spend less time reading and writing test boilerplate
-  - **function like test definitions** - akin to `clojure.spec/fdef`, but for tests
-  - **flexibility**:
-    - switch order of examples to improve readability
-    - check return against a predicate or equality relative to other data types
-    - specialized on function testing, but able to test arbitrary expressions as well
-  - **focus**:
-    - focus on specific tests while developing
-    - understand the focus of an assertion by using input *don't cares*
-  - **examples as data** - for trivial tool support, examples are just data!
-  - **reach**:
-    - supports clojure.test - along with its excelent tooling support
-    - supports Clojure, ClojureScript JVM, and ClojureScript JS
+Check the [ideas driving eg](doc/ideas.md).
 
 ## Installation
 **Disclaimer:** *eg* is work-in-progress. Use it at your own risk!
@@ -196,8 +183,7 @@ Finally, run your tests as you normally would with `clojure.test`.
 ```
 
 ## Roadmap
-  1. Mention:
-     - leiningen `test-selectors` for use of metadata
+  1. Mention leiningen `test-selectors` for use of metadata
   2. Support checkers in arbitrary places
   3. Support docstring for `ex`
   4. Suffix test name with '-slow' when using ':slow' selector
@@ -232,7 +218,7 @@ Run tests expected to pass, targeting ClojureScript JS:
 > lein tach lumo
 ```
 
-## Test libraries that works great with eg
+## Test libraries which work great with eg
   * [eftest](https://github.com/weavejester/eftest) – Eftest is a fast and pretty Clojure test runner.
   * [humane-test-output](https://github.com/pjstadig/humane-test-output) - Humane test output for clojure.test
 
