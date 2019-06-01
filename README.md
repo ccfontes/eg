@@ -220,7 +220,7 @@ Run tests expected to pass, targeting ClojureScript JS:
 
 ## Test libraries which work great with eg
   * [eftest](https://github.com/weavejester/eftest) – Eftest is a fast and pretty Clojure test runner.
-  * [humane-test-output](https://github.com/pjstadig/humane-test-output) - Humane test output for clojure.test
+  * [humane-test-output](https://github.com/pjstadig/humane-test-output) – Humane test output for clojure.test
 
 ## [License](LICENSE.md)
 Copyright (c) 2019 Carlos da Cunha Fontes

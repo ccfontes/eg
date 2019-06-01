@@ -46,15 +46,14 @@
         normalized-params (if (vector? params) params [params])]
     [normalized-params exp]))
 
-(defn parse-expressions [exprs]
-  (map #(let [parsed [(first %) (last %)]
-              arrow (nth % 1)]
-         (if (= arrow '=>)
-           parsed
-           (if (= arrow '<=)
-             (reverse parsed)
-             (cross-throw (str "Was expecting an arrow, but found '" arrow "' instead..")))))
-       exprs))
+(defn parse-expression [expr]
+  (let [parsed [(first expr) (last expr)]
+        arrow (nth expr 1)]
+    (if (= arrow '=>)
+      parsed
+      (if (= arrow '<=)
+        (reverse parsed)
+        (cross-throw (str "Was expecting an arrow, but found '" arrow "' instead.."))))))
 
 (defn test? [focus-metas focus?]
   (let [focuses (vals @focus-metas)
@@ -138,7 +137,7 @@
 (defmacro ge [& args] `(eg-helper ~args true))
 
 (defmacro ex [& body]
-  (let [examples (->> body (partition 3) parse-expressions)]
+  (let [examples (->> body (partition 3) (map parse-expression))]
     `(->expression-test ~examples)))
 
 #?(:clj
