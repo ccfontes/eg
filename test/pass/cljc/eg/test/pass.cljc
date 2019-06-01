@@ -1,11 +1,11 @@
 (ns eg.test.pass
   #?(:cljs
     (:require [eg.platform :refer [deftest is testing cross-throw]]
-              [eg :refer [eg ge ex ->examples parse-examples test? assoc-focus-metas named-dont-care? fill-dont-cares]]))
+              [eg :refer [eg ge ex ->examples parse-example test? assoc-focus-metas named-dont-care? fill-dont-cares]]))
   #?(:clj
     (:require [eg :refer [set-eg!]]
               [eg.platform :refer [deftest is testing cross-throw]]
-              [eg :refer [eg ge ex ->examples parse-examples test? assoc-focus-metas named-dont-care? fill-dont-cares]])))
+              [eg :refer [eg ge ex ->examples parse-example test? assoc-focus-metas named-dont-care? fill-dont-cares]])))
 
 (deftest cross-throw-test
   (is (= "BOOM" (try (cross-throw "BOOM")
@@ -20,11 +20,11 @@
   (is (= '([[2] => 1], [[1] 2])
          (->examples '([2] => 1, [1] 2)))))
 
-(deftest parse-examples-test
+(deftest parse-example-test
   (testing "should be in order: input->output"
-    (is (= '([[2] 1]) (parse-examples '([[2] 1]) false)))
-    (is (= '([[2] 1]) (parse-examples '([[2] => 1]) false)))
-    (is (= '([[2] 1]) (parse-examples '([1 <= [2]]) false)))))
+    (is (= [[2] 1] (parse-example [[2] 1] false)))
+    (is (= [[2] 1] (parse-example [[2] '=> 1] false)))
+    (is (= [[2] 1] (parse-example [1 '<= [2]] false)))))
 
 (deftest test?-test
   (is (= true  (boolean (test? (atom {:clojure.core/some false :clojure.core/any? nil})   true))))

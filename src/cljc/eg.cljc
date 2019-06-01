@@ -39,15 +39,14 @@
       [[] []]
       egge-body)))
 
-(defn parse-examples [examples ge?]
-  (map #(if (= (count %) 3)
-          (let [pair [(first %) (last %)]]
-            (if (= (nth % 1) '<=) (reverse pair) pair))
-          (if (= (count %) 1)
-            (let [egge (str (if ge? "ge" "eg"))]
-              (cross-throw (str egge " examples need to come in pairs.")))
-            (if ge? (reverse %) %)))
-       examples))
+(defn parse-example [example ge?]
+  (if (= (count example) 3)
+    (let [pair [(first example) (last example)]]
+      (if (= (nth example 1) '<=) (reverse pair) pair))
+    (if (= (count example) 1)
+      (let [egge (str (if ge? "ge" "eg"))]
+        (cross-throw (str egge " examples need to come in pairs.")))
+      (if ge? (reverse example) example))))
 
 (defn parse-expressions [exprs]
   (map #(let [parsed [(first %) (last %)]
@@ -126,7 +125,7 @@
     (map fo examples)))
 
 (defmacro eg-helper [[fn-sym & body] ge?]
-  (let [examples (-> body ->examples (parse-examples ge?) fill-dont-cares)
+  (let [examples (->> body ->examples (map #(parse-example % ge?)) fill-dont-cares)
         fn-meta (meta fn-sym)
         focus? (:focus fn-meta)]
     `(do (swap! focus-metas assoc-focus-metas ~fn-meta ~fn-sym)
