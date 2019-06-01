@@ -63,8 +63,7 @@
   (is (not (named-dont-care? 'thing)))
   (is (not (named-dont-care? "thing"))))
 
-; this test will not run its assertions because other tests are focused
-(eg true? [true] true)
+(eg true? true true)
 
 (eg not [(not true)] true)
 

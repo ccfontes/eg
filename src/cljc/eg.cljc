@@ -40,13 +40,16 @@
       egge-body)))
 
 (defn parse-example [example ge?]
-  (if (= (count example) 3)
-    (let [pair [(first example) (last example)]]
-      (if (= (nth example 1) '<=) (reverse pair) pair))
-    (if (= (count example) 1)
-      (let [egge (str (if ge? "ge" "eg"))]
-        (cross-throw (str egge " examples need to come in pairs.")))
-      (if ge? (reverse example) example))))
+  (let [[params exp]
+          (if (= (count example) 3)
+            (let [pair [(first example) (last example)]]
+              (if (= (nth example 1) '<=) (reverse pair) pair))
+            (if (= (count example) 1)
+              (let [egge (str (if ge? "ge" "eg"))]
+                (cross-throw (str egge " examples need to come in pairs.")))
+              (if ge? (reverse example) example)))
+        normalized-params (if (vector? params) params [params])]
+    [normalized-params exp]))
 
 (defn parse-expressions [exprs]
   (map #(let [parsed [(first %) (last %)]

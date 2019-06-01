@@ -11,7 +11,7 @@
 ```
 in *eg* becomes:
 ```clj
-(eg inc [0] 1)
+(eg inc 0 1)
 ```
 
 Core ideas driving *eg*:
@@ -52,16 +52,14 @@ Let's try *eg*! Start by creating a REPL session and then requiring `eg` and `ge
 Each *eg* test tests one function using examples. You could think of it as a function's test definition:
 ```clj
   (eg not   ; testing clojure.core/not
-    [false] ; with input parameters vector `[false]`
+    false   ; with input parameter `false`
     true)   ; returning expected value `true`
 ```
 a `clojure.test` test named `not-test` was generated.
 
-There are times when we prefer to have expected values
-on the left, and input parameters on the right.
-For that we use `ge`, a useful mnemonic for the inverted flow of the test example:
+If a function under test takes multiple parameters, we need to wrap these under a vector:
 ```clj
-  (ge + 10 [3 7]) ; one liners are also ok, as with `defn`
+(eg * [3 2] 6)
 ```
 
 Each *eg* test can contain an arbitrary number of examples:
@@ -69,6 +67,13 @@ Each *eg* test can contain an arbitrary number of examples:
   (eg *
     [3]   3
     [3 2] 6)
+```
+
+There are times when we prefer to have expected values
+on the left, and input parameters on the right.
+For that we use `ge`, a useful mnemonic for the inverted flow of the test example:
+```clj
+  (ge + 10 [3 7])
 ```
 
 Predicates can also be used in place of an expected value:
