@@ -1,11 +1,11 @@
 (ns eg.test.pass
   #?(:cljs
     (:require [eg.platform :refer [deftest is testing cross-throw]]
-              [eg :refer [eg ge ex ->examples parse-example test? assoc-focus-metas named-dont-care? fill-dont-cares]]))
+              [eg :refer [eg ge ex examples-acc parse-example test? assoc-focus-metas named-dont-care? fill-dont-cares]]))
   #?(:clj
     (:require [eg :refer [set-eg!]]
               [eg.platform :refer [deftest is testing cross-throw]]
-              [eg :refer [eg ge ex ->examples parse-example test? assoc-focus-metas named-dont-care? fill-dont-cares]])))
+              [eg :refer [eg ge ex examples-acc parse-example test? assoc-focus-metas named-dont-care? fill-dont-cares]])))
 
 (deftest cross-throw-test
   (is (= "BOOM" (try (cross-throw "BOOM")
@@ -13,12 +13,14 @@
                     #?(:clj (-> e Throwable->map :cause))
                     #?(:cljs (.-message e)))))))
 
-(deftest ->examples-test
-  (is (= '([[2] 1]) (->examples '([2] 1))))
-  (is (= '([[2] => 1]) (->examples '([2] => 1))))
-  (is (= '([[2] <= 1]) (->examples '([2] <= 1))))
-  (is (= '([[2] => 1], [[1] 2])
-         (->examples '([2] => 1, [1] 2)))))
+(deftest examples-acc-test
+  (is (= [ [] [2] ] (examples-acc [ [] [] ] 2)))
+  (is (= [ [[2 1]] [] ] (examples-acc [ [] [2] ] 1)))
+  (is (= [ [] [2 '=>] ] (examples-acc [ [] [2] ] '=>)))
+  (is (= [ [[2 '=> 1]] [] ] (examples-acc [ [] [2 '=>] ] 1)))
+  (is (= [ [] [2 '<=] ] (examples-acc [ [] [2] ] '<=)))
+  (is (= [ [[2 '<= 1]] [] ] (examples-acc [ [] [2 '<=] ] 1)))
+  (is (= [ [[2 '=> 1] [1 2]] [] ] (examples-acc [ [[2 '=> 1]] [1] ] 2))))
 
 (deftest parse-example-test
   (testing "should be in order: input->output"

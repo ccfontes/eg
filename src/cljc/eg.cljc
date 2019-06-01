@@ -24,20 +24,15 @@
                  (map* f rest-colls))))))
   f colls))
 
-(defn ->examples [egge-body]
-  (first
-    (reduce
-      (fn [[parts part] token]
-        (let [new-part (conj part token)]
-          (if (#{'=> '<=} token)
-            (if (= (count part) 2)
-              [(conj parts new-part) []]
-              [parts new-part])
-            (if (empty? part)
-              [parts new-part]
-              [(conj parts new-part) []]))))
-      [[] []]
-      egge-body)))
+(defn examples-acc [[parts part] token]
+  (let [new-part (conj part token)]
+    (if (#{'=> '<=} token)
+      (if (= (count part) 2)
+        [(conj parts new-part) []]
+        [parts new-part])
+      (if (empty? part)
+        [parts new-part]
+        [(conj parts new-part) []]))))
 
 (defn parse-example [example ge?]
   (let [[params exp]
@@ -128,7 +123,11 @@
     (map fo examples)))
 
 (defmacro eg-helper [[fn-sym & body] ge?]
-  (let [examples (->> body ->examples (map #(parse-example % ge?)) fill-dont-cares)
+  (let [examples (->> body
+                   (reduce examples-acc [[] []])
+                   (first)
+                   (map #(parse-example % ge?))
+                   fill-dont-cares)
         fn-meta (meta fn-sym)
         focus? (:focus fn-meta)]
     `(do (swap! focus-metas assoc-focus-metas ~fn-meta ~fn-sym)
