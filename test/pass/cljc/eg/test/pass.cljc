@@ -1,11 +1,11 @@
 (ns eg.test.pass
   #?(:cljs
     (:require [eg.platform :refer [deftest is testing cross-throw]]
-              [eg :refer [eg ge ex examples-acc parse-example test? assoc-focus-metas named-dont-care? fill-dont-cares]]))
+              [eg :refer [eg ge ex examples-acc parse-example parse-expression test? assoc-focus-metas named-dont-care? fill-dont-cares]]))
   #?(:clj
     (:require [eg :refer [set-eg!]]
               [eg.platform :refer [deftest is testing cross-throw]]
-              [eg :refer [eg ge ex examples-acc parse-example test? assoc-focus-metas named-dont-care? fill-dont-cares]])))
+              [eg :refer [eg ge ex examples-acc parse-example parse-expression test? assoc-focus-metas named-dont-care? fill-dont-cares]])))
 
 (deftest cross-throw-test
   (is (= "BOOM" (try (cross-throw "BOOM")
@@ -27,6 +27,10 @@
     (is (= [[2] 1] (parse-example [[2] 1] false)))
     (is (= [[2] 1] (parse-example [[2] '=> 1] false)))
     (is (= [[2] 1] (parse-example [1 '<= [2]] false)))))
+
+(deftest parse-expression-test
+  (is (= [2 2] (parse-expression [(count [3 2]) '=> 2])))
+  (is (= [2 2] (parse-expression [2 '<= (count [3 2])]))))
 
 (deftest test?-test
   (is (= true  (boolean (test? (atom {:clojure.core/some false :clojure.core/any? nil})   true))))
