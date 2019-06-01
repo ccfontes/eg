@@ -9,9 +9,10 @@
 
 (defonce focus-metas (atom {}))
 
-(defn map-dregs [f & colls]
+(defn map-dregs
   "Like map but when there is a different count between colls, applies input fn
    to the coll values until the biggest coll is empty."
+  [f & colls]
   ((fn map* [f colls]
      (lazy-seq
        (if-let [non-empty-colls (seq (filter seq colls))]

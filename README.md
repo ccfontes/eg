@@ -182,18 +182,6 @@ Finally, run your tests as you normally would with `clojure.test`.
 (cljs.test/run-tests some.ns)
 ```
 
-## Roadmap
-  1. Mention leiningen `test-selectors` for use of metadata
-  2. Support checkers in arbitrary places
-  3. Support docstring for `ex`
-  4. Suffix test name with '-slow' when using ':slow' selector
-  5. Spec API macros `eg`, `ge`, and `ex`
-  6. Create API to access example data for i.e. tool use
-  7. document clipboard dev flow
-  8. Reduce Clojure and ClojureScript requirements
-  9. Solve `^:focus` caveats in ClojureScript
-  10. Adapt failed assertions report to *eg*'s data capture capability
-
 ## Run eg's own tests
 Run tests expected to pass, targeting Clojure:
 ```clj
