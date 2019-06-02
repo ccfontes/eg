@@ -177,7 +177,7 @@ ClojureScript tests in the REPL:
 ```
 
 # Run eg's own tests
-[Run tests](doc/egs-own-tests.md) expected to pass, fail, targeting Clojure, ClojureScript JVM, and ClojureScript JS.
+[Run eg's own tests](doc/egs-own-tests.md) expected to pass, fail, targeting Clojure, ClojureScript JVM, and ClojureScript JS.
 
 ## Test libraries which work great with eg
   * [eftest](https://github.com/weavejester/eftest) – Eftest is a fast and pretty Clojure test runner.

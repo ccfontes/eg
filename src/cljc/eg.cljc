@@ -141,9 +141,13 @@
   (set! cljs.test/test-var (alter-test-var-update-fn cljs.test/test-var)))
 
 #?(:clj
-  (defn set-eg! []
+  (defn set-eg-no-refresh! []
     (let [eg-var (intern 'clojure.core (with-meta 'eg {:macro true}) @#'eg)
           ge-var (intern 'clojure.core (with-meta 'ge {:macro true}) @#'ge)
-          ex-var (intern 'clojure.core (with-meta 'ex {:macro true}) @#'ex)]
-      (clojure.tools.namespace.repl/refresh)
+          ex-var (intern 'clojure.core (with-meta 'ex {:macro true}) @#'ex)]    
       #{eg-var ge-var ex-var})))
+
+#?(:clj ; FIXME cannot be tested – calling clojure.tools.namespace.repl/refresh causes lein test to run 0 tests
+  (defn set-eg! []
+    (set-eg-no-refresh!)
+    (clojure.tools.namespace.repl/refresh)))
