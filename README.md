@@ -39,9 +39,9 @@ Let's try *eg*! Start by creating a REPL session and then requiring `eg` and `ge
 
 Each *eg* test tests one function using examples. You could think of it as a function's test definition:
 ```clj
-  (eg not   ; testing clojure.core/not
-    false   ; with input parameter `false`
-    true)   ; returning expected value `true`
+  (eg not  ; testing clojure.core/not
+    false  ; with input parameter `false`
+    true)  ; returning expected value `true`
 ```
 a `clojure.test` test named `not-test` was generated.
 

@@ -1,6 +1,6 @@
 (ns eg.test.pass
     (:require [eg.platform :refer [deftest is testing cross-throw]]
-              [eg :refer [eg ge ex examples-acc parse-example parse-expression test? assoc-focus-metas named-dont-care? fill-dont-cares]]
+              [eg :refer [eg ge ex examples-acc parse-example parse-expression test? assoc-focus-metas dont-care? named-dont-care? fill-dont-cares]]
               #?(:clj [eg :refer [set-eg!]])))
 
 (deftest cross-throw-test
@@ -64,6 +64,10 @@
   (is (named-dont-care? '$thing))
   (is (not (named-dont-care? 'thing)))
   (is (not (named-dont-care? "thing"))))
+
+(deftest dont-care-test
+  (is (dont-care? '_))
+  (is (dont-care? '$foo)))
 
 (eg true? true true)
 
