@@ -145,7 +145,7 @@ Between `eg`, and `ge`, choose the form that is most convenient for your combina
 (ge inc [0] 1)
 ```
 
-Remove `WARNING: eg is a single segment namespace` warning with the compiler option `single-segment-namespace`:
+When building with ClojureScript JVM, remove `WARNING: eg is a single segment namespace` warning with the compiler option `single-segment-namespace`:
 ```clj
 {:cljsbuild
   {:builds
@@ -157,48 +157,27 @@ Remove `WARNING: eg is a single segment namespace` warning with the compiler opt
 ## Run your tests
 Finally, run your tests as you normally would with `clojure.test`.
 
-**Clojure tests in the REPL:**
+Clojure tests in the REPL:
 ```clj
 (clojure.test/run-all-tests)
 ; or
 (clojure.test/run-tests some.ns)
 ```
 
-**Clojure tests in the terminal:**
+Clojure tests in the terminal:
 ```
 > lein test
 ```
 
-**ClojureScript tests in the REPL:**
+ClojureScript tests in the REPL:
 ```clj
 (cljs.test/run-all-tests)
 ; or
 (cljs.test/run-tests some.ns)
 ```
 
-## Run eg's own tests
-Run tests expected to pass, targeting Clojure:
-```clj
-> lein clj-test-pass
-```
-Run tests expected to pass, targeting ClojureScript JVM->nodejs:
-```clj
-> lein cljs-test-pass
-```
-Run tests expected to fail, targeting Clojure:
-```clj
-> lein clj-test-fail
-```
-Run tests expected to fail, targeting ClojureScript JVM->nodejs:
-```clj
-> lein cljs-test-fail
-```
-Run tests expected to pass, targeting ClojureScript JS:
-```sh
-> lein tach planck
-# or
-> lein tach lumo
-```
+# Run eg's own tests
+[Run tests](doc/egs-own-tests.md) expected to pass, fail, targeting Clojure, ClojureScript JVM, and ClojureScript JS.
 
 ## Test libraries which work great with eg
   * [eftest](https://github.com/weavejester/eftest) – Eftest is a fast and pretty Clojure test runner.
