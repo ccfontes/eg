@@ -9,7 +9,7 @@
   - **focus**:
     - focus on specific tests while developing
     - understand the focus of an assertion by using input *don't cares*
-  - **examples as data** - for trivial tool support, examples are just data!
+  - **example inputs as data** - for trivial tool integration, its just data!
   - **reach**:
     - supports clojure.test - along with its excelent tooling support
     - supports Clojure, ClojureScript JVM, and ClojureScript JS

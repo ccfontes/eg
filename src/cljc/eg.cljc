@@ -4,7 +4,8 @@
   (:require #?(:cljs [cljs.test :include-macros true])
             #?(:clj [clojure.test :as clj.test])
             [eg.platform :refer [deftest is cross-throw]]
-            [clojure.walk :refer [postwalk]])
+            [clojure.walk :refer [postwalk]]
+            [clojure.tools.namespace.repl])
   #?(:cljs (:require-macros [eg :refer [eg ge ex]])))
 
 (defonce focus-metas (atom {}))
