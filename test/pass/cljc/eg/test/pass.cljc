@@ -26,7 +26,12 @@
     (is (= [[2] 1] (parse-example [[2] '=> 1] false)))
     (is (= [[2] 1] (parse-example [[2] '=> 1] true)))
     (is (= [[2] 1] (parse-example [1 '<= [2]] false)))
-    (is (= [[2] 1] (parse-example [1 '<= [2]] true)))))
+    (is (= [[2] 1] (parse-example [1 '<= [2]] true))))
+    (is (= "eg examples need to come in pairs, but found only: '[2]'"
+         (try (parse-example [[2]] false)
+           (catch #?(:clj Exception :cljs :default) e
+             #?(:clj (-> e Throwable->map :cause))
+             #?(:cljs (.-message e)))))))
 
 (deftest parse-expression-test
   (is (= [2 2] (parse-expression [(count [3 2]) '=> 2])))

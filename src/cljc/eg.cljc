@@ -38,7 +38,7 @@
                 (reverse pair)
                 pair))
             (let [egge (str (if ge? "ge" "eg"))]
-              (cross-throw (str egge " examples need to come in pairs."))))
+              (cross-throw (str egge " examples need to come in pairs, but found only: '" (first example) "'"))))
         normalized-params (if (vector? params) params [params])]
     [normalized-params exp]))
 
