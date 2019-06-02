@@ -16,7 +16,8 @@
   (is (= [ [[2 '=> 1]] [] ] (examples-acc [ [] [2 '=>] ] 1)))
   (is (= [ [] [2 '<=] ] (examples-acc [ [] [2] ] '<=)))
   (is (= [ [[2 '<= 1]] [] ] (examples-acc [ [] [2 '<=] ] 1)))
-  (is (= [ [[2 '=> 1] [1 2]] [] ] (examples-acc [ [[2 '=> 1]] [1] ] 2))))
+  (is (= [ [[2 '=> 1] [1 2]] [] ] (examples-acc [ [[2 '=> 1]] [1] ] 2)))
+  (is (= [ [] ['=>] ] (examples-acc [ [] [] ] '=>))))
 
 (deftest parse-example-test
   (testing "should be in order: input->output"

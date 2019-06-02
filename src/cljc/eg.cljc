@@ -25,13 +25,9 @@
 
 (defn examples-acc [[parts part] token]
   (let [new-part (conj part token)]
-    (if (#{'=> '<=} token)
-      (if (= (count part) 2)
-        [(conj parts new-part) []]
-        [parts new-part])
-      (if (empty? part)
-        [parts new-part]
-        [(conj parts new-part) []]))))
+    (if (or (empty? part) (#{'=> '<=} token))
+      [parts new-part]
+      [(conj parts new-part) []])))
 
 (defn parse-example [example ge?]
   (let [[params exp]

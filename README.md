@@ -30,12 +30,11 @@ eg {:mvn/version "0.4.3-alpha"}
 ```
 
 ## Usage
-`eg` stands for *e.g.* (short for example), and `ge` is just `eg` reversed. Reversed example: `(ge inc 1 [0])`.
-
 Let's try *eg*! Start by creating a REPL session and then requiring `eg` and `ge`:
 ```clj
 (require '[eg :refer [eg ge]])
 ```
+`eg` stands for *e.g.* (short for example), and `ge` is just `eg` reversed. Reversed example: `(ge inc 1 [0])`.
 
 Each *eg* test tests one function using examples. You could think of it as a function's test definition:
 ```clj
@@ -133,12 +132,12 @@ There are some caveats to consider when using `^:focus` **with ClojureScript**:
 
 Skip running certain tests or assertions using vanilla Clojure(Script) code:
 ```clj
-#_(eg count ['(9 8 7)]
+#_(eg count '(9 8 7)
             3)
 
 (eg count
- ; ['(9 8 7)] 3
- ['(9 8 7 6)] 4)
+ ; '(9 8 7) 3
+ '(9 8 7 6) 4)
 ```
 
 Between `eg`, and `ge`, choose the form that is most convenient for your combination of function examples and use it **only once** for testing a function. For example, **don't do this**:
