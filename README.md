@@ -1,8 +1,4 @@
-# eg
-[![Clojars Project](https://img.shields.io/clojars/v/eg.svg)](https://clojars.org/eg)
-[![CircleCI](https://circleci.com/gh/ccfontes/eg.svg?style=svg)](https://circleci.com/gh/ccfontes/eg)
-[![codecov](https://codecov.io/gh/ccfontes/eg/branch/master/graph/badge.svg)](https://codecov.io/gh/ccfontes/eg)
-[![Universal Permissive License v1.0](https://img.shields.io/badge/license-UPL-%23f80000.svg)](LICENSE.md)
+# eg [![Clojars Project](https://img.shields.io/clojars/v/eg.svg)](https://clojars.org/eg) [![CircleCI](https://circleci.com/gh/ccfontes/eg.svg?style=svg)](https://circleci.com/gh/ccfontes/eg) [![codecov](https://codecov.io/gh/ccfontes/eg/branch/master/graph/badge.svg)](https://codecov.io/gh/ccfontes/eg) [![Universal Permissive License v1.0](https://img.shields.io/badge/license-UPL-%23f80000.svg)](LICENSE.md)
 
 *eg* delivers `clojure.test` function tests with conciseness.
 
