@@ -2,10 +2,10 @@
          :license {:name "The Universal Permissive License (UPL), Version 1.0"
                    :url "https://github.com/ccfontes/eg/blob/master/LICENSE.md"}}
   (:require #?(:cljs [cljs.test :include-macros true])
-            #?(:clj [clojure.test :as clj.test])
+            #?@(:clj [[clojure.test :as clj.test]
+                      [clojure.tools.namespace.repl]])
             [eg.platform :refer [deftest is cross-throw]]
-            [clojure.walk :refer [postwalk]]
-            [clojure.tools.namespace.repl])
+            [clojure.walk :refer [postwalk]])
   #?(:cljs (:require-macros [eg :refer [eg ge ex]])))
 
 (defonce focus-metas (atom {}))
