@@ -30,7 +30,12 @@
 
 (deftest parse-expression-test
   (is (= [2 2] (parse-expression [(count [3 2]) '=> 2])))
-  (is (= [2 2] (parse-expression [2 '<= (count [3 2])]))))
+  (is (= [2 2] (parse-expression [2 '<= (count [3 2])])))
+  (is (= "Was expecting an arrow, but found '3' instead.."
+         (try (parse-expression [2 3])
+           (catch #?(:clj Exception :cljs :default) e
+             #?(:clj (-> e Throwable->map :cause))
+             #?(:cljs (.-message e)))))))
 
 (deftest test?-test
   (is (test? (atom {:clojure.core/some false :clojure.core/any? nil})   true))
