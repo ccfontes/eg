@@ -24,8 +24,8 @@
          :source-paths ["src/cljc" "test/pass/cljc" "test/pass/cljs"]
          :force-non-zero-exit-on-test-failure? true}
   :profiles
-    {:dev {:source-paths ["dev"]
-           :dependencies [[org.clojure/clojure "1.10.0"]
+    {:repl {:source-paths ["repl"]}
+     :dev {:dependencies [[org.clojure/clojure "1.10.0"]
                           [org.clojure/clojurescript "1.10.520" :scope "provided"]
                           [pjstadig/humane-test-output "0.9.0"]]
            :injections [(require 'pjstadig.humane-test-output)
