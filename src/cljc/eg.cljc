@@ -54,8 +54,7 @@
   (let [focuses (vals @focus-metas)
         focuses? (some true? focuses)]
     (boolean
-      (or focus?
-          (and (not focus?) (not focuses?))))))
+      (or focus? (not focuses?)))))
 
 (defmacro ->example-test [fn-sym examples focus-metas- focus?]
   (let [test-name (-> fn-sym name (str "-test") symbol)]

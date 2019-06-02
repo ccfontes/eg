@@ -30,10 +30,11 @@
   (is (= [2 2] (parse-expression [2 '<= (count [3 2])]))))
 
 (deftest test?-test
-  (is (= true  (boolean (test? (atom {:clojure.core/some false :clojure.core/any? nil})   true))))
-  (is (= true  (boolean (test? (atom {:clojure.core/some true  :clojure.core/any? nil})   true))))
-  (is (= true  (boolean (test? (atom {:clojure.core/some nil   :clojure.core/any? false}) nil))))
-  (is (= false (boolean (test? (atom {:clojure.core/some false :clojure.core/any? true})  nil)))))
+  (is (test? (atom {:clojure.core/some false :clojure.core/any? nil})   true))
+  (is (test? (atom {:clojure.core/some true  :clojure.core/any? nil})   true))
+  (is (test? (atom {:clojure.core/some nil   :clojure.core/any? false}) nil))
+  (is (not (test? (atom {:clojure.core/some false :clojure.core/any? true})  nil)))
+  (is (not (test? (atom {:clojure.core/some true :clojure.core/any? true}) nil))))
 
 (deftest assoc-focus-metas-test
   (let [inc-meta (-> 'seq resolve meta)
