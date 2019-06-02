@@ -73,6 +73,7 @@ override the default order of `eg` or `ge`.
 
 `ex` makes it possible to test the result of calling an arbitrary form **ex**pression. Typical scenarios include testing the result of calling a macro (`eg`, and `ge` only support function testing), or decomposing the assertion of different properties or values from calling a form:
 ```clj
+; let must be used outside of 'ex' when surrounding examples
 (let [test-eg-ret (ex (inc 0) 1)
       f-len (count "eg-test-")]
   ; arrows are compulsory
@@ -110,7 +111,6 @@ As a personal experience, writing tests often becomes an afterthought, because c
 (require '[eg :refer [set-eg!]])
 (set-eg!)
 ;=> :reloading ()
-;=> #{#'clojure.core/eg #'clojure.core/ex #'clojure.core/ge}
 ```
 Now use `eg`, `ge`, and `ex` anywhere you want to create new tests!
 

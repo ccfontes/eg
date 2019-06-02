@@ -22,8 +22,11 @@
 (deftest parse-example-test
   (testing "should be in order: input->output"
     (is (= [[2] 1] (parse-example [[2] 1] false)))
+    (is (= [[2] 1] (parse-example [1 [2]] true)))
     (is (= [[2] 1] (parse-example [[2] '=> 1] false)))
-    (is (= [[2] 1] (parse-example [1 '<= [2]] false)))))
+    (is (= [[2] 1] (parse-example [[2] '=> 1] true)))
+    (is (= [[2] 1] (parse-example [1 '<= [2]] false)))
+    (is (= [[2] 1] (parse-example [1 '<= [2]] true)))))
 
 (deftest parse-expression-test
   (is (= [2 2] (parse-expression [(count [3 2]) '=> 2])))

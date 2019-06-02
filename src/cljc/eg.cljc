@@ -31,13 +31,14 @@
 
 (defn parse-example [example ge?]
   (let [[params exp]
-          (if (= (count example) 3)
+          (if (#{2 3} (count example))
             (let [pair [(first example) (last example)]]
-              (if (= (nth example 1) '<=) (reverse pair) pair))
-            (if (= (count example) 1)
-              (let [egge (str (if ge? "ge" "eg"))]
-                (cross-throw (str egge " examples need to come in pairs.")))
-              (if ge? (reverse example) example)))
+              (if (or (and ge? (not= (second example) '=>))
+                      (= (second example) '<=))
+                (reverse pair)
+                pair))
+            (let [egge (str (if ge? "ge" "eg"))]
+              (cross-throw (str egge " examples need to come in pairs."))))
         normalized-params (if (vector? params) params [params])]
     [normalized-params exp]))
 
