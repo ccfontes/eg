@@ -1,7 +1,12 @@
 (ns eg.test.pass
-    (:require [eg.platform :refer [deftest is testing cross-throw]]
-              [eg :refer [eg ge ex examples-acc parse-example parse-expression test? assoc-focus-metas dont-care? named-dont-care? fill-dont-cares]]
-              #?(:clj [eg :refer [set-eg-no-refresh!]])))
+    (:require [clojure.spec.alpha :as spec]
+              [eg.platform :refer [deftest is testing cross-throw]]
+              [eg :refer [eg ge ex examples-acc parse-example parse-expression test? assoc-focus-metas dont-care? named-dont-care? fill-dont-cares ->examples ->test-name]]
+      #?(:clj [eg :refer [set-eg-no-refresh!]])))
+
+(spec/def ::string string?)
+
+(spec/def ::int int?)
 
 (deftest cross-throw-test
   (is (= "BOOM" (try (cross-throw "BOOM")
@@ -49,6 +54,11 @@
   (is (not (test? (atom {:clojure.core/some false :clojure.core/any? true})  nil)))
   (is (not (test? (atom {:clojure.core/some true :clojure.core/any? true}) nil))))
 
+(deftest ->test-name-test
+  (is (symbol? (->test-name 'inc)))
+  (is (symbol? (->test-name ::inc)))
+  (is 'inc-test (->test-name 'inc)))
+
 (deftest assoc-focus-metas-test
   (let [inc-meta (-> 'seq resolve meta)
         inc-w-focus-meta (assoc inc-meta :focus true)]
@@ -65,12 +75,21 @@
   (is (= [[[5 2] :b] [[5 2] [{:a 5} 5]]]
          (fill-dont-cares [[[5 2] :b] [['$1 2] [{:a '$1} '$1]]])))
   #_(is (= "No choices found for don't care"
-         (try (fill-dont-cares [[['_ 4] :b]])
-           (catch #?(:clj Exception :cljs :default) e
-             #?(:clj (-> e Throwable->map :cause))
-             #?(:cljs (.-message e)))))))
+          (try (fill-dont-cares [[['_ 4] :b]])
+            (catch #?(:clj Exception :cljs :default) e
+              #?(:clj (-> e Throwable->map :cause))
+              #?(:cljs (.-message e)))))))
 
-; only Clojure can metadata from a function using 'meta'
+(deftest ->examples-test
+  (is (= [[[0] false?] [[1] 2]] (->examples 'inc true [false? [0] 2 [1]])))
+  (is (= [3 5] (->examples ::int false [3 5])))
+  (is (= (str "Not a valid test name type: inc")
+        (try (->examples "inc" false [[0]])
+          (catch #?(:clj Exception :cljs :default) e
+            #?(:clj (-> e Throwable->map :cause))
+            #?(:cljs (.-message e)))))))
+
+; only Clojure can get metadata from a function using 'meta'
 #?(:clj (defmacro macro-fn-meta-fixture [f] (meta f)))
 #?(:clj (deftest macro-fn-meta-simulated-test
     (is (= {:focus true} (macro-fn-meta-fixture ^:focus inc)))))
@@ -127,3 +146,7 @@
     (ex #(every? (comp :macro meta) %) <= set-eg-ret
         #(every? (comp #{"clojure.core"} str :ns meta) %) <= set-eg-ret
         #{'eg 'ge 'ex} <= (set (map (comp :name meta) set-eg-ret)))))
+
+(eg ::string "foo")
+
+(ge :eg.test.pass/int (identity 4) 3)

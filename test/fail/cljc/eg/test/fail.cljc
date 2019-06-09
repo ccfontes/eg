@@ -1,5 +1,11 @@
 (ns eg.test.fail
-  (:require [eg :refer [eg ge ex]]))
+  (:require [clojure.spec.alpha :as spec]
+            [eg :refer [eg ge ex]]
+    #?(:clj [eg :refer [set-eg-no-refresh!]])))
+
+(spec/def ::string string?)
+
+(spec/def ::int int?)
 
 (eg not [(not true)] false)
 
@@ -16,3 +22,7 @@
 (ex (true? true) => false)
 
 (ex string? <= (ex (inc 0) 1))
+
+(eg ::int "spam" "eggs")
+
+(ge :eg.test.fail/string 4 3)

@@ -1,11 +1,12 @@
 (ns eg ^{:author "Carlos da Cunha Fontes"
          :license {:name "The Universal Permissive License (UPL), Version 1.0"
                    :url "https://github.com/ccfontes/eg/blob/master/LICENSE.md"}}
-  (:require #?(:cljs [cljs.test :include-macros true])
-            #?@(:clj [[clojure.test :as clj.test]
-                      [clojure.tools.namespace.repl]])
-            [eg.platform :refer [deftest is cross-throw]]
-            [clojure.walk :refer [postwalk]])
+  (:require [eg.platform :refer [deftest is cross-throw]]
+            [clojure.walk :refer [postwalk]]
+            [clojure.spec.alpha :as spec]
+   #?(:cljs [cljs.test :include-macros true])
+  #?@(:clj [[clojure.test :as clj.test]
+            [clojure.tools.namespace.repl]]))
   #?(:cljs (:require-macros [eg :refer [eg ge ex]])))
 
 (defonce focus-metas (atom {}))
@@ -57,14 +58,19 @@
     (boolean
       (or focus? (not focuses?)))))
 
+(def ->test-name (comp symbol #(str % "-test") name))
+
 (defmacro ->example-test [fn-sym examples focus-metas- focus?]
-  (let [test-name (-> fn-sym name (str "-test") symbol)]
+  (let [test-name (->test-name fn-sym)]
     `(let [test# (deftest ~test-name
                    (when (test? ~focus-metas- ~focus?)
-                     ~@(map (fn [[param-vec ret]]
-                              `(if (fn? ~ret)
-                                (is (~ret (~fn-sym ~@param-vec)))
-                                (is (= ~ret (~fn-sym ~@param-vec)))))
+                     ~@(map (fn [example]
+                              (let [[param-vec ret] (if (coll? example) example)]
+                                (if (qualified-keyword? fn-sym)
+                                  `(is (spec/valid? ~fn-sym ~example))
+                                  `(if (fn? ~ret)
+                                    (is (~ret (~fn-sym ~@param-vec)))
+                                    (is (= ~ret (~fn-sym ~@param-vec)))))))
                             examples)))]
       ; passing down ^:focus meta to clojure.test: see alter-test-var-update-fn
       ; FIXME not associng in cljs
@@ -111,17 +117,24 @@
                             (let [pw-f #(if (= param %) choice %)]
                               [(concat param-acc [choice])
                                (if (named-dont-care? param) (postwalk pw-f exp) exp)])
-                            (cross-throw "No choices found for don't care"))
+                            (cross-throw "No choices found for don't care")) ; TODO add don't care name
                           [(concat param-acc [param]) exp]))]
                (reduce fi [[] exp] (map #(vec %&) params choices-per-param))))]
     (map fo examples)))
 
+(defn ->examples [test-thing ge? body]
+  (cond
+    (symbol? test-thing)
+      (->> body
+        (reduce examples-acc [[] []])
+        (first)
+        (map #(parse-example % ge?))
+        (fill-dont-cares))
+    (keyword? test-thing) body
+    :else (cross-throw (str "Not a valid test name type: " test-thing))))
+
 (defmacro eg-helper [[fn-sym & body] ge?]
-  (let [examples (->> body
-                   (reduce examples-acc [[] []])
-                   (first)
-                   (map #(parse-example % ge?))
-                   (fill-dont-cares))
+  (let [examples (->examples fn-sym ge? body)
         fn-meta (meta fn-sym)
         focus? (:focus fn-meta)]
     `(do (swap! focus-metas assoc-focus-metas ~fn-meta ~fn-sym)

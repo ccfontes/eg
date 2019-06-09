@@ -1,7 +1,7 @@
 (ns eg.platform
   #?(:cljs (:require-macros [eg.platform :refer [deftest is testing]]))
-  #?(:clj (:require [clojure.test :as clj.test]))
-  #?(:cljs (:require [cljs.test :include-macros true])))
+           (:require #?(:clj [clojure.test :as clj.test])
+                    #?(:cljs [cljs.test :include-macros true])))
 
 (defn cross-throw [msg]
   (throw #?(:cljs (js/Error. msg)

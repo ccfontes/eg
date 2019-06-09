@@ -28,7 +28,7 @@ Let's try *eg*! Start by creating a REPL session and then requiring `eg` and `ge
 ```clj
 (require '[eg :refer [eg ge]])
 ```
-`eg` stands for *e.g.* (short for example), and `ge` is just `eg` reversed. Reversed example: `(ge inc 1 [0])`.
+`eg` stands for *e.g.* (short for example), and `ge` is just `eg` reversed.
 
 Each *eg* test tests one function using examples. You could think of it as a function's test definition:
 ```clj
@@ -96,23 +96,34 @@ for these cases:
   [4 _ 5]   vector?)
 ```
 
-We can arbitrarily name a *don't care* parameter by prefixing its name with `$`. A *named don't care* can also be bound with parts on the expected result:
+We can arbitrarily name a *don't care* parameter by prefixing its name with `$`. A *named don't care* can also be bound with parts on the expected result. *Don't care* parameters are generated from parameters on the same argument position:
 ```clj
 (eg assoc-in
   [{} [:a :b] {:eggs "boiled"}] => {:a {:b {:eggs "boiled"}}}
   [_ $spam _] => map?
   [_ _ $eggs] => {:a {:b $eggs}})
 ```
-When writing the assertion, *don't cares* enable us to spend less time doing fillers, and the reader is able to better understand the focus
-of the assertion.
+When writing examples, *don't cares* enable us to spend less time writting fillers, and the reader is able to better understand the focus
+of the example.
 
-As a personal experience, writing tests often becomes an afterthought, because creating test boilerblate like a new test namespace, requiring test forms and functions under test is too much of a hassle, while being immersed on writting code. It makes sense to have test forms globally available that we use almost as often as `defn`. Introducing `set-eg!`! Call it at the development entrypoint of your program:
+Check if your specs are on the correct track using examples.
+`eg` validates examples against a spec defined with a qualified keyword:
+```clj
+(require '[clojure.spec.alpha :as spec])
+
+(spec/def ::string (spec/nilable string?))
+
+(eg ::string nil "foo") ; `^:focus` cannot be used here at the moment
+;=> string-test
+```
+
+Quite often, writing tests becomes an afterthought, because creating test boilerblate like a new test namespace, requiring test forms and functions under test is too much of a hassle, while being immersed on writing code. It would make sense to have test forms globally available that we use almost as often as `defn`. Introducing `set-eg!`! Call it at the development entrypoint of your program:
 ```clj
 (require '[eg :refer [set-eg!]])
 (set-eg!)
 ;=> :reloading ()
 ```
-Now use `eg`, `ge`, and `ex` anywhere you want to create new tests!
+Now use `eg`, `ge`, and `ex` in any namespace without additional requires!
 
 PS - This functionality is only supported in Clojure.
 
@@ -121,10 +132,10 @@ It's possible to run only selected tests by using metadata `^:focus` on `eg` or 
 (eg ^:focus false? [false] true)
 ```
 There are some caveats to consider when using `^:focus` **with ClojureScript**:
-  1. The tests report counts towards non focused tests, although assertions under such tests are not executed.
-  2. Assertions for tests defined directly with `clojure.test/deftest` will be executed, despite the presence of focused `eg`, or `ge` tests. 
+  1. The tests report counts towards non focused tests, although examples under such tests are not executed.
+  2. Assertions for tests defined directly with `clojure.test/deftest` will still be executed, despite the presence of focused `eg`, or `ge` tests. 
 
-Skip running certain tests or assertions using vanilla Clojure(Script) code:
+Skip running certain tests or examples using vanilla Clojure(Script) code:
 ```clj
 #_(eg count '(9 8 7)
             3)
