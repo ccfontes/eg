@@ -117,13 +117,19 @@ Check if your specs are on the correct track using examples.
 ;=> <current-ns>-:string-test
 ```
 
-Quite often, writing tests becomes an afterthought, because creating test boilerblate like a new test namespace, requiring test forms and functions under test is too much of a hassle, while being immersed on writing code. It would make sense to have test forms globally available that we use almost as often as `defn`. Introducing `set-eg!`! Call it at the development entrypoint of your program:
+Quite often, writing tests becomes an afterthought, because creating test boilerblate like a new test namespace, requiring test forms and functions under test is too much of a hassle, while being immersed on writing code. It would make sense to have test forms globally available that we use almost as often as `defn`. Introducing `set-eg!` – call it at the development entrypoint of your program:
 ```clj
 (require '[eg :refer [set-eg!]])
+```
+To use `eg`, `ge`, and `ex` in any namespace without additional requires, run:
+```clj
 (set-eg!)
 ;=> :reloading ()
 ```
-Now use `eg`, `ge`, and `ex` in any namespace without additional requires!
+To use `eg`, and `ge` in any namespace without additional requires, run:
+```clj
+(set-eg! 'eg ge')
+```
 
 PS - This functionality is only supported in Clojure.
 

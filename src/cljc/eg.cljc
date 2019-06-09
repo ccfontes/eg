@@ -12,6 +12,9 @@
 
 (defonce focus-metas (atom {}))
 
+(defn ffilter
+  [pred coll] (first (filter pred coll)))
+
 (defn map-dregs
   "Like map but when there is a different count between colls, applies input fn
    to the coll values until the biggest coll is empty."
@@ -174,13 +177,14 @@
   (set! cljs.test/test-var (alter-test-var-update-fn cljs.test/test-var)))
 
 #?(:clj
-  (defn set-eg-no-refresh! []
-    (let [eg-var (intern 'clojure.core (with-meta 'eg {:macro true}) @#'eg)
-          ge-var (intern 'clojure.core (with-meta 'ge {:macro true}) @#'ge)
-          ex-var (intern 'clojure.core (with-meta 'ex {:macro true}) @#'ex)]    
-      #{eg-var ge-var ex-var})))
+  (defn set-eg-no-refresh! [egs]
+    (println "egs" egs)
+    (let [eg-var (if (ffilter #{'eg} egs) (intern 'clojure.core (with-meta 'eg {:macro true}) @#'eg))
+          ge-var (if (ffilter #{'ge} egs) (intern 'clojure.core (with-meta 'ge {:macro true}) @#'ge))
+          ex-var (if (ffilter #{'ex} egs) (intern 'clojure.core (with-meta 'ex {:macro true}) @#'ex))]
+      (set (keep identity [eg-var ge-var ex-var])))))
 
 #?(:clj ; FIXME cannot be tested – calling clojure.tools.namespace.repl/refresh causes lein test to run 0 tests
-  (defn set-eg! []
-    (set-eg-no-refresh!)
+  (defn set-eg! [& egs]
+    (set-eg-no-refresh! egs)
     (clojure.tools.namespace.repl/refresh)))

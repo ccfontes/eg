@@ -166,10 +166,8 @@
   [_ _ $eggs] => {:a {:b $eggs}})
 
 #?(:clj
-  (let [set-eg-ret (set-eg-no-refresh!)]
-    (ex #(every? (comp :macro meta) %) <= set-eg-ret
-        #(every? (comp #{"clojure.core"} str :ns meta) %) <= set-eg-ret
-        #{'eg 'ge 'ex} <= (set (map (comp :name meta) set-eg-ret)))))
+  (let [set-eg-ret (set-eg-no-refresh! '[eg ge])]
+    (ex '#{eg ge} <= (set (map (comp :name meta) set-eg-ret)))))
 
 (eg ::string "foo")
 
