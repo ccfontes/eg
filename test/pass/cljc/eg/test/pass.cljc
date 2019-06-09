@@ -56,8 +56,10 @@
 
 (deftest ->test-name-test
   (is (symbol? (->test-name 'inc)))
-  (is (symbol? (->test-name ::inc)))
-  (is 'inc-test (->test-name 'inc)))
+  (is (symbol? (->test-name ::int)))
+  (is (= 'inc-test (->test-name 'inc)))
+  (is (= 'clojure.core-inc-test (->test-name 'clojure.core/inc)))
+  (is (= 'eg.test.pass-:int-test (->test-name ::int))))
 
 (deftest assoc-focus-metas-test
   (let [inc-meta (-> 'seq resolve meta)

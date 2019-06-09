@@ -4,6 +4,7 @@
   (:require [eg.platform :refer [deftest is cross-throw]]
             [clojure.walk :refer [postwalk]]
             [clojure.spec.alpha :as spec]
+            [clojure.string :as str]
    #?(:cljs [cljs.test :include-macros true])
   #?@(:clj [[clojure.test :as clj.test]
             [clojure.tools.namespace.repl]]))
@@ -58,7 +59,13 @@
     (boolean
       (or focus? (not focuses?)))))
 
-(def ->test-name (comp symbol #(str % "-test") name))
+(def ->test-name
+  (comp symbol
+        #(str % "-test")
+        #(str/join "-" %)
+        #(keep identity %)
+        (juxt namespace
+              #(str (if (keyword? %) ":") (name %)))))
 
 (defmacro ->example-test [fn-sym examples focus-metas- focus?]
   (let [test-name (->test-name fn-sym)]

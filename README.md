@@ -114,7 +114,7 @@ Check if your specs are on the correct track using examples.
 (spec/def ::string (spec/nilable string?))
 
 (eg ::string nil "foo") ; `^:focus` cannot be used here at the moment
-;=> string-test
+;=> <current-ns>-:string-test
 ```
 
 Quite often, writing tests becomes an afterthought, because creating test boilerblate like a new test namespace, requiring test forms and functions under test is too much of a hassle, while being immersed on writing code. It would make sense to have test forms globally available that we use almost as often as `defn`. Introducing `set-eg!`! Call it at the development entrypoint of your program:
