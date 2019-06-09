@@ -1,7 +1,21 @@
 (ns eg.test.pass
     (:require [clojure.spec.alpha :as spec]
               [eg.platform :refer [deftest is testing cross-throw]]
-              [eg :refer [eg ge ex examples-acc parse-example parse-expression test? assoc-focus-metas dont-care? named-dont-care? fill-dont-cares ->examples ->test-name]]
+              [eg :refer [eg
+                          ge
+                          ex
+                          examples-acc
+                          parse-example
+                          parse-expression
+                          test?
+                          assoc-focus-metas
+                          dont-care?
+                          named-dont-care?
+                          fill-dont-cares
+                          ->examples
+                          ->test-name
+                          cljs-safe-namespace
+                          rm-lead-colon]]
       #?(:clj [eg :refer [set-eg-no-refresh!]])))
 
 (spec/def ::string string?)
@@ -54,12 +68,20 @@
   (is (not (test? (atom {:clojure.core/some false :clojure.core/any? true})  nil)))
   (is (not (test? (atom {:clojure.core/some true :clojure.core/any? true}) nil))))
 
+(deftest rm-colon-test
+  (is (= "foo" (rm-lead-colon ":foo")))
+  (is (= "bar" (rm-lead-colon "bar"))))
+
+(deftest cljs-safe-namespace-test
+  (is (= "clojure-core" (cljs-safe-namespace 'clojure.core/inc)))
+  (is (= "clojure-core" (cljs-safe-namespace :clojure.core/inc))))
+
 (deftest ->test-name-test
   (is (symbol? (->test-name 'inc)))
   (is (symbol? (->test-name ::int)))
   (is (= 'inc-test (->test-name 'inc)))
-  (is (= 'clojure.core-inc-test (->test-name 'clojure.core/inc)))
-  (is (= 'eg.test.pass-:int-test (->test-name ::int))))
+  (is (= 'clojure-core-inc-test (->test-name 'clojure.core/inc)))
+  (is (= 'eg-test-pass-:int-test (->test-name ::int))))
 
 (deftest assoc-focus-metas-test
   (let [inc-meta (-> 'seq resolve meta)

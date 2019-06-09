@@ -59,12 +59,24 @@
     (boolean
       (or focus? (not focuses?)))))
 
+(defn rm-lead-colon
+  "Motivation: 'name' does not work for processed strings"
+  [s] (if (= ":" (-> s first str))
+        (subs s 1)
+        s))
+
+(defn cljs-safe-namespace
+  "Motivation: Using '.' in the name causes compilation error in cljs."
+  [thing]
+  (let []
+    (-> thing str (str/replace "." "-") symbol namespace rm-lead-colon)))
+
 (def ->test-name
   (comp symbol
         #(str % "-test")
         #(str/join "-" %)
         #(keep identity %)
-        (juxt namespace
+        (juxt cljs-safe-namespace
               #(str (if (keyword? %) ":") (name %)))))
 
 (defmacro ->example-test [fn-sym examples focus-metas- focus?]
