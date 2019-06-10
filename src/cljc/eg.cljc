@@ -70,9 +70,7 @@
 
 (defn cljs-safe-namespace
   "Motivation: Using '.' in the name causes compilation error in cljs."
-  [thing]
-  (let []
-    (-> thing str (str/replace "." "-") symbol namespace rm-lead-colon)))
+  [thing] (-> thing str (str/replace "." "-") symbol namespace rm-lead-colon))
 
 (def ->test-name
   (comp symbol
@@ -87,7 +85,8 @@
     `(let [test# (deftest ~test-name
                    (when (test? ~focus-metas- ~focus?)
                      ~@(map (fn [example]
-                              (let [[param-vec ret] (if (coll? example) example)]
+                              (let [[param-vec ret] (if (and (not (qualified-keyword? fn-sym)) (coll? example))
+                                                      example)]
                                 (if (qualified-keyword? fn-sym)
                                   `(is (spec/valid? ~fn-sym ~example))
                                   `(if (fn? ~ret)

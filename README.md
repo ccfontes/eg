@@ -128,7 +128,7 @@ To use `eg`, `ge`, and `ex` in any namespace without additional requires, run:
 ```
 To use `eg`, and `ge` in any namespace without additional requires, run:
 ```clj
-(set-eg! 'eg ge')
+(set-eg! 'eg 'ge)
 ```
 
 PS - This functionality is only supported in Clojure.

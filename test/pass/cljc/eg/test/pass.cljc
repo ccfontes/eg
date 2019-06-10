@@ -22,6 +22,8 @@
 
 (spec/def ::int int?)
 
+(spec/def ::map map?)
+
 (deftest cross-throw-test
   (is (= "BOOM" (try (cross-throw "BOOM")
                   (catch #?(:clj Exception :cljs :default) e
@@ -172,3 +174,5 @@
 (eg ::string "foo")
 
 (ge :eg.test.pass/int (identity 4) 3)
+
+(eg ::map {:foo "bar"})
