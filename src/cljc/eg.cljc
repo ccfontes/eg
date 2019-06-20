@@ -12,6 +12,8 @@
 
 (defonce focus-metas (atom {}))
 
+(def operators #{'=> '<= '=})
+
 (defn ffilter
   [pred coll] (first (filter pred coll)))
 
@@ -30,22 +32,26 @@
 
 (defn examples-acc [[parts part] token]
   (let [new-part (conj part token)]
-    (if (or (empty? part) (#{'=> '<=} token))
+    (if (or (empty? part) (operators token))
       [parts new-part]
       [(conj parts new-part) []])))
 
 (defn parse-example [example ge?]
-  (let [[params exp]
+  (let [normalise-rev-ex #(juxt last (constantly %) first)
+        normalise-ex #(juxt first (constantly %) last)
+        parsed-ex
           (if (#{2 3} (count example))
-            (let [pair [(first example) (last example)]]
+            (if (= (second example) '=)
+              ((normalise-ex '=) (if ge? (reverse example) example))
               (if (or (and ge? (not= (second example) '=>))
                       (= (second example) '<=))
-                (reverse pair)
-                pair))
+                ((normalise-rev-ex '=>) example)
+                ((normalise-ex '=>) example)))
             (let [egge (str (if ge? "ge" "eg"))]
               (cross-throw (str egge " examples need to come in pairs, but found only: '" (first example) "'"))))
+        params (first parsed-ex)
         normalized-params (if (vector? params) params [params])]
-    [normalized-params exp]))
+    (cons normalized-params (rest parsed-ex))))
 
 (defn parse-expression [expr]
   (let [parsed [(first expr) (last expr)]
@@ -85,11 +91,12 @@
     `(let [test# (deftest ~test-name
                    (when (test? ~focus-metas- ~focus?)
                      ~@(map (fn [example]
-                              (let [[param-vec ret] (if (and (not (qualified-keyword? fn-sym)) (coll? example))
-                                                      example)]
-                                (if (qualified-keyword? fn-sym)
-                                  `(is (spec/valid? ~fn-sym ~example))
-                                  `(if (fn? ~ret)
+                              (if (qualified-keyword? fn-sym)
+                                `(is (spec/valid? ~fn-sym ~example))
+                                (let [equal? (= (second example) '=)
+                                      param-vec (first example)
+                                      ret (last example)]
+                                  `(if (and (fn? ~ret) (not ~equal?))
                                     (is (~ret (~fn-sym ~@param-vec)))
                                     (is (= ~ret (~fn-sym ~@param-vec)))))))
                             examples)))]
@@ -130,17 +137,21 @@
 (defn fill-dont-cares [examples]
   (let [input-examples (map first examples)
         choices-per-param (apply map-dregs #(->> %& (remove dont-care?) vec) input-examples)
-        fo (fn [[params exp]]
+        fo (fn [example]
              ; OPTIMIZE to choose at random
-             (let [fi (fn [[param-acc exp] [param choices]]
+             (let [params (first example)
+                   op (operators (second example))
+                   exp (last example)
+                   fi (fn [[param-acc op- exp] [param choices]]
                         (if (dont-care? param)
                           (if-let [choice (first choices)]
                             (let [pw-f #(if (= param %) choice %)]
                               [(concat param-acc [choice])
+                               op-
                                (if (named-dont-care? param) (postwalk pw-f exp) exp)])
                             (cross-throw "No choices found for don't care")) ; TODO add don't care name
-                          [(concat param-acc [param]) exp]))]
-               (reduce fi [[] exp] (map #(vec %&) params choices-per-param))))]
+                          [(concat param-acc [param]) op- exp]))]
+               (keep identity (reduce fi [[] op exp] (map #(vec %&) params choices-per-param)))))]
     (map fo examples)))
 
 (defn ->examples [test-thing ge? body]
@@ -177,7 +188,6 @@
 
 #?(:clj
   (defn set-eg-no-refresh! [egs]
-    (println "egs" egs)
     (let [eg-var (if (ffilter #{'eg} egs) (intern 'clojure.core (with-meta 'eg {:macro true}) @#'eg))
           ge-var (if (ffilter #{'ge} egs) (intern 'clojure.core (with-meta 'ge {:macro true}) @#'ge))
           ex-var (if (ffilter #{'ex} egs) (intern 'clojure.core (with-meta 'ex {:macro true}) @#'ex))]

@@ -57,9 +57,18 @@ For that we use `ge`, a useful mnemonic for the inverted flow of the test exampl
   (ge + 10 [3 7])
 ```
 
-Predicates can also be used in place of an expected value:
+Expected values can be checked against a predicate:
 ```clj
 (eg dec [4] integer?)
+```
+
+If we want to check if the expected value is a function, the operator `=` is used:
+```clj
+(defn foo [x] inc)
+
+(eg foo 2 = inc)
+; or
+(ge foo inc = 2)
 ```
 
 `=>` or `<=` delimiters between input parameters and expected value can be used to improve readability, or

@@ -18,6 +18,8 @@
                           rm-lead-colon]]
       #?(:clj [eg :refer [set-eg-no-refresh!]])))
 
+(defn foo [x] inc)
+
 (spec/def ::string string?)
 
 (spec/def ::int int?)
@@ -37,22 +39,26 @@
   (is (= [ [[2 '=> 1]] [] ] (examples-acc [ [] [2 '=>] ] 1)))
   (is (= [ [] [2 '<=] ] (examples-acc [ [] [2] ] '<=)))
   (is (= [ [[2 '<= 1]] [] ] (examples-acc [ [] [2 '<=] ] 1)))
+  (is (= [ [] [2 '=] ] (examples-acc [ [] [2] ] '=)))
+  (is (= [ [[2 '= 1]] [] ] (examples-acc [ [] [2 '=] ] 1)))
   (is (= [ [[2 '=> 1] [1 2]] [] ] (examples-acc [ [[2 '=> 1]] [1] ] 2)))
   (is (= [ [] ['=>] ] (examples-acc [ [] [] ] '=>))))
 
 (deftest parse-example-test
   (testing "should be in order: input->output"
-    (is (= [[2] 1] (parse-example [[2] 1] false)))
-    (is (= [[2] 1] (parse-example [1 [2]] true)))
-    (is (= [[2] 1] (parse-example [[2] '=> 1] false)))
-    (is (= [[2] 1] (parse-example [[2] '=> 1] true)))
-    (is (= [[2] 1] (parse-example [1 '<= [2]] false)))
-    (is (= [[2] 1] (parse-example [1 '<= [2]] true))))
+    (is (= [[2] '=> 1] (parse-example [[2] 1] false)))
+    (is (= [[2] '=> 1] (parse-example [1 [2]] true)))
+    (is (= [[2] '=> 1] (parse-example [[2] '=> 1] false)))
+    (is (= [[2] '=> 1] (parse-example [[2] '=> 1] true)))
+    (is (= [[2] '=> 1] (parse-example [1 '<= [2]] false)))
+    (is (= [[2] '=> 1] (parse-example [1 '<= [2]] true)))
+    (is (= [[inc] '= inc] (parse-example [[inc] '= inc] false)))
+    (is (= [[inc] '= inc] (parse-example [inc '= [inc]] true)))
     (is (= "eg examples need to come in pairs, but found only: '[2]'"
          (try (parse-example [[2]] false)
            (catch #?(:clj Exception :cljs :default) e
              #?(:clj (-> e Throwable->map :cause))
-             #?(:cljs (.-message e)))))))
+             #?(:cljs (.-message e))))))))
 
 (deftest parse-expression-test
   (is (= [2 2] (parse-expression [(count [3 2]) '=> 2])))
@@ -100,6 +106,8 @@
          (fill-dont-cares [[[1 2] :a] [['_ 4] :b] [[5] :c]])))
   (is (= [[[5 2] :b] [[5 2] [{:a 5} 5]]]
          (fill-dont-cares [[[5 2] :b] [['$1 2] [{:a '$1} '$1]]])))
+  (is (= [[[5 2] '= :b] [[5 2] '=> [{:a 5} 5]]]
+         (fill-dont-cares [[[5 2] '= :b] [['$1 2] '=> [{:a '$1} '$1]]])))
   #_(is (= "No choices found for don't care"
           (try (fill-dont-cares [[['_ 4] :b]])
             (catch #?(:clj Exception :cljs :default) e
@@ -107,7 +115,7 @@
               #?(:cljs (.-message e)))))))
 
 (deftest ->examples-test
-  (is (= [[[0] false?] [[1] 2]] (->examples 'inc true [false? [0] 2 [1]])))
+  (is (= [[[0] '=> false?] [[1] '=> 2]] (->examples 'inc true [false? [0] 2 [1]])))
   (is (= [3 5] (->examples ::int false [3 5])))
   (is (= (str "Not a valid test name type: inc")
         (try (->examples "inc" false [[0]])
@@ -176,3 +184,9 @@
 (ge :eg.test.pass/int (identity 4) 3)
 
 (eg ::map {:foo "bar"})
+
+(eg foo 2 = inc)
+
+(ge foo inc = 2)
+
+; TODO test empty args function

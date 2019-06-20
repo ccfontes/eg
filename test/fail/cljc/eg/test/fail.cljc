@@ -26,3 +26,7 @@
 (eg ::int "spam" "eggs")
 
 (ge :eg.test.fail/string 4 3)
+
+(defn foo [x] inc)
+
+(eg foo 2 = dec)
