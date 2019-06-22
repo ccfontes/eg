@@ -1,13 +1,14 @@
 (ns eg ^{:author "Carlos da Cunha Fontes"
          :license {:name "The Universal Permissive License (UPL), Version 1.0"
                    :url "https://github.com/ccfontes/eg/blob/master/LICENSE.md"}}
+  #?(:cljs (:require-macros [eg :refer [eg ge ex]]))
   (:require [eg.platform :refer [deftest is cross-throw]]
             [clojure.walk :refer [postwalk]]
             [clojure.spec.alpha :as spec]
             [clojure.string :as str]
             [clojure.test :as clj.test]
-    #?(:clj [clojure.tools.namespace.repl]))
-  #?(:cljs (:require-macros [eg :refer [eg ge ex]])))
+   #?(:cljs [cljs.test :include-macros true])
+    #?(:clj [clojure.tools.namespace.repl])))
 
 (defonce focus-metas (atom {}))
 
@@ -94,10 +95,12 @@
                                 `(is (spec/valid? ~fn-sym ~example))
                                 (let [equal? (= (second example) '=)
                                       param-vec (first example)
-                                      ret (last example)]
-                                  `(if (and (fn? ~ret) (not ~equal?))
-                                    (is (~ret (~fn-sym ~@param-vec)))
-                                    (is (= ~ret (~fn-sym ~@param-vec)))))))
+                                      ret (last example)
+                                      ; to avoid CompilerException on unreached branch: 'Can't call nil'
+                                      normalised-ret (if (nil? ret) 'nil? ret)]
+                                  `(if (and (fn? ~normalised-ret) (not ~equal?))
+                                    (is (~normalised-ret (~fn-sym ~@param-vec)))
+                                    (is (= ~normalised-ret (~fn-sym ~@param-vec)))))))
                             examples)))]
       ; passing down ^:focus meta to clj.test: see alter-test-var-update-fn
       ; FIXME not associng in cljs
@@ -109,9 +112,11 @@
         test-name (symbol (str "eg-test-" rand-id))]
     `(deftest ~test-name
       ~@(map (fn [[res expected]]
-               `(if (fn? ~expected)
-                 (is (~expected ~res))
-                 (is (= ~expected ~res))))
+               ; to avoid CompilerException on unreached branch: 'Can't call nil'
+               (let [normalised-expected (if (nil? expected) 'nil? expected)]
+                 `(if (fn? ~normalised-expected)
+                   (is (~normalised-expected ~res))
+                   (is (= ~normalised-expected ~res)))))
              examples))))
 
 (defn assoc-focus-metas [focus-metas- fn-meta fn-sym]
@@ -149,8 +154,9 @@
                                op-
                                (if (named-dont-care? param) (postwalk pw-f exp) exp)])
                             (cross-throw "No choices found for don't care")) ; TODO add don't care name
-                          [(concat param-acc [param]) op- exp]))]
-               (keep identity (reduce fi [[] op exp] (map #(vec %&) params choices-per-param)))))]
+                          [(concat param-acc [param]) op- exp]))
+                   ret-ex (reduce fi [[] op exp] (map #(vec %&) params choices-per-param))]
+               (if (-> ret-ex second nil?) [(first ret-ex) (last ret-ex)] ret-ex)))]
     (map fo examples)))
 
 (defn ->examples [test-thing ge? body]
@@ -183,7 +189,7 @@
   (alter-var-root (var clj.test/test-var) alter-test-var-update-fn))
 
 #?(:cljs ; FIXME this is not redefining 'test-var'
-  (set! clj.test/test-var (alter-test-var-update-fn clj.test/test-var)))
+  (set! cljs.test/test-var (alter-test-var-update-fn cljs.test/test-var)))
 
 #?(:clj
   (defn set-eg-no-refresh! [egs]

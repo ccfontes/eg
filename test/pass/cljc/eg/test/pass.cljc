@@ -46,6 +46,8 @@
   (is (= [ [] [2 '=] ] (examples-acc [ [] [2] ] '=)))
   (is (= [ [[2 '= 1]] [] ] (examples-acc [ [] [2 '=] ] 1)))
   (is (= [ [[2 '=> 1] [1 2]] [] ] (examples-acc [ [[2 '=> 1]] [1] ] 2)))
+  (is (= [ [] [nil] ] (examples-acc [ [] [] ] nil)))
+  (is (= [ [[nil nil]] [] ] (examples-acc [ [] [nil] ] nil)))
   (is (= [ [] ['=>] ] (examples-acc [ [] [] ] '=>))))
 
 (deftest parse-example-test
@@ -58,6 +60,9 @@
     (is (= [[2] '=> 1] (parse-example [1 '<= [2]] true)))
     (is (= [[inc] '= inc] (parse-example [[inc] '= inc] false)))
     (is (= [[inc] '= inc] (parse-example [inc '= [inc]] true)))
+    (is (= [[2] '=> 1] (parse-example [1 '<= 2] false)))
+    (is (= [[2] '=> 1] (parse-example [2 '=> 1] true)))
+    (is (= [[2] '=> 1] (parse-example [1 2] true)))
     (is (= "eg examples need to come in pairs, but found only: '[2]'"
          (try (parse-example [[2]] false)
            (catch #?(:clj Exception :cljs :default) e
@@ -112,6 +117,8 @@
          (fill-dont-cares [[[5 2] :b] [['$1 2] [{:a '$1} '$1]]])))
   (is (= [[[5 2] '= :b] [[5 2] '=> [{:a 5} 5]]]
          (fill-dont-cares [[[5 2] '= :b] [['$1 2] '=> [{:a '$1} '$1]]])))
+  (is (= [[[1 2] nil] [[1 4] :b]]
+         (fill-dont-cares [[[1 2] nil] [['_ 4] :b]])))
   #_(is (= "No choices found for don't care"
           (try (fill-dont-cares [[['_ 4] :b]])
             (catch #?(:clj Exception :cljs :default) e
@@ -196,3 +203,9 @@
 (eg foo 2 = inc)
 
 (ge bar inc = 2)
+
+(eg identity
+  nil   nil
+  [nil] nil)
+
+(ex (identity nil) => nil)
