@@ -20,6 +20,10 @@
 
 (defn foo [x] inc)
 
+(defn bar [x] inc)
+
+(defn noargs [] "foo")
+
 (spec/def ::string string?)
 
 (spec/def ::int int?)
@@ -139,7 +143,11 @@
 
 (eg true? true true)
 
+(eg noargs [] "foo")
+
 (eg not [(not true)] true)
+
+(eg set [[1 2]] #{1 2})
 
 (ge * #(= 9 %) [3 3])
 
@@ -187,6 +195,4 @@
 
 (eg foo 2 = inc)
 
-(ge foo inc = 2)
-
-; TODO test empty args function
+(ge bar inc = 2)

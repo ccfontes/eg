@@ -38,9 +38,15 @@ Each *eg* test tests one function using examples. You could think of it as a fun
 ```
 a `clojure.test` test named `not-test` was generated.
 
-If a function under test takes multiple parameters, we need to wrap these under a vector:
+If a function under test takes multiple parameters, we need to wrap these with `[]`:
 ```clj
 (eg * [3 2] 6)
+```
+
+When parameter is a vector, it needs to be wrapped with `[]` as well:
+```clj
+(eg set
+  [[1 2]] #{1 2}) ; cannot do: [1 2] #{1 2}
 ```
 
 Each *eg* test can contain an arbitrary number of examples:
@@ -71,13 +77,19 @@ If we want to check if the expected value is a function, the operator `=` is use
 (ge foo inc = 2)
 ```
 
-`=>` or `<=` delimiters between input parameters and expected value can be used to improve readability, or
-override the default order of `eg` or `ge`.
+`=>` or `<=` operators between input parameters and expected value can be used to improve readability, or
+override the default example direction of `eg` or `ge`.
 ```clj
 (eg hash-map
   [:d 1] {:d 1}
-  [:a 1 :b 2 :c 3 :d 4] => {:a 1 :b 2 :c 3 :d 4}
-  map? <= {:a 1 :b 2 :c 3 :d 4})
+  [:a 1 :b 2 :c 3 :d 4] => {:a 1 :b 2 :c 3 :d 4})
+```
+
+`=>` or `<=` can be read as *is*. `{:a 1 :b 2 :c 3 :d 4}` is a `map?`:
+```clj
+(eg hash-map
+  map? <= {:a 1}
+  {:a 1} coll?) ; when no operator is used, 'is' operator semantics are assumed
 ```
 
 `ex` makes it possible to test the result of calling an arbitrary form **ex**pression. Typical scenarios include testing the result of calling a macro (`eg`, and `ge` only support function testing), or decomposing the assertion of different properties or values from calling a form:

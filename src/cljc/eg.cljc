@@ -5,9 +5,8 @@
             [clojure.walk :refer [postwalk]]
             [clojure.spec.alpha :as spec]
             [clojure.string :as str]
-   #?(:cljs [cljs.test :include-macros true])
-  #?@(:clj [[clojure.test :as clj.test]
-            [clojure.tools.namespace.repl]]))
+            [clojure.test :as clj.test]
+    #?(:clj [clojure.tools.namespace.repl]))
   #?(:cljs (:require-macros [eg :refer [eg ge ex]])))
 
 (defonce focus-metas (atom {}))
@@ -100,7 +99,7 @@
                                     (is (~ret (~fn-sym ~@param-vec)))
                                     (is (= ~ret (~fn-sym ~@param-vec)))))))
                             examples)))]
-      ; passing down ^:focus meta to clojure.test: see alter-test-var-update-fn
+      ; passing down ^:focus meta to clj.test: see alter-test-var-update-fn
       ; FIXME not associng in cljs
       (alter-meta! (var ~test-name) #(assoc % :focus ~focus?))
       test#)))
@@ -184,7 +183,7 @@
   (alter-var-root (var clj.test/test-var) alter-test-var-update-fn))
 
 #?(:cljs ; FIXME this is not redefining 'test-var'
-  (set! cljs.test/test-var (alter-test-var-update-fn cljs.test/test-var)))
+  (set! clj.test/test-var (alter-test-var-update-fn clj.test/test-var)))
 
 #?(:clj
   (defn set-eg-no-refresh! [egs]
