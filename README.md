@@ -16,11 +16,11 @@ Check the [ideas driving eg](doc/ideas.md).
 
 **Leiningen/Boot**
 ```clj
-[eg "0.4.6-alpha"]
+[eg "0.4.7-alpha"]
 ```
 **Clojure CLI/deps.edn**
 ```clj
-eg {:mvn/version "0.4.6-alpha"}
+eg {:mvn/version "0.4.7-alpha"}
 ```
 
 ## Usage
@@ -131,7 +131,7 @@ We can arbitrarily name a *don't care* parameter by prefixing its name with `$`.
   [_ _ $eggs] => {:a {:b $eggs}})
 ```
 
-Expecting deeply nested JavaScript objects or arrays works out of the box:
+Expecting arbitrarily nested JavaScript objects or arrays works out of the box:
 ```clj
 (eg identity
   #js {:a [1]} => #js {:a [1]}
