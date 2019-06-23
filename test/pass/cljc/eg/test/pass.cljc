@@ -70,8 +70,9 @@
              #?(:cljs (.-message e))))))))
 
 (deftest parse-expression-test
-  (is (= [2 2] (parse-expression [(count [3 2]) '=> 2])))
-  (is (= [2 2] (parse-expression [2 '<= (count [3 2])])))
+  (is (= [4 '=> 2] (parse-expression [4 '=> 2])))
+  (is (= [3 '=> 2] (parse-expression [2 '<= 3])))
+  (is (= [2 '= 5] (parse-expression [2 '= (+ 1 4)])))
   (is (= "Was expecting an arrow, but found '3' instead.."
          (try (parse-expression [2 3])
            (catch #?(:clj Exception :cljs :default) e
@@ -209,3 +210,7 @@
   [nil] nil)
 
 (ex (identity nil) => nil)
+
+(ex (foo 2) = inc)
+
+(ex inc = (foo 2))

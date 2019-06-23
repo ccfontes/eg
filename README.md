@@ -85,7 +85,7 @@ override the default example direction of `eg` or `ge`.
   [:a 1 :b 2 :c 3 :d 4] => {:a 1 :b 2 :c 3 :d 4})
 ```
 
-`=>` or `<=` can be read as *is*. `{:a 1 :b 2 :c 3 :d 4}` is a `map?`:
+`=>` or `<=` can be read as *is*. `{:a 1 :b 2 :c 3 :d 4}` *is* a `map?`:
 ```clj
 (eg hash-map
   map? <= {:a 1}

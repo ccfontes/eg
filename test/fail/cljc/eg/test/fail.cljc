@@ -3,6 +3,8 @@
             [eg :refer [eg ge ex]]
     #?(:clj [eg :refer [set-eg-no-refresh!]])))
 
+(defn foo [x] inc)
+
 (spec/def ::string string?)
 
 (spec/def ::int int?)
@@ -27,6 +29,8 @@
 
 (ge :eg.test.fail/string 4 3)
 
-(defn foo [x] inc)
-
 (eg foo 2 = dec)
+
+(ex (foo 2) = inc)
+
+(ex inc = (foo 2))

@@ -54,13 +54,11 @@
     (cons normalized-params (rest parsed-ex))))
 
 (defn parse-expression [expr]
-  (let [parsed [(first expr) (last expr)]
-        arrow (nth expr 1)]
-    (if (= arrow '=>)
-      parsed
-      (if (= arrow '<=)
-        (reverse parsed)
-        (cross-throw (str "Was expecting an arrow, but found '" arrow "' instead.."))))))
+  (if (#{'=> '=} (second expr))
+    expr
+    (if (= (second expr) '<=)
+      ((juxt last (constantly '=>) first) expr)
+      (cross-throw (str "Was expecting an arrow, but found '" (second expr) "' instead..")))))
 
 (defn test? [focus-metas focus?]
   (let [focuses (vals @focus-metas)
@@ -111,10 +109,11 @@
   (let [rand-id (int (* (rand) 100000))
         test-name (symbol (str "eg-test-" rand-id))]
     `(deftest ~test-name
-      ~@(map (fn [[res expected]]
+      ~@(map (fn [[res op expected]]
                ; to avoid CompilerException on unreached branch: 'Can't call nil'
-               (let [normalised-expected (if (nil? expected) 'nil? expected)]
-                 `(if (fn? ~normalised-expected)
+               (let [equal? (= op '=)
+                     normalised-expected (if (nil? expected) 'nil? expected)]
+                 `(if (and (fn? ~normalised-expected) (not ~equal?))
                    (is (~normalised-expected ~res))
                    (is (= ~normalised-expected ~res)))))
              examples))))
