@@ -2,7 +2,7 @@
          :license {:name "The Universal Permissive License (UPL), Version 1.0"
                    :url "https://github.com/ccfontes/eg/blob/master/LICENSE.md"}}
   #?(:cljs (:require-macros [eg :refer [eg ge ex]]))
-  (:require [eg.platform :refer [deftest is cross-throw]]
+  (:require [eg.platform :refer [deftest is cross-throw ->clj]]
             [clojure.walk :refer [postwalk]]
             [clojure.spec.alpha :as spec]
             [clojure.string :as str]
@@ -93,12 +93,12 @@
                                 `(is (spec/valid? ~fn-sym ~example))
                                 (let [equal? (= (second example) '=)
                                       param-vec (first example)
-                                      ret (last example)
+                                      expected (last example)
                                       ; to avoid CompilerException on unreached branch: 'Can't call nil'
-                                      normalised-ret (if (nil? ret) 'nil? ret)]
-                                  `(if (and (fn? ~normalised-ret) (not ~equal?))
-                                    (is (~normalised-ret (~fn-sym ~@param-vec)))
-                                    (is (= ~normalised-ret (~fn-sym ~@param-vec)))))))
+                                      normalised-expected (if (nil? expected) 'nil? expected)]
+                                  `(if (and (fn? ~normalised-expected) (not ~equal?))
+                                    (is (~normalised-expected (~fn-sym ~@param-vec)))
+                                    (is (= (->clj ~normalised-expected) (->clj (~fn-sym ~@param-vec))))))))
                             examples)))]
       ; passing down ^:focus meta to clj.test: see alter-test-var-update-fn
       ; FIXME not associng in cljs
@@ -115,7 +115,7 @@
                      normalised-expected (if (nil? expected) 'nil? expected)]
                  `(if (and (fn? ~normalised-expected) (not ~equal?))
                    (is (~normalised-expected ~res))
-                   (is (= ~normalised-expected ~res)))))
+                   (is (= (->clj ~normalised-expected) (->clj ~res))))))
              examples))))
 
 (defn assoc-focus-metas [focus-metas- fn-meta fn-sym]

@@ -68,15 +68,6 @@ Expected values can be checked against a predicate:
 (eg dec [4] integer?)
 ```
 
-If we want to check if the expected value is a function, the operator `=` is used:
-```clj
-(defn foo [x] inc)
-
-(eg foo 2 = inc)
-; or
-(ge foo inc = 2)
-```
-
 `=>` or `<=` operators between input parameters and expected value can be used to improve readability, or
 override the default example direction of `eg` or `ge`.
 ```clj
@@ -107,6 +98,21 @@ override the default example direction of `eg` or `ge`.
   (ex (true? false) => false) ;=> eg-test-<rand-id>
 ```
 
+If we want to check if the expected value is a function, the operator `=` is used:
+```clj
+(defn foo [x] inc)
+
+(eg foo 2 = inc)
+; or
+(ge foo inc = 2)
+; or
+(ex (foo 2) = inc)
+; or
+(ex inc = (foo 2))
+; or
+(ex (foo 2) = inc)
+```
+
 There are times when we just want to test a certain input parameter value, but fill the
 remainder input parameters nevertheless. *eg* provides a *don't care* placeholder `_`,
 for these cases:
@@ -124,6 +130,16 @@ We can arbitrarily name a *don't care* parameter by prefixing its name with `$`.
   [_ $spam _] => map?
   [_ _ $eggs] => {:a {:b $eggs}})
 ```
+
+Expecting deeply nested JavaScript objects or arrays works out of the box:
+```clj
+(eg identity
+  #js {:a [1]} => #js {:a [1]}
+  #js {:a [1]} => (clj->js {:a [1]}))
+
+(ex (identity #js {:a [1]}) => #js {:a [1]}))
+```
+
 When writing examples, *don't cares* enable us to spend less time writting fillers, and the reader is able to better understand the focus
 of the example.
 

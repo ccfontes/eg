@@ -24,6 +24,8 @@
 
 (defn noargs [] "foo")
 
+(defn js-eggs [x] x)
+
 (spec/def ::string string?)
 
 (spec/def ::int int?)
@@ -214,3 +216,11 @@
 (ex (foo 2) = inc)
 
 (ex inc = (foo 2))
+
+#?(:cljs
+  (eg js-eggs
+    #js {:a [1]} => #js {:a [1]}
+    #js {:a [1]} => (clj->js {:a [1]})))
+
+#?(:cljs
+  (ex (js-eggs #js {:a [2]}) => #js {:a [2]}))

@@ -19,6 +19,10 @@
   [then else]
   (if (cljs-env? &env) then else))
 
+(defn ->clj [datum]
+  #?(:clj datum)
+  #?(:cljs (js->clj datum)))
+
 (defmacro is
   "Source: http://blog.nberger.com.ar/blog/2015/09/18/more-portable-complex-macro-musing"
   [& args]
