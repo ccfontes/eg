@@ -5,6 +5,7 @@
                           ge
                           ex
                           examples-acc
+                          spec-eg-acc
                           parse-example
                           parse-expression
                           test?
@@ -51,6 +52,11 @@
   (is (= [ [] [nil] ] (examples-acc [ [] [] ] nil)))
   (is (= [ [[nil nil]] [] ] (examples-acc [ [] [nil] ] nil)))
   (is (= [ [] ['=>] ] (examples-acc [ [] [] ] '=>))))
+
+(deftest spec-eg-acc-test
+  (is (= [ [[2]] [] ] (spec-eg-acc [ [] [] ] 2)))
+  (is (= [ [] ['!] ] (spec-eg-acc [ [] [] ] '!)))
+  (is (= [ [['! 1]] [] ] (spec-eg-acc [ [] ['!] ] 1))))
 
 (deftest parse-example-test
   (testing "should be in order: input->output"
@@ -130,7 +136,7 @@
 
 (deftest ->examples-test
   (is (= [[[0] '=> false?] [[1] '=> 2]] (->examples 'inc true [false? [0] 2 [1]])))
-  (is (= [3 5] (->examples ::int false [3 5])))
+  (is (= [[3] ['! 5]] (->examples ::int false [3 '! 5])))
   (is (= (str "Not a valid test name type: inc")
         (try (->examples "inc" false [[0]])
           (catch #?(:clj Exception :cljs :default) e
@@ -199,7 +205,10 @@
 
 (eg ::string "foo")
 
-(ge :eg.test.pass/int (identity 4) 3)
+(ge :eg.test.pass/int
+  (identity 4)
+  ! "eggs"
+  3)
 
 (eg ::map {:foo "bar"})
 

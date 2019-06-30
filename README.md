@@ -130,6 +130,8 @@ We can arbitrarily name a *don't care* parameter by prefixing its name with `$`.
   [_ $spam _] => map?
   [_ _ $eggs] => {:a {:b $eggs}})
 ```
+When writing examples, *don't cares* enable us to spend less time writting fillers, and the reader is able to better understand the focus
+of the example.
 
 Expecting arbitrarily nested JavaScript objects or arrays works out of the box:
 ```clj
@@ -140,18 +142,20 @@ Expecting arbitrarily nested JavaScript objects or arrays works out of the box:
 (ex (identity #js {:a [1]}) => #js {:a [1]}))
 ```
 
-When writing examples, *don't cares* enable us to spend less time writting fillers, and the reader is able to better understand the focus
-of the example.
-
 Check if your specs are on the correct track using examples.
 `eg` validates examples against a spec defined with a qualified keyword:
 ```clj
 (require '[clojure.spec.alpha :as spec])
 
 (spec/def ::string (spec/nilable string?))
+(spec/def ::pos-int pos-int?)
 
 (eg ::string nil "foo") ; `^:focus` cannot be used here at the moment
 ;=> <current-ns>-:string-test
+
+(ge ::pos-int
+  ! 0 ; test invalid examples, i.e., near a spec's boundary, using `!`
+  1)
 ```
 
 Quite often, writing tests becomes an afterthought, because creating test boilerblate like a new test namespace, requiring test forms and functions under test is too much of a hassle, while being immersed on writing code. It would make sense to have test forms globally available that we use almost as often as `defn`. Introducing `set-eg!` – call it at the development entrypoint of your program:

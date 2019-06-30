@@ -25,9 +25,15 @@
 
 (ex string? <= (ex (inc 0) 1))
 
-(eg ::int "spam" "eggs")
+(eg ::int
+  "spam"
+  ! 4
+  "eggs")
 
-(ge :eg.test.fail/string 4 3)
+(ge :eg.test.fail/string
+  4
+  ! "foo"
+  3)
 
 (eg foo 2 = dec)
 

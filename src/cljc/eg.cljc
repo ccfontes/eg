@@ -36,6 +36,12 @@
       [parts new-part]
       [(conj parts new-part) []])))
 
+(defn spec-eg-acc [[parts part] token]
+  (let [new-part (conj part token)]
+    (if (and (empty? part) (= '! token))
+      [parts new-part]
+      [(conj parts new-part) []])))
+
 (defn parse-example [example ge?]
   (let [normalise-rev-ex #(juxt last (constantly %) first)
         normalise-ex #(juxt first (constantly %) last)
@@ -90,7 +96,10 @@
                    (when (test? ~focus-metas- ~focus?)
                      ~@(map (fn [example]
                               (if (qualified-keyword? fn-sym)
-                                `(is (spec/valid? ~fn-sym ~example))
+                                (let [example-val (last example)]
+                                  (if (= (first example) '!)
+                                    `(is (not (spec/valid? ~fn-sym ~example-val)))
+                                    `(is (spec/valid? ~fn-sym ~example-val))))
                                 (let [equal? (= (second example) '=)
                                       param-vec (first example)
                                       expected (last example)
@@ -166,7 +175,7 @@
         (first)
         (map #(parse-example % ge?))
         (fill-dont-cares))
-    (keyword? test-thing) body
+    (keyword? test-thing) (first (reduce spec-eg-acc [[] []] body))
     :else (cross-throw (str "Not a valid test name type: " test-thing))))
 
 (defmacro eg-helper [[fn-sym & body] ge?]
