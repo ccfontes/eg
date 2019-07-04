@@ -40,3 +40,9 @@
 (ex (foo 2) = inc)
 
 (ex inc = (foo 2))
+
+(eg identity
+  1 => ::string
+  "eggs" ::int
+  ::int <= "foo"
+  1 = ::int)

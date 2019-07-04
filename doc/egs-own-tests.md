@@ -27,7 +27,7 @@ Run tests expected to fail, targeting ClojureScript JVM->nodejs:
 ```
 The test report should look like this:
 ```
-Ran 8 tests containing 12 assertions.
-12 failures, 0 errors.
+Ran 12 tests containing 21 assertions.
+19 failures, 0 errors.
 Tests failed.
 ```

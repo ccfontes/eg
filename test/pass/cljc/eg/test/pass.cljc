@@ -169,6 +169,7 @@
 
 (eg -
   [1 2]       integer?
+  [1 2]       ::int
   [1 2]    => -1
   integer? <= [1 2])
 
@@ -218,6 +219,10 @@
 
 (eg identity
   nil   nil
+  1 => ::int
+  "eggs" ::string
+  ::string <= "foo"
+  ::int = ::int
   [nil] nil)
 
 (ex (identity nil) => nil)

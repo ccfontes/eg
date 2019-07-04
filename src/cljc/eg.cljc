@@ -105,9 +105,10 @@
                                       expected (last example)
                                       ; to avoid CompilerException on unreached branch: 'Can't call nil'
                                       normalised-expected (if (nil? expected) 'nil? expected)]
-                                  `(if (and (fn? ~normalised-expected) (not ~equal?))
-                                    (is (~normalised-expected (~fn-sym ~@param-vec)))
-                                    (is (= (->clj ~normalised-expected) (->clj (~fn-sym ~@param-vec))))))))
+                                  `(cond
+                                      (and (fn? ~normalised-expected) (not ~equal?)) (is (~normalised-expected (~fn-sym ~@param-vec)))
+                                      (and (qualified-keyword? ~normalised-expected) (not ~equal?)) (is (spec/valid? ~normalised-expected (~fn-sym ~@param-vec)))
+                                      :else (is (= (->clj ~normalised-expected) (->clj (~fn-sym ~@param-vec))))))))
                             examples)))]
       ; passing down ^:focus meta to clj.test: see alter-test-var-update-fn
       ; FIXME not associng in cljs
