@@ -63,9 +63,15 @@ For that we use `ge`, a useful mnemonic for the inverted flow of the test exampl
   (ge + 10 [3 7])
 ```
 
-Expected values can be checked against a predicate:
+Expected values can be checked against a predicate or a spec:
 ```clj
-(eg dec [4] integer?)
+(require '[clojure.spec.alpha :as spec])
+
+(spec/def ::int integer?)
+
+(eg dec
+  [4] integer?
+  [5] ::int)
 ```
 
 `=>` or `<=` operators between input parameters and expected value can be used to improve readability, or
