@@ -14,6 +14,8 @@ Check the [ideas driving eg](doc/ideas.md).
 ## Installation
 **Disclaimer:** *eg* is work-in-progress. Use it at your own risk!
 
+eg supports Clojure, ClojureScript JVM, and ClojureScript JS.
+
 **Leiningen/Boot**
 ```clj
 [eg "0.4.9-alpha"]
@@ -104,19 +106,23 @@ override the default example direction of `eg` or `ge`.
   (ex (true? false) => false) ;=> eg-test-<rand-id>
 ```
 
-If we want to check if the expected value is a function, the operator `=` is used:
+If we want to check if the expected value is a function or a spec, the operator `=` is used:
 ```clj
-(defn foo [x] inc)
+(defn foo [] inc)
 
-(eg foo 2 = inc)
+(eg foo [] = inc)
 ; or
-(ge foo inc = 2)
-; or
+(ge foo [] = 2)
+
 (ex (foo 2) = inc)
-; or
-(ex inc = (foo 2))
-; or
-(ex (foo 2) = inc)
+
+(ex inc = (foo))
+
+(ex (foo) = inc)
+
+(defn bar [] ::inc)
+
+(eg bar [] ::inc)
 ```
 
 There are times when we just want to test a certain input parameter value, but fill the

@@ -234,7 +234,9 @@
 #?(:cljs
   (eg js-eggs
     #js {:a [1]} => #js {:a [1]}
-    #js {:a [1]} => (clj->js {:a [1]})))
+    #js {:a [1]} => (clj->js {:a [1]})
+    (clj->js {:a [1]}) => #js {:a [1]}
+    (clj->js {:a [1]}) => (clj->js {:a [1]})))
 
 #?(:cljs
   (ex (js-eggs #js {:a [2]}) => #js {:a [2]}))

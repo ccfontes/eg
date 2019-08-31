@@ -30,19 +30,25 @@
                  (map* f rest-colls))))))
   f colls))
 
-(defn examples-acc [[parts part] token]
+(defn examples-acc
+  "Accumulates examples, mainly taking into account operator used in example."
+  [[parts part] token]
   (let [new-part (conj part token)]
     (if (or (empty? part) (operators token))
       [parts new-part]
       [(conj parts new-part) []])))
 
-(defn spec-eg-acc [[parts part] token]
+(defn spec-eg-acc
+  "accumulates examples for a spec, mainly because some could appear negated using '!'."
+  [[parts part] token]
   (let [new-part (conj part token)]
     (if (and (empty? part) (= '! token))
       [parts new-part]
       [(conj parts new-part) []])))
 
-(defn parse-example [example ge?]
+(defn parse-example
+  "Normalizes an 'eg/ge' example's operator, and order of function parameters vs expected result."
+  [example ge?]
   (let [normalise-rev-ex #(juxt last (constantly %) first)
         normalise-ex #(juxt first (constantly %) last)
         parsed-ex
@@ -59,27 +65,33 @@
         normalized-params (if (vector? params) params [params])]
     (cons normalized-params (rest parsed-ex))))
 
-(defn parse-expression [expr]
+(defn parse-expression
+  "Normalizes an 'ex' expression's operator, and order of test expression vs expected result."
+  [expr]
   (if (#{'=> '=} (second expr))
     expr
     (if (= (second expr) '<=)
       ((juxt last (constantly '=>) first) expr)
       (cross-throw (str "Was expecting an arrow, but found '" (second expr) "' instead..")))))
 
-(defn test? [focus-metas focus?]
+(defn test?
+  "Used to determine if function will be tested based on its focus state,
+  and the focus state of the other function tests."
+  [focus-metas focus?]
   (let [focuses (vals @focus-metas)
         focuses? (some true? focuses)]
     (boolean
       (or focus? (not focuses?)))))
 
 (defn rm-lead-colon
-  "Motivation: 'name' does not work for processed strings"
+  "Motivation: 'name' does not work for processed strings."
   [s] (if (= ":" (-> s first str))
         (subs s 1)
         s))
 
 (defn cljs-safe-namespace
-  "Motivation: Using '.' in the name causes compilation error in cljs."
+  "Like 'namespace', but occurrences of '.' are replaced with '-', to prevent compilation error in cljs.
+  Used to create an unambiguous test name."
   [thing] (-> thing str (str/replace "." "-") symbol namespace rm-lead-colon))
 
 (def ->test-name
@@ -90,7 +102,12 @@
         (juxt cljs-safe-namespace
               #(str (if (keyword? %) ":") (name %)))))
 
-(defmacro ->example-test [fn-sym examples focus-metas- focus?]
+(defmacro ->example-test
+  "Creates a clojure.test test for function being tested.
+  Assertions are generated under the test using provided examples.
+  Test name is derived from the fully qualified name of function under test, and by appending '-test' to it.
+  Test may not run depending on its focus state, and of other function tests."
+  [fn-sym examples focus-metas- focus?]
   (let [test-name (->test-name fn-sym)]
     `(let [test# (deftest ~test-name
                    (when (test? ~focus-metas- ~focus?)
@@ -115,7 +132,11 @@
       (alter-meta! (var ~test-name) #(assoc % :focus ~focus?))
       test#)))
 
-(defmacro ->expression-test [examples]
+(defmacro ->expression-test
+  "Creates a clojure.test test for expressions being tested.
+  Assertions are generated under the test using provided expressions.
+  Test name is created as 'eg-test-<rand-id>'."
+  [examples]
   (let [rand-id (int (* (rand) 100000))
         test-name (symbol (str "eg-test-" rand-id))]
     `(deftest ~test-name
@@ -128,14 +149,19 @@
                    (is (= (->clj ~normalised-expected) (->clj ~res))))))
              examples))))
 
-(defn assoc-focus-metas [focus-metas- fn-meta fn-sym]
+(defn assoc-focus-metas
+  "Creates a new entry in fn to focus? map for qualified function in params."
+  [focus-metas- fn-meta fn-sym]
   (let [fn-ns-name (-> fn-meta :ns str)
         qualified-fn-kw (keyword (str fn-ns-name "/" fn-sym))
         focus? (:focus fn-meta)]
     (assoc focus-metas- qualified-fn-kw focus?)))
 
 ; FIXME function not executing in cljs
-(defn alter-test-var-update-fn [test-v]
+(defn alter-test-var-update-fn
+  "Meant for use with 'alter-var-root' to decorate 'clj.test/test-var' with
+  test check on focus state."
+  [test-v]
   (fn [v]
     (let [focus? (-> v meta :focus)]
       (if (test? focus-metas focus?)
@@ -147,7 +173,12 @@
 
 (def dont-care? (some-fn #{'_} named-dont-care?))
 
-(defn fill-dont-cares [examples]
+(defn fill-dont-cares
+  "Takes in example pairs, and fills every occurrence of a don't care with values from other examples.
+  Each '_' don't care occurrence is replaced with a value from another example at the same args position.
+  Each named don't care (prefixed with '$'), is replaced as '_', then propagated to every occurrence under
+  its expected value."
+  [examples]
   (let [input-examples (map first examples)
         choices-per-param (apply map-dregs #(->> %& (remove dont-care?) vec) input-examples)
         fo (fn [example]
@@ -168,7 +199,9 @@
                (if (-> ret-ex second nil?) [(first ret-ex) (last ret-ex)] ret-ex)))]
     (map fo examples)))
 
-(defn ->examples [test-thing ge? body]
+(defn ->examples
+  "Takes in an eg body, and returns example pairs."
+  [test-thing ge? body]
   (cond
     (symbol? test-thing)
       (->> body
@@ -179,18 +212,28 @@
     (keyword? test-thing) (first (reduce spec-eg-acc [[] []] body))
     :else (cross-throw (str "Not a valid test name type: " test-thing))))
 
-(defmacro eg-helper [[fn-sym & body] ge?]
+(defmacro eg-helper
+  "Common logic between 'eg' and 'ge'."
+  [[fn-sym & body] ge?]
   (let [examples (->examples fn-sym ge? body)
         fn-meta (meta fn-sym)
         focus? (:focus fn-meta)]
     `(do (swap! focus-metas assoc-focus-metas ~fn-meta ~fn-sym)
          (->example-test ~fn-sym ~examples focus-metas ~focus?))))
 
-(defmacro eg [& args] `(eg-helper ~args false))
+(defmacro eg
+  "Test function using examples of parameters / expected value. See readme for usage."
+  [& args] `(eg-helper ~args false))
 
-(defmacro ge [& args] `(eg-helper ~args true))
+(defmacro ge
+  "Like 'eg' but example components are reversed. See readme for usage."
+  [& args]
+  `(eg-helper ~args true))
 
-(defmacro ex [& body]
+(defmacro ex
+  "Test arbitrary expressions against corresponding expected values.
+  See readme for usage."
+  [& body]
   (let [examples (->> body (partition 3) (map parse-expression))]
     `(->expression-test ~examples)))
 
@@ -201,13 +244,18 @@
   (set! cljs.test/test-var (alter-test-var-update-fn cljs.test/test-var)))
 
 #?(:clj
-  (defn set-eg-no-refresh! [egs]
+  (defn set-eg-no-refresh!
+    "Interns 'eg', 'ge', and 'ex' in clojure.core, to be able to use those forms without requires in test ns."
+    [egs]
     (let [eg-var (if (ffilter #{'eg} egs) (intern 'clojure.core (with-meta 'eg {:macro true}) @#'eg))
           ge-var (if (ffilter #{'ge} egs) (intern 'clojure.core (with-meta 'ge {:macro true}) @#'ge))
           ex-var (if (ffilter #{'ex} egs) (intern 'clojure.core (with-meta 'ex {:macro true}) @#'ex))]
       (set (keep identity [eg-var ge-var ex-var])))))
 
 #?(:clj ; FIXME cannot be tested – calling clojure.tools.namespace.repl/refresh causes lein test to run 0 tests
-  (defn set-eg! [& egs]
+  (defn set-eg!
+    "Interns 'eg', 'ge', and 'ex' in clojure.core, to be able to use those forms without requires in test ns.
+    Then, refreshes all namespaces for cases when a test namespace is required before this function is called."
+    [& egs]
     (set-eg-no-refresh! egs)
     (clojure.tools.namespace.repl/refresh)))
