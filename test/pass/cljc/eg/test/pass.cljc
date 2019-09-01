@@ -128,20 +128,20 @@
          (fill-dont-cares [[[5 2] '= :b] [['$1 2] '=> [{:a '$1} '$1]]])))
   (is (= [[[1 2] nil] [[1 4] :b]]
          (fill-dont-cares [[[1 2] nil] [['_ 4] :b]])))
-  #_(is (= "No choices found for don't care"
-          (try (fill-dont-cares [[['_ 4] :b]])
-            (catch #?(:clj Exception :cljs :default) e
-              #?(:clj (-> e Throwable->map :cause))
-              #?(:cljs (.-message e)))))))
+  (is (= "No choices found for don't care: _"
+         (try (doall (fill-dont-cares [[['_ 4] :b]]))
+           (catch #?(:clj Exception :cljs :default) e
+             #?(:clj (-> e Throwable->map :cause))
+             #?(:cljs (.-message e)))))))
 
 (deftest ->examples-test
   (is (= [[[0] '=> false?] [[1] '=> 2]] (->examples 'inc true [false? [0] 2 [1]])))
   (is (= [[3] ['! 5]] (->examples ::int false [3 '! 5])))
-  (is (= (str "Not a valid test name type: inc")
-        (try (->examples "inc" false [[0]])
-          (catch #?(:clj Exception :cljs :default) e
-            #?(:clj (-> e Throwable->map :cause))
-            #?(:cljs (.-message e)))))))
+  (is (= "Not a valid test name type: inc"
+         (try (->examples "inc" false [[0]])
+           (catch #?(:clj Exception :cljs :default) e
+             #?(:clj (-> e Throwable->map :cause))
+             #?(:cljs (.-message e)))))))
 
 ; only Clojure can get metadata from a function using 'meta'
 #?(:clj (defmacro macro-fn-meta-fixture [f] (meta f)))

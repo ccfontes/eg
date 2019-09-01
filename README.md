@@ -9,12 +9,12 @@ in *eg* becomes:
 (eg inc 0 1)
 ```
 
+`eg` supports Clojure, ClojureScript JVM, and ClojureScript JS.
+
 Check the [ideas driving eg](doc/ideas.md).
 
 ## Installation
 **Disclaimer:** *eg* is work-in-progress. Use it at your own risk!
-
-eg supports Clojure, ClojureScript JVM, and ClojureScript JS.
 
 **Leiningen/Boot**
 ```clj

@@ -59,7 +59,7 @@
                       (= (second example) '<=))
                 ((normalise-rev-ex '=>) example)
                 ((normalise-ex '=>) example)))
-            (let [egge (str (if ge? "ge" "eg"))]
+            (let [egge (if ge? "ge" "eg")]
               (cross-throw (str egge " examples need to come in pairs, but found only: '" (first example) "'"))))
         params (first parsed-ex)
         normalized-params (if (vector? params) params [params])]
@@ -176,7 +176,7 @@
 (defn fill-dont-cares
   "Takes in example pairs, and fills every occurrence of a don't care with values from other examples.
   Each '_' don't care occurrence is replaced with a value from another example at the same args position.
-  Each named don't care (prefixed with '$'), is replaced as '_', then propagated to every occurrence under
+  Each named don't care (prefixed with '$'), is replaced the same way as in '_', then propagated to every occurrence under
   its expected value."
   [examples]
   (let [input-examples (map first examples)
@@ -193,7 +193,7 @@
                               [(concat param-acc [choice])
                                op-
                                (if (named-dont-care? param) (postwalk pw-f exp) exp)])
-                            (cross-throw "No choices found for don't care")) ; TODO add don't care name
+                            (cross-throw (str "No choices found for don't care: " param)))
                           [(concat param-acc [param]) op- exp]))
                    ret-ex (reduce fi [[] op exp] (map #(vec %&) params choices-per-param))]
                (if (-> ret-ex second nil?) [(first ret-ex) (last ret-ex)] ret-ex)))]
