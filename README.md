@@ -19,11 +19,11 @@ That said, please exercise care when upgrading *eg*.
 
 **Leiningen/Boot**
 ```clj
-[eg "0.4.9-alpha"]
+[eg "0.4.10-alpha"]
 ```
 **Clojure CLI/deps.edn**
 ```clj
-eg {:mvn/version "0.4.9-alpha"}
+eg {:mvn/version "0.4.10-alpha"}
 ```
 
 ## Usage
