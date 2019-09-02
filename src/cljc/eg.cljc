@@ -38,12 +38,22 @@
       [parts new-part]
       [(conj parts new-part) []])))
 
+(defn variadic-bang?
+  "Checks if token is a list with '!' as first element."
+  [token]
+  (and (list? token)
+       (= (first token) '!)
+       (> (count token) 1)))
+
 (defn spec-eg-acc
-  "accumulates examples for a spec, mainly because some could appear negated using '!'."
+  "Accumulates examples for a spec, mainly because some could appear negated using '!'."
   [[parts part] token]
   (let [new-part (conj part token)]
-    (if (and (empty? part) (= '! token))
-      [parts new-part]
+    (if (empty? part)
+      (cond
+        (= '! token)           [parts new-part]
+        (variadic-bang? token) [(->> token rest (interpose '!) (cons '!) (partition 2) (concat parts)) []]
+        :else                  [(conj parts new-part) []])
       [(conj parts new-part) []])))
 
 (defn parse-example
@@ -227,8 +237,7 @@
 
 (defmacro ge
   "Like 'eg' but example components are reversed. See readme for usage."
-  [& args]
-  `(eg-helper ~args true))
+  [& args] `(eg-helper ~args true))
 
 (defmacro ex
   "Test arbitrary expressions against corresponding expected values.

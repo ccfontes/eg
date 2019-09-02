@@ -16,7 +16,8 @@
                           ->examples
                           ->test-name
                           cljs-safe-namespace
-                          rm-lead-colon]]
+                          rm-lead-colon
+                          variadic-bang?]]
       #?(:clj [eg :refer [set-eg-no-refresh!]])))
 
 (defn foo [x] inc)
@@ -53,10 +54,19 @@
   (is (= [ [[nil nil]] [] ] (examples-acc [ [] [nil] ] nil)))
   (is (= [ [] ['=>] ] (examples-acc [ [] [] ] '=>))))
 
+(deftest variadic-bang?-test
+  (is (not (variadic-bang? 1)))
+  (is (not (variadic-bang? '())))
+  (is (not (variadic-bang? '("a"))))
+  (is (not (variadic-bang? '(!))))
+  (is (variadic-bang? '(! 4)))
+  (is (variadic-bang? '(! 4 "b"))))
+
 (deftest spec-eg-acc-test
-  (is (= [ [[2]] [] ] (spec-eg-acc [ [] [] ] 2)))
-  (is (= [ [] ['!] ] (spec-eg-acc [ [] [] ] '!)))
-  (is (= [ [['! 1]] [] ] (spec-eg-acc [ [] ['!] ] 1))))
+  (is (= [ [[2]] ['!] ] (spec-eg-acc [ [[2]] [] ] '!)))
+  (is (= [ [[2] ['! 3] ['! 4]] [] ] (spec-eg-acc [ [[2]] [] ] '(! 3 4))))
+  (is (= [ [[2] [3]] [] ] (spec-eg-acc [ [[2]] [] ] 3)))
+  (is (= [ [[2] ['! 3]] [] ] (spec-eg-acc [ [[2]] ['!] ] 3))))
 
 (deftest parse-example-test
   (testing "should be in order: input->output"
@@ -208,7 +218,8 @@
 
 (ge :eg.test.pass/int
   (identity 4)
-  ! "eggs"
+  !"eggs"
+  (! 4.5 2.3)
   3)
 
 (eg ::map {:foo "bar"})

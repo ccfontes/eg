@@ -9,12 +9,13 @@ in *eg* becomes:
 (eg inc 0 1)
 ```
 
-`eg` supports Clojure, ClojureScript JVM, and ClojureScript JS.
+*eg* supports Clojure, ClojureScript JVM, and ClojureScript JS.
 
 Check the [ideas driving eg](doc/ideas.md).
 
 ## Installation
-**Disclaimer:** *eg* is work-in-progress. Use it at your own risk!
+**Disclaimer:** *eg* is becoming stable and there are no future plans on doing breaking changes.
+That said, please exercise care when upgrading *eg*.
 
 **Leiningen/Boot**
 ```clj
@@ -166,8 +167,10 @@ Check if your specs are on the correct track using examples.
 ;=> <current-ns>-:string-test
 
 (ge ::pos-int
-  ! 0 ; test invalid examples, i.e., near a spec's boundary, using `!`
-  1)
+  1
+  ; test invalid examples, i.e., near a spec's boundary, using `!`
+  ! 0
+  (! -1 -2 -3)) ; equivalent to: ! -1 ! -2 ! -3
 ```
 
 Quite often, writing tests becomes an afterthought, because creating test boilerblate like a new test namespace, requiring test forms and functions under test is too much of a hassle, while being immersed on writing code. It would make sense to have test forms globally available that we use almost as often as `defn`. Introducing `set-eg!` – call it at the development entrypoint of your program:
