@@ -214,7 +214,7 @@
   (let [set-eg-ret (set-eg-no-refresh! '[eg ge])]
     (ex '#{eg ge} <= (set (map (comp :name meta) set-eg-ret)))))
 
-(eg ::string "foo")
+(eg ::string "foo" (! 2 3))
 
 (ge :eg.test.pass/int
   (identity 4)
