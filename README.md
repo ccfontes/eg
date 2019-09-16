@@ -11,14 +11,14 @@ in *eg* becomes:
 
 *eg* supports Clojure, ClojureScript JVM, and ClojureScript JS.
 
-Vanilla clojure.test tests and *eg* test results are included in the same report.
+Vanilla clojure.test and *eg* test results are included in the same report.
 Also, no custom test runner is required.
 
 Check the [ideas driving eg](doc/ideas.md).
 
 ## Installation
-**Disclaimer:** *eg* is becoming stable and there are no future plans on making breaking changes.
-That said, please exercise care when upgrading *eg*.
+
+**Warning:** versions 0.4.4-alpha, through 0.4.10-alpha break in ClojureScript JVM when using spec functionality combined with not explicitly requiring clojure.spec.alpha in the test namespace.
 
 **Leiningen/Boot**
 ```clj

@@ -2,9 +2,8 @@
          :license {:name "The Universal Permissive License (UPL), Version 1.0"
                    :url "https://github.com/ccfontes/eg/blob/master/LICENSE.md"}}
   #?(:cljs (:require-macros [eg :refer [eg ge ex]]))
-  (:require [eg.platform :refer [deftest is cross-throw ->clj]]
+  (:require [eg.platform :refer [deftest is cross-throw ->clj valid-spec?]]
             [clojure.walk :refer [postwalk]]
-            [clojure.spec.alpha :as spec]
             [clojure.string :as str]
             [clojure.test :as clj.test]
    #?(:cljs [cljs.test :include-macros true])
@@ -125,17 +124,17 @@
                               (if (qualified-keyword? fn-sym)
                                 (let [example-val (last example)]
                                   (if (= (first example) '!)
-                                    `(is (not (spec/valid? ~fn-sym ~example-val)))
-                                    `(is (spec/valid? ~fn-sym ~example-val))))
+                                    `(is (not (valid-spec? ~fn-sym ~example-val)))
+                                    `(is (valid-spec? ~fn-sym ~example-val))))
                                 (let [equal? (= (second example) '=)
                                       param-vec (first example)
                                       expected (last example)
                                       ; to avoid CompilerException on unreached branch: 'Can't call nil'
                                       normalised-expected (if (nil? expected) 'nil? expected)]
                                   `(cond
-                                      (and (fn? ~normalised-expected) (not ~equal?)) (is (~normalised-expected (~fn-sym ~@param-vec)))
-                                      (and (qualified-keyword? ~normalised-expected) (not ~equal?)) (is (spec/valid? ~normalised-expected (~fn-sym ~@param-vec)))
-                                      :else (is (= (->clj ~normalised-expected) (->clj (~fn-sym ~@param-vec))))))))
+                                    (and (fn? ~normalised-expected) (not ~equal?)) (is (~normalised-expected (~fn-sym ~@param-vec)))
+                                    (and (qualified-keyword? ~normalised-expected) (not ~equal?)) (is (valid-spec? ~normalised-expected (~fn-sym ~@param-vec)))
+                                    :else (is (= (->clj ~normalised-expected) (->clj (~fn-sym ~@param-vec))))))))
                             examples)))]
       ; passing down ^:focus meta to clj.test: see alter-test-var-update-fn
       ; FIXME not associng in cljs

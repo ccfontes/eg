@@ -1,6 +1,6 @@
 (ns eg.test.pass
-    (:require [clojure.spec.alpha :as spec]
-              [eg.platform :refer [deftest is testing cross-throw]]
+    (:require [eg.platform :refer [deftest is testing cross-throw]]
+              [eg.test.fixtures :as fixtures]
               [eg :refer [eg
                           ge
                           ex
@@ -19,20 +19,6 @@
                           rm-lead-colon
                           variadic-bang?]]
       #?(:clj [eg :refer [set-eg-no-refresh!]])))
-
-(defn foo [x] inc)
-
-(defn bar [x] inc)
-
-(defn noargs [] "foo")
-
-(defn js-eggs [x] x)
-
-(spec/def ::string string?)
-
-(spec/def ::int int?)
-
-(spec/def ::map map?)
 
 (deftest cross-throw-test
   (is (= "BOOM" (try (cross-throw "BOOM")
@@ -114,10 +100,10 @@
 
 (deftest ->test-name-test
   (is (symbol? (->test-name 'inc)))
-  (is (symbol? (->test-name ::int)))
+  (is (symbol? (->test-name ::fixtures/int)))
   (is (= 'inc-test (->test-name 'inc)))
   (is (= 'clojure-core-inc-test (->test-name 'clojure.core/inc)))
-  (is (= 'eg-test-pass-:int-test (->test-name ::int))))
+  (is (= 'eg-test-fixtures-:int-test (->test-name ::fixtures/int))))
 
 (deftest assoc-focus-metas-test
   (let [inc-meta (-> 'seq resolve meta)
@@ -146,7 +132,7 @@
 
 (deftest ->examples-test
   (is (= [[[0] '=> false?] [[1] '=> 2]] (->examples 'inc true [false? [0] 2 [1]])))
-  (is (= [[3] ['! 5]] (->examples ::int false [3 '! 5])))
+  (is (= [[3] ['! 5]] (->examples ::fixtures/int false [3 '! 5])))
   (is (= "Not a valid test name type: inc"
          (try (->examples "inc" false [[0]])
            (catch #?(:clj Exception :cljs :default) e
@@ -169,7 +155,7 @@
 
 (eg true? true true)
 
-(eg noargs [] "foo")
+(eg fixtures/noargs [] "foo")
 
 (eg not [(not true)] true)
 
@@ -179,7 +165,7 @@
 
 (eg -
   [1 2]       integer?
-  [1 2]       ::int
+  [1 2]       ::fixtures/int
   [1 2]    => -1
   integer? <= [1 2])
 
@@ -214,40 +200,40 @@
   (let [set-eg-ret (set-eg-no-refresh! '[eg ge])]
     (ex '#{eg ge} <= (set (map (comp :name meta) set-eg-ret)))))
 
-(eg ::string "foo" (! 2 3))
+(eg ::fixtures/string "foo" (! 2 3))
 
-(ge :eg.test.pass/int
+(ge ::fixtures/int
   (identity 4)
   !"eggs"
   (! 4.5 2.3)
   3)
 
-(eg ::map {:foo "bar"})
+(eg ::fixtures/map {:foo "bar"})
 
-(eg foo 2 = inc)
+(eg fixtures/foo 2 = inc)
 
-(ge bar inc = 2)
+(ge fixtures/bar inc = 2)
 
 (eg identity
   nil   nil
-  1 => ::int
-  "eggs" ::string
-  ::string <= "foo"
-  ::int = ::int
+  1 => ::fixtures/int
+  "eggs" ::fixtures/string
+  ::fixtures/string <= "foo"
+  ::fixtures/int = ::fixtures/int
   [nil] nil)
 
 (ex (identity nil) => nil)
 
-(ex (foo 2) = inc)
+(ex (fixtures/foo 2) = inc)
 
-(ex inc = (foo 2))
+(ex inc = (fixtures/foo 2))
 
 #?(:cljs
-  (eg js-eggs
+  (eg fixtures/js-eggs
     #js {:a [1]} => #js {:a [1]}
     #js {:a [1]} => (clj->js {:a [1]})
     (clj->js {:a [1]}) => #js {:a [1]}
     (clj->js {:a [1]}) => (clj->js {:a [1]})))
 
 #?(:cljs
-  (ex (js-eggs #js {:a [2]}) => #js {:a [2]}))
+  (ex (fixtures/js-eggs #js {:a [2]}) => #js {:a [2]}))

@@ -1,7 +1,8 @@
 (ns eg.platform
   #?(:cljs (:require-macros [eg.platform :refer [deftest is testing]]))
-  (:require [clojure.test :as clj.test]
-            #?(:cljs [cljs.test :include-macros true])))
+  (:require [clojure.spec.alpha]
+            [clojure.test :as clj.test]
+            [cljs.test :include-macros true]))
 
 (defn cross-throw [msg]
   (throw #?(:cljs (js/Error. msg)
@@ -22,6 +23,11 @@
 (defn ->clj [datum]
   #?(:clj datum)
   #?(:cljs (js->clj datum)))
+
+(defn valid-spec?
+  "Solves a clojure.spec.alpha/valid? resolve issue in cljs JVM.
+  Check client code for use cases."
+  [& args] (apply clojure.spec.alpha/valid? args))
 
 (defmacro is
   "Source: http://blog.nberger.com.ar/blog/2015/09/18/more-portable-complex-macro-musing"
