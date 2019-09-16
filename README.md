@@ -18,16 +18,19 @@ Check the [ideas driving eg](doc/ideas.md).
 
 ## Installation
 
-**Warning:** versions 0.4.4-alpha, through 0.4.10-alpha break in ClojureScript JVM when using spec functionality combined with not explicitly requiring clojure.spec.alpha in the test namespace.
-
 **Leiningen/Boot**
+
+**Disclaimer:** *eg* is unstable, marked by a history of buggy features. Use with caution.
+
 ```clj
-[eg "0.4.10-alpha"]
+[eg "0.4.11-alpha"]
 ```
 **Clojure CLI/deps.edn**
 ```clj
-eg {:mvn/version "0.4.10-alpha"}
+eg {:mvn/version "0.4.11-alpha"}
 ```
+
+**Warning:** versions `0.4.4-alpha`, through `0.4.10-alpha` break in ClojureScript JVM when using spec functionality combined with not explicitly requiring `clojure.spec.alpha` in a test namespace. This issue has ben fixed since `0.4.11-alpha`.
 
 ## Usage
 Let's try *eg*! Start by creating a REPL session and then requiring `eg` and `ge`:
