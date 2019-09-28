@@ -23,11 +23,11 @@ Check the [ideas driving eg](doc/ideas.md).
 **Leiningen/Boot**
 
 ```clj
-[eg "0.4.11-alpha"]
+[eg "0.4.12-alpha"]
 ```
 **Clojure CLI/deps.edn**
 ```clj
-eg {:mvn/version "0.4.11-alpha"}
+eg {:mvn/version "0.4.12-alpha"}
 ```
 
 **Warning:** versions `0.4.4-alpha`, through `0.4.10-alpha` break in ClojureScript JVM when using spec functionality combined with not explicitly requiring `clojure.spec.alpha` in a test namespace. This issue has ben fixed since `0.4.11-alpha`.
