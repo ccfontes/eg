@@ -2,7 +2,7 @@
          :license {:name "The Universal Permissive License (UPL), Version 1.0"
                    :url "https://github.com/ccfontes/eg/blob/master/LICENSE.md"}}
   #?(:cljs (:require-macros [eg :refer [eg ge ex]]))
-  (:require [eg.platform :refer [deftest is cross-throw ->clj valid-spec?]]
+  (:require [eg.platform :refer [deftest is cross-throw ->clj valid-spec? invalid-spec?]]
             [clojure.walk :refer [postwalk]]
             [clojure.string :as str]
             [clojure.test :as clj.test]
@@ -124,7 +124,7 @@
                               (if (qualified-keyword? fn-sym)
                                 (let [example-val (last example)]
                                   (if (= (first example) '!)
-                                    `(is (not (valid-spec? ~fn-sym ~example-val)))
+                                    `(is (invalid-spec? ~fn-sym ~example-val))
                                     `(is (valid-spec? ~fn-sym ~example-val))))
                                 (let [equal? (= (second example) '=)
                                       param-vec (first example)

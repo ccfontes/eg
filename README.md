@@ -18,9 +18,9 @@ Check the [ideas driving eg](doc/ideas.md).
 
 ## Installation
 
-**Leiningen/Boot**
+**Disclaimer:** *eg* is unstable, with bugs popping out occasionally. Use with caution.
 
-**Disclaimer:** *eg* is unstable, marked by a history of buggy features. Use with caution.
+**Leiningen/Boot**
 
 ```clj
 [eg "0.4.11-alpha"]
@@ -179,7 +179,7 @@ Check if your specs are on the correct track using examples.
   (! -1 -2 -3)) ; equivalent to: ! -1 ! -2 ! -3
 ```
 
-Quite often, writing tests becomes an afterthought, because creating test boilerblate like a new test namespace, requiring test forms and functions under test is too much of a hassle, while being immersed on writing code. It would make sense to have test forms globally available that we use almost as often as `defn`. Introducing `set-eg!` – call it at the development entrypoint of your program:
+Quite often, writing tests becomes an afterthought, because creating test boilerblate like a new test namespace, requiring test forms and functions under test is too much of a hassle, while being immersed in writing code. It would make sense to have test forms globally available that we use almost as often as `defn`. Introducing `set-eg!` – call it at the development entrypoint of your program:
 ```clj
 (require '[eg :refer [set-eg!]])
 ```
@@ -261,6 +261,13 @@ ClojureScript tests in the REPL:
 ## Test libraries which work great with eg
   * [eftest](https://github.com/weavejester/eftest) – Eftest is a fast and pretty Clojure test runner.
   * [humane-test-output](https://github.com/pjstadig/humane-test-output) – Humane test output for clojure.test
+
+## The following readings were of special importance to write eg
+  * https://seespotcode.net/2018/01/13/portable-clojure-test-assert-expr/
+  * http://blog.nberger.com.ar/blog/2015/09/18/more-portable-complex-macro-musing
+  * https://github.com/clojure/clojure/blob/master/src/clj/clojure/test.clj
+  * https://github.com/clojure/clojurescript/blob/master/src/main/cljs/cljs/test.cljs
+  * https://github.com/clojure/clojurescript/blob/master/src/main/cljs/cljs/test.cljc
 
 ## [License](LICENSE.md)
 Copyright (c) 2019 Carlos da Cunha Fontes
