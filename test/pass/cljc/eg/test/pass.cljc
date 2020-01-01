@@ -1,5 +1,5 @@
 (ns eg.test.pass
-    (:require [eg.platform :refer [deftest is testing cross-throw]]
+    (:require [eg.platform :as platform :refer [deftest is testing cross-throw]]
               [eg.test.fixtures :as fixtures]
               [eg :refer [eg
                           ge
@@ -18,6 +18,7 @@
                           cljs-safe-namespace
                           rm-lead-colon
                           variadic-bang?]]
+      #?(:cljs [eg.platform.cljs :as cljs-platform])
       #?(:clj [eg :refer [set-eg-no-refresh!]])))
 
 (deftest cross-throw-test
@@ -152,6 +153,19 @@
 (deftest dont-care-test
   (is (dont-care? '_))
   (is (dont-care? '$foo)))
+
+#?(:cljs
+  (if (exists? js/cljs.test$macros)
+    (deftest ->file-and-line-repr-test
+      (is (= '("eg/test/pass.js")
+             (cljs-platform/->file-and-line-repr "eg/test/pass.js" 5))))
+    (deftest ->file-and-line-repr-test
+      (is (= '("eg/test/pass.js:5")
+             (cljs-platform/->file-and-line-repr "eg/test/pass.js" 5))))))
+
+(deftest equal?-test
+  (is (true? (platform/equal? 3 3)))
+  (is (= (= 3 3) (platform/equal? 3 3))))
 
 (eg true? true true)
 

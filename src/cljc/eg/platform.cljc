@@ -35,6 +35,11 @@
   "Complement of valid-spec? to able a distinct dispatch fn arg in clojure.test/assert-expr."
   [& args] (not (apply spec/valid? args)))
 
+(defn equal?
+  "Create alias for '=, so that we don't override or be overriden by libraries dispatching on '= for assert-expr, 
+  and to apply our custom assert-expr only to function tests, i.e., not expression tests."
+  [& args] (apply = args))
+
 (defn explain-str
   [& args] (apply spec/explain-str args))
 
@@ -67,14 +72,13 @@
         {:file (.getFileName s) :line (.getLineNumber s)})
       {:file nil :line nil})))
 
-#?(:cljs
-  (defn rm-cljsjs-st-fname-prefix-fluff
-    "Remove unnecessary (for reports) prefix found in a filename of a cljs js stacktrace."
-    [fname]
-    (->> (str/replace fname "file:///" "")
-         (drop-while (partial not= \@))
-         (rest)
-         (str/join))))
+(defn rm-cljsjs-st-fname-prefix-fluff
+  "Remove unnecessary (for reports) prefix found in a filename of a cljs js stacktrace."
+  [fname]
+  (->> (str/replace fname "file:///" "")
+       (drop-while (partial not= \@))
+       (rest)
+       (str/join)))
 
 #?(:cljs
   (defn file-and-line
@@ -96,18 +100,28 @@
          :line (.-lineNumber exception)}))))
 
 #?(:clj
-  (defmethod clj.test/report :fail-spec
-    ; Source: https://github.com/clojure/clojure/blob/master/src/clj/clojure/test.clj
-    [{:keys [spec-kw example example-code reason expect-valid? file line]}]
-    (clj.test/with-test-out
-      (let [example-code? (or (not= example example-code) (not expect-valid?))]
+  (do
+    (defmethod clj.test/report :fail-spec
+      ; Source: https://github.com/clojure/clojure/blob/master/src/clj/clojure/test.clj
+      [{:keys [spec-kw example example-code reason expect-valid? file line]}]
+      (clj.test/with-test-out
+        (let [example-code? (or (not= example example-code) (not expect-valid?))]
+          (clj.test/inc-report-counter :fail)
+          (println "\nFAIL in spec" (list spec-kw) (list (str file ":" line)))
+          (if example-code? (println "in example:" (if expect-valid? "" "!") example-code))
+          (println (str (if example-code? "   ") "because:")
+                   (if expect-valid?
+                     (->> (str/split reason #" spec: ") butlast (str/join " spec: "))
+                     (str example " - is a valid example"))))))
+  
+    (defmethod clj.test/report :fail-equal
+      ; Source: https://github.com/clojure/clojure/blob/master/src/clj/clojure/test.clj
+      [{:keys [equal expected actual file line]}]
+      (clj.test/with-test-out
         (clj.test/inc-report-counter :fail)
-        (println "\nFAIL in spec" (list spec-kw) (list (str file ":" line)))
-        (if example-code? (println "in example:" (if expect-valid? "" "!") example-code))
-        (println (str (if example-code? "   ") "because:")
-                 (if expect-valid?
-                   (->> (str/split reason #" spec: ") butlast (str/join " spec: "))
-                   (str example " - is a valid example")))))))
+        (println "\nFAIL in" (list equal) (list (str file ":" line)))
+        (println "    expected: " expected)
+        (println "      actual: " actual)))))
 
 #?(:clj
   (defn do-report
@@ -117,7 +131,7 @@
      Modified clj.test fn to convert :fail-spec into :fail, in order to get file:line.
      Source: https://github.com/clojure/clojure/blob/master/src/clj/clojure/test.clj"
     [m] (clj.test/report
-          (case (:type (update m :type #(if (= % :fail-spec) :fail %)))
+          (case (:type (update m :type #(if (#{:fail-spec :fail-equal} %) :fail %)))
             :fail (merge (stacktrace-file-and-line (drop-while
                                                      #(let [cl-name (.getClassName ^StackTraceElement %)]
                                                         (or (str/starts-with? cl-name "eg.platform$")
@@ -135,7 +149,7 @@
      If you are writing a custom assert-expr method, call this function to pass test results to report.
      Source: https://github.com/clojure/clojurescript/blob/master/src/main/cljs/cljs/test.cljs"
     [m] (let [st-depth (if (exists? js/cljs.test$macros) 2 3)
-              m (case (:type (update m :type #(if (= % :fail-spec) :fail %)))
+              m (case (:type (update m :type #(if (#{:fail-spec :fail-equal} %) :fail %)))
                   :fail (merge (file-and-line (js/Error.) st-depth) m)
                   :error (merge (file-and-line (:actual m) 0) m)
                   m)]
@@ -155,25 +169,46 @@
                   :reason        (explain-str ~spec-kw ~example)}))
     result#))
 
+(defn do-equal-report
+  "Support customised spec examples in a test result and call report."
+  [equal expected [f & params :as actual]]
+  `(let [result# (~equal (->clj ~expected) (->clj ~actual))]
+    (if result#
+      (do-report {:type :pass})
+      (do-report {:type     :fail-equal
+                  :function '~f
+                  :params   (vec '~params)
+                  :expected ~expected
+                  :actual   ~actual}))
+    result#))
+
 #?(:clj
   (do
+    ; defmethods for clj
     (defmethod clj.test/assert-expr 'eg.platform/valid-spec?
       [_ form] (do-spec-report form true))
 
     (defmethod clj.test/assert-expr 'eg.platform/invalid-spec?
       [_ form] (do-spec-report form false))
-      
+
+    ; defmethods for cljs JVM
     (defmethod cljs.test/assert-expr 'eg.platform/valid-spec?
       [_ _ form] (do-spec-report form true))
 
     (defmethod cljs.test/assert-expr 'eg.platform/invalid-spec?
-      [_ _ form] (do-spec-report form false)))
-      
+      [_ _ form] (do-spec-report form false))
+
+    (defmethod cljs.test/assert-expr 'eg.platform/equal?
+      [_ _ form] (apply do-equal-report form)))
+
   :cljs
    (when (exists? js/cljs.test$macros)
-  
+     ; defmethods for cljs JS
      (defmethod js/cljs.test$macros.assert_expr 'eg.platform/valid-spec?
        [_ _ form] (do-spec-report form true))
 
      (defmethod js/cljs.test$macros.assert_expr 'eg.platform/invalid-spec?
-       [_ _ form] (do-spec-report form false))))
+       [_ _ form] (do-spec-report form false))
+
+     (defmethod js/cljs.test$macros.assert_expr 'eg.platform/equal?
+       [_ _ form] (apply do-equal-report form))))

@@ -2,7 +2,7 @@
          :license {:name "The Universal Permissive License (UPL), Version 1.0"
                    :url "https://github.com/ccfontes/eg/blob/master/LICENSE.md"}}
   #?(:cljs (:require-macros [eg :refer [eg ge ex]]))
-  (:require [eg.platform :refer [deftest is cross-throw ->clj valid-spec? invalid-spec?]]
+  (:require [eg.platform :refer [deftest is cross-throw ->clj valid-spec? invalid-spec? equal?]]
             [clojure.walk :refer [postwalk]]
             [clojure.string :as str]
             [clojure.test :as clj.test]
@@ -134,7 +134,7 @@
                                   `(cond
                                     (and (fn? ~normalised-expected) (not ~equal?)) (is (~normalised-expected (~fn-sym ~@param-vec)))
                                     (and (qualified-keyword? ~normalised-expected) (not ~equal?)) (is (valid-spec? ~normalised-expected (~fn-sym ~@param-vec)))
-                                    :else (is (= (->clj ~normalised-expected) (->clj (~fn-sym ~@param-vec))))))))
+                                    :else (is (equal? ~normalised-expected (~fn-sym ~@param-vec)))))))
                             examples)))]
       ; passing down ^:focus meta to clj.test: see alter-test-var-update-fn
       ; FIXME not associng in cljs

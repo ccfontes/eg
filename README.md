@@ -9,10 +9,10 @@ in *eg* becomes:
 (eg inc 0 1)
 ```
 
-*eg* supports Clojure, ClojureScript JVM, and ClojureScript JS.
+*eg* supports Clojure, ClojureScript JVM, and ClojureScript JS, the same as clojure.test.
 
-Vanilla clojure.test and *eg* test results are included in the same report.
-Also, no custom test runner is required.
+Vanilla `clojure.test` and *eg* test results are included in the same report.
+Also, no custom test runner is required – run your clojure.test tests as usual.
 
 Check the [ideas driving eg](doc/ideas.md).
 
@@ -30,7 +30,7 @@ Check the [ideas driving eg](doc/ideas.md).
 eg {:mvn/version "0.4.12-alpha"}
 ```
 
-**Warning:** versions `0.4.4-alpha`, through `0.4.10-alpha` break in ClojureScript JVM when using spec functionality combined with not explicitly requiring `clojure.spec.alpha` in a test namespace. This issue has ben fixed since `0.4.11-alpha`.
+**Warning:** versions `0.4.4-alpha`, through `0.4.10-alpha` break in ClojureScript JVM when using spec functionality combined with not explicitly requiring `clojure.spec.alpha` in a test namespace. This issue has been fixed since `0.4.11-alpha`.
 
 ## Usage
 Let's try *eg*! Start by creating a REPL session and then requiring `eg` and `ge`:
@@ -91,7 +91,7 @@ override the default example direction of `eg` or `ge`.
   [:a 1 :b 2 :c 3 :d 4] => {:a 1 :b 2 :c 3 :d 4})
 ```
 
-`=>` or `<=` can be read as *is*. `{:a 1 :b 2 :c 3 :d 4}` *is* a `map?`:
+`=>` or `<=` could be read as *is*. `{:a 1 :b 2 :c 3 :d 4}` *is* a `map?`:
 ```clj
 (eg hash-map
   map? <= {:a 1}
@@ -161,7 +161,7 @@ Expecting arbitrarily nested JavaScript objects or arrays works out of the box:
 (ex (identity #js {:a [1]}) => #js {:a [1]}))
 ```
 
-Check if your specs are on the correct track using examples.
+Check if your specs are on the right track using examples.
 `eg` validates examples against a spec defined with a qualified keyword:
 ```clj
 (require '[clojure.spec.alpha :as spec])
