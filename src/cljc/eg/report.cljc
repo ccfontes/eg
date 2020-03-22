@@ -3,7 +3,8 @@
             [clojure.string :as str]
             [cljs.test :include-macros true]
             [clojure.test :as clj.test]
-            [eg.platform :refer [->clj]]))
+            [eg.platform :refer [->clj]]
+   #?(:cljs [eg.report.cljs]))) ; here for extending cljs.test/report
 
 (defn explain-str
   [& args] (apply spec/explain-str args))

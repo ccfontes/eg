@@ -18,7 +18,7 @@
                           cljs-safe-namespace
                           rm-lead-colon
                           variadic-bang?]]
-      #?(:cljs [eg.platform.cljs :as cljs-platform])
+      #?(:cljs [eg.report.cljs :as cljs-report])
       #?(:clj [eg :refer [set-eg-no-refresh!]])))
 
 (deftest cross-throw-test
@@ -158,10 +158,10 @@
   (if (exists? js/cljs.test$macros)
     (deftest ->file-and-line-repr-test
       (is (= '("eg/test/pass.js")
-             (cljs-platform/->file-and-line-repr "eg/test/pass.js" 5))))
+             (cljs-report/->file-and-line-repr "eg/test/pass.js" 5))))
     (deftest ->file-and-line-repr-test
       (is (= '("eg/test/pass.js:5")
-             (cljs-platform/->file-and-line-repr "eg/test/pass.js" 5))))))
+             (cljs-report/->file-and-line-repr "eg/test/pass.js" 5))))))
 
 (deftest equal?-test
   (is (true? (platform/equal? 3 3)))

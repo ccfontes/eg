@@ -1,4 +1,4 @@
-(ns eg.platform.cljs
+(ns eg.report.cljs
   (:require [clojure.string :as str]
             [cljs.test]))
 

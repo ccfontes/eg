@@ -3,8 +3,7 @@
   (:require [clojure.string :as str]
             [clojure.spec.alpha :as spec]
             [clojure.test :as clj.test]
-            [cljs.test :include-macros true]
-   #?(:cljs [eg.platform.cljs]))) ; here for extending cljs.test/report
+            [cljs.test :include-macros true]))
 
 (defn cross-throw [msg]
   (throw #?(:cljs (js/Error. msg)
