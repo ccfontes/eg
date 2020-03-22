@@ -3,6 +3,7 @@
                    :url "https://github.com/ccfontes/eg/blob/master/LICENSE.md"}}
   #?(:cljs (:require-macros [eg :refer [eg ge ex]]))
   (:require [eg.platform :refer [deftest is cross-throw ->clj valid-spec? invalid-spec? equal?]]
+            [eg.report] ; here for side-effects extending clj.test/assert-expr, cljs.test/assert-expr, and js/cljs.test$macros.assert_expr
             [clojure.walk :refer [postwalk]]
             [clojure.string :as str]
             [clojure.test :as clj.test]

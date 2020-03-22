@@ -18,8 +18,6 @@ Check the [ideas driving eg](doc/ideas.md).
 
 ## Installation
 
-**Disclaimer:** *eg* is unstable, with bugs popping out occasionally. Use with caution.
-
 **Leiningen/Boot**
 
 ```clj
