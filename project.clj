@@ -10,7 +10,7 @@
   :source-paths ["src/cljc"]
   :test-paths ["test/pass/cljc" "test/fail/cljc"]
   :deploy-repositories [["releases" :clojars]]
-  :aliases {"clj-test-pass"  ["test" "eg.test.platform" "eg.test.pass"]
+  :aliases {"clj-test-pass"  ["test" "eg.test.report" "eg.test.pass"]
             "cljs-test-pass" ["with-profiles" "+cljs-test-pass" "cljsbuild" "test"]
             "clj-test-fail"  ["test" "eg.test.fail"]
             "cljs-test-fail" ["with-profiles" "+cljs-test-fail" "cljsbuild" "test"]
