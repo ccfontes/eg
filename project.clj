@@ -7,8 +7,8 @@
         :url "https://github.com/ccfontes/eg"}
   :jar-name "eg.jar"
   :jar-exclusions [#"\.swp|\.swo|\.DS_Store"]
-  :source-paths ["src/cljc"]
-  :test-paths ["test/pass/cljc" "test/fail/cljc"]
+  :source-paths ["src"]
+  :test-paths ["test/pass" "test/fail"]
   :deploy-repositories [["releases" :clojars]]
   :aliases {"clj-test-pass"  ["test" "eg.test.report" "eg.test.pass"]
             "cljs-test-pass" ["with-profiles" "+cljs-test-pass" "cljsbuild" "test"]
@@ -21,7 +21,7 @@
                  :welcome (do (println "To refresh all namespaces, run: (refresh)")
                               (println "To run all tests, run: (run-tests)"))}
   :tach {:test-runner-ns eg.test.pass.runner
-         :source-paths ["src/cljc" "test/pass/cljc" "test/pass/cljs"]
+         :source-paths ["src" "test/pass"]
          :force-non-zero-exit-on-test-failure? true}
   :profiles
     {:repl {:source-paths ["repl"]}
@@ -37,7 +37,7 @@
         {:test-commands {"pass-node" ["node" "target/out/test/pass/runner.js"]}
          :builds
           {:test
-            {:source-paths ["src/cljc" "test/pass/cljc" "test/pass/cljs"]
+            {:source-paths ["src" "test/pass"]
              :compiler     {:target        :nodejs
                             :main          eg.test.pass.runner
                             :output-to     "target/out/test/pass/runner.js"
@@ -49,7 +49,7 @@
         {:test-commands {"fail-node" ["node" "target/out/test/fail/runner.js"]}
          :builds
           {:test
-            {:source-paths ["src/cljc" "test/fail/cljc" "test/fail/cljs"]
+            {:source-paths ["src" "test/fail"]
              :compiler     {:target        :nodejs
                             :main          eg.test.fail.runner
                             :output-to     "target/out/test/fail/runner.js"
