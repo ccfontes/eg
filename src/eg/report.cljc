@@ -3,8 +3,7 @@
             [clojure.string :as str]
             [cljs.test :include-macros true]
             [clojure.test :as clj.test]
-            [eg.platform :refer [->clj]]
-   #?(:cljs [eg.report.cljs]))) ; here for extending cljs.test/report
+            [eg.platform :refer [if-cljs ->clj]]))
 
 (defn explain-str
   [& args] (apply spec/explain-str args))
@@ -59,16 +58,7 @@
           (println (str (if example-code? "   ") "because:")
                    (if expect-valid?
                      (->> (str/split reason #" spec: ") butlast (str/join " spec: "))
-                     (str example " - is a valid example"))))))
-  
-    (defmethod clj.test/report :fail-equal
-      ; Source: https://github.com/clojure/clojure/blob/master/src/clj/clojure/test.clj
-      [{:keys [equal expected actual file line]}]
-      (clj.test/with-test-out
-        (clj.test/inc-report-counter :fail)
-        (println "\nFAIL in" (list equal) (list (str file ":" line)))
-        (println "    expected: " expected)
-        (println "      actual: " actual)))))
+                     (str example " - is a valid example"))))))))
 
 #?(:clj
   (defn do-report
@@ -80,11 +70,9 @@
     [m] (clj.test/report
           (case (:type (update m :type #(if (#{:fail-spec :fail-equal} %) :fail %)))
             :fail (merge (stacktrace-file-and-line (drop-while
-                                                     #(let [cl-name (.getClassName ^StackTraceElement %)]
-                                                        (or (str/starts-with? cl-name "eg.platform$")
-                                                            (str/starts-with? cl-name "java.lang.")
-                                                            (str/starts-with? cl-name "clojure.test$")
-                                                            (str/starts-with? cl-name "clojure.core$ex_info")))
+                                                     #(let [classname (.getClassName ^StackTraceElement %)
+                                                            classname-blacklist ["eg.report$" "eg.platform$" "java.lang." "clojure.test$" "clojure.core$ex_info"]]
+                                                        (first (filter (partial str/starts-with? classname) classname-blacklist)))
                                                      (.getStackTrace (Thread/currentThread))))
                          m)
             :error (merge (stacktrace-file-and-line (.getStackTrace ^Throwable (:actual m))) m)
@@ -101,6 +89,18 @@
                   :error (merge (file-and-line (:actual m) 0) m)
                   m)]
           (cljs.test/report m))))
+
+(defn ->file-and-line-repr [file line]
+  (->> (if-not (if-cljs (exists? js/cljs.test$macros)) (str ":" line))
+    (str file)
+    (list)))
+
+(defn ->testing-fn-repr
+  "Returns a string representation of the current function test.
+  Renders function name as a list, then the source file and line of current assertion."
+  [m] (let [{:keys [function file line]} m]
+       (list (list function)
+             (->file-and-line-repr file line))))
 
 (defn do-spec-report
   "Support customised spec examples in a test result and call report."

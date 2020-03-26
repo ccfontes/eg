@@ -8,7 +8,9 @@
             [clojure.string :as str]
             [clojure.test :as clj.test]
    #?(:cljs [cljs.test :include-macros true])
-    #?(:clj [clojure.tools.namespace.repl])))
+    #?(:clj [clojure.tools.namespace.repl])
+   #?(:clj  [eg.report.clj])    ; here for side-effects extending clojure.test/assert-expr
+   #?(:cljs [eg.report.cljs]))) ; here for side-effects extending cljs.test/report    
 
 (defonce focus-metas (atom {}))
 

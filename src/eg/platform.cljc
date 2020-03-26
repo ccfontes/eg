@@ -18,8 +18,7 @@
 (defmacro if-cljs
   "Return then if we are generating cljs code and else for Clojure code.
   Source: http://blog.nberger.com.ar/blog/2015/09/18/more-portable-complex-macro-musing"
-  [then else]
-  (if (cljs-env? &env) then else))
+  [then & [else]] (if (cljs-env? &env) then else))
 
 (defn ->clj [datum]
   #?(:clj datum)

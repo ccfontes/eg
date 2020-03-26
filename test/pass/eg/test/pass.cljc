@@ -18,14 +18,8 @@
                           cljs-safe-namespace
                           rm-lead-colon
                           variadic-bang?]]
-      #?(:cljs [eg.report.cljs :as cljs-report])
+              [eg.report :as report]
       #?(:clj [eg :refer [set-eg-no-refresh!]])))
-
-(deftest cross-throw-test
-  (is (= "BOOM" (try (cross-throw "BOOM")
-                  (catch #?(:clj Exception :cljs :default) e
-                    #?(:clj (-> e Throwable->map :cause))
-                    #?(:cljs (.-message e)))))))
 
 (deftest examples-acc-test
   (is (= [ [] [2] ] (examples-acc [ [] [] ] 2)))
@@ -154,18 +148,55 @@
   (is (dont-care? '_))
   (is (dont-care? '$foo)))
 
-#?(:cljs
-  (if (exists? js/cljs.test$macros)
-    (deftest ->file-and-line-repr-test
-      (is (= '("eg/test/pass.js")
-             (cljs-report/->file-and-line-repr "eg/test/pass.js" 5))))
-    (deftest ->file-and-line-repr-test
-      (is (= '("eg/test/pass.js:5")
-             (cljs-report/->file-and-line-repr "eg/test/pass.js" 5))))))
+(deftest cross-throw-test
+  (is (= "BOOM" (try (cross-throw "BOOM")
+                  (catch #?(:clj Exception :cljs :default) e
+                    #?(:clj (-> e Throwable->map :cause))
+                    #?(:cljs (.-message e)))))))
+
+(deftest if-cljs-test
+  #?(:cljs (do (is (= "cljs" (platform/if-cljs "cljs" "clj")))
+               (is (= "cljs" (platform/if-cljs "cljs"))))
+     :clj (do (is (= "clj" (platform/if-cljs "cljs" "clj")))
+              (is (= nil (platform/if-cljs "clj"))))))
 
 (deftest equal?-test
   (is (true? (platform/equal? 3 3)))
   (is (= (= 3 3) (platform/equal? 3 3))))
+
+#?(:cljs
+  (deftest rm-cljsjs-st-fname-prefix-fluff-test
+    (is (= "eg/test/pass.js:2590:27"
+           (report/rm-cljsjs-st-fname-prefix-fluff "cljs$lang$test@file:///eg/test/pass.js:2590:27")))))
+
+#?(:cljs
+  (if (exists? js/cljs.test$macros)
+    (deftest ->file-and-line-repr-test
+      (is (= ["eg/test/pass.js"]
+             (report/->file-and-line-repr "eg/test/pass.js" 5))))
+    (deftest ->file-and-line-repr-test
+      (is (= ["eg/test/pass.js:5"]
+             (report/->file-and-line-repr "eg/test/pass.js" 5))))))
+
+#?(:clj
+  (deftest ->file-and-line-repr-test
+    (is (= ["eg/test/pass.js:5"]
+           (report/->file-and-line-repr "eg/test/pass.js" 5)))))
+
+#?(:cljs
+  (if (exists? js/cljs.test$macros)
+    (deftest ->testing-fn-repr-test
+      (is (= [['assoc-in] ["pass.js"]]
+             (report/->testing-fn-repr {:function 'assoc-in :file "pass.js" :line 208}))))
+    (deftest ->testing-fn-repr-test
+      (is (= [['assoc-in] ["pass.cljc:208"]]
+             (report/->testing-fn-repr {:function 'assoc-in :file "pass.cljc" :line 208}))))))
+
+#?(:clj
+  (deftest ->testing-fn-repr-test
+    (is (= [['assoc-in] ["pass.cljc:208"]]
+           (report/->testing-fn-repr {:function 'assoc-in :file "pass.cljc" :line 208})))))
+
 
 (eg true? true true)
 

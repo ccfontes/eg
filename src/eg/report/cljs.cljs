@@ -1,18 +1,7 @@
 (ns eg.report.cljs
   (:require [clojure.string :as str]
-            [cljs.test]))
-
-(defn ->file-and-line-repr [file line]
-  (->> (if-not (exists? js/cljs.test$macros) (str ":" line))
-    (str file)
-    (list)))
-
-(defn ->testing-fn-repr
-  "Returns a string representation of the current function test.
-  Renders function name as a list, then the source file and line of current assertion."
-  [m] (let [{:keys [function file line]} m]
-       (list (list function)
-             (->file-and-line-repr file line))))
+            [cljs.test]
+            [eg.report :refer [->file-and-line-repr ->testing-fn-repr]]))
 
 (defmethod cljs.test/report [:cljs.test/default :fail-spec]
   ; Source: https://github.com/clojure/clojurescript/blob/master/src/main/cljs/cljs/test.cljs
@@ -31,7 +20,7 @@
 
 (defmethod cljs.test/report [:cljs.test/default :fail-equal]
   ; Source: https://github.com/clojure/clojurescript/blob/master/src/main/cljs/cljs/test.cljs
-  [{:keys [params expected actual file line] :as m}]
+  [{:keys [params expected actual] :as m}]
   (cljs.test/inc-report-counter! :fail)
   (apply println "\nFAIL in function" (->testing-fn-repr m))
   (println "      params: " params)
