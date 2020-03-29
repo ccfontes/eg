@@ -1,7 +1,22 @@
 (ns eg.report.cljs
   (:require [clojure.string :as str]
             [cljs.test]
-            [eg.report :refer [->file-and-line-repr ->testing-fn-repr]]))
+            [eg.platform]
+            [eg.report :refer [->file-and-line-repr ->testing-fn-repr do-spec-report do-equal-report]]))
+
+(when (exists? js/cljs.test$macros)
+  ; defmethods for cljs JS
+  (defmethod js/cljs.test$macros.assert_expr 'eg.platform/valid-spec?
+    [_ _ form] (do-spec-report form true))
+
+  (defmethod js/cljs.test$macros.assert_expr 'eg.platform/invalid-spec?
+    [_ _ form] (do-spec-report form false))
+
+  (defmethod js/cljs.test$macros.assert_expr 'eg.platform/equal?
+    [_ _ form] (apply do-equal-report (concat form [false])))
+
+  (defmethod js/cljs.test$macros.assert_expr 'eg.platform/equal-ex?
+    [_ _ form] (apply do-equal-report (concat form [true]))))
 
 (defmethod cljs.test/report [:cljs.test/default :fail-spec]
   ; Source: https://github.com/clojure/clojurescript/blob/master/src/main/cljs/cljs/test.cljs

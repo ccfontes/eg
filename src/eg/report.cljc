@@ -46,20 +46,6 @@
          :line (.-lineNumber exception)}))))
 
 #?(:clj
-  (defmethod clj.test/report :fail-spec
-    ; Source: https://github.com/clojure/clojure/blob/master/src/clj/clojure/test.clj
-    [{:keys [spec-kw example example-code reason expect-valid? file line]}]
-    (clj.test/with-test-out
-      (let [example-code? (or (not= example example-code) (not expect-valid?))]
-        (clj.test/inc-report-counter :fail)
-        (println "\nFAIL in spec" (list spec-kw) (list (str file ":" line)))
-        (if example-code? (println "in example:" (if expect-valid? "" "!") example-code))
-        (println (str (if example-code? "   ") "because:")
-                 (if expect-valid?
-                   (->> (str/split reason #" spec: ") butlast (str/join " spec: "))
-                   (str example " - is a valid example")))))))
-
-#?(:clj
   (defn do-report
     "Add file and line information to a test result and call report.
      If you are writing a custom assert-expr method, call this function
@@ -147,18 +133,4 @@
         [_ _ form] (apply do-equal-report (concat form [false])))
       
       (defmethod cljs.test/assert-expr 'eg.platform/equal-ex?
-        [_ _ form] (apply do-equal-report (concat form [true]))))
-   :cljs
-     (when (exists? js/cljs.test$macros)
-       ; defmethods for cljs JS
-       (defmethod js/cljs.test$macros.assert_expr 'eg.platform/valid-spec?
-         [_ _ form] (do-spec-report form true))
-
-       (defmethod js/cljs.test$macros.assert_expr 'eg.platform/invalid-spec?
-         [_ _ form] (do-spec-report form false))
-
-       (defmethod js/cljs.test$macros.assert_expr 'eg.platform/equal?
-         [_ _ form] (apply do-equal-report (concat form [false])))
-
-       (defmethod js/cljs.test$macros.assert_expr 'eg.platform/equal-ex?
-         [_ _ form] (apply do-equal-report (concat form [true])))))
+        [_ _ form] (apply do-equal-report (concat form [true])))))
