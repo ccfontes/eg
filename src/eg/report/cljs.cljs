@@ -20,9 +20,11 @@
 
 (defmethod cljs.test/report [:cljs.test/default :fail-equal]
   ; Source: https://github.com/clojure/clojurescript/blob/master/src/main/cljs/cljs/test.cljs
-  [{:keys [params expected actual] :as m}]
+  [{:keys [params expected actual expression?] :as m}]
   (cljs.test/inc-report-counter! :fail)
-  (apply println "\nFAIL in function" (->testing-fn-repr m))
-  (println "      params: " params)
+  (if expression?
+    (println "\nFAIL in expression at" (->testing-fn-repr m))
+    (do (apply println "\nFAIL in function" (->testing-fn-repr m))
+        (println "      params: " params)))
   (println "    expected: " expected)
   (println "      actual: " actual))

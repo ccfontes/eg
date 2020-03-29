@@ -38,6 +38,10 @@
   and to apply our custom assert-expr only to function tests, i.e., not expression tests."
   [& args] (apply = args))
 
+(defn equal-ex?
+  "Same as 'equal?', but for expression tests."
+  [& args] (apply equal? args))
+
 (defmacro is
   "Source: http://blog.nberger.com.ar/blog/2015/09/18/more-portable-complex-macro-musing"
   [& args]

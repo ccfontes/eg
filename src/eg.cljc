@@ -2,7 +2,7 @@
          :license {:name "The Universal Permissive License (UPL), Version 1.0"
                    :url "https://github.com/ccfontes/eg/blob/master/LICENSE.md"}}
   #?(:cljs (:require-macros [eg :refer [eg ge ex]]))
-  (:require [eg.platform :refer [deftest is cross-throw ->clj valid-spec? invalid-spec? equal?]]
+  (:require [eg.platform :refer [deftest is cross-throw ->clj valid-spec? invalid-spec? equal? equal-ex?]]
             [eg.report] ; here for side-effects extending clj.test/assert-expr, cljs.test/assert-expr, and js/cljs.test$macros.assert_expr
             [clojure.walk :refer [postwalk]]
             [clojure.string :as str]
@@ -157,8 +157,8 @@
                (let [equal? (= op '=)
                      normalised-expected (if (nil? expected) 'nil? expected)]
                  `(if (and (fn? ~normalised-expected) (not ~equal?))
-                   (is (~normalised-expected ~res))
-                   (is (= (->clj ~normalised-expected) (->clj ~res))))))
+                   (is (~normalised-expected ~res))  ; TODO improve report here
+                   (is (equal-ex? (->clj ~normalised-expected) (->clj ~res))))))
              examples))))
 
 (defn assoc-focus-metas

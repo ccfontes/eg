@@ -164,6 +164,9 @@
   (is (true? (platform/equal? 3 3)))
   (is (= (= 3 3) (platform/equal? 3 3))))
 
+(deftest equal-ex?-test
+  (is (boolean? (platform/equal-ex? 3 3))))
+
 #?(:cljs
   (deftest rm-cljsjs-st-fname-prefix-fluff-test
     (is (= "eg/test/pass.js:2590:27"
@@ -187,16 +190,17 @@
   (if (exists? js/cljs.test$macros)
     (deftest ->testing-fn-repr-test
       (is (= [['assoc-in] ["pass.js"]]
-             (report/->testing-fn-repr {:function 'assoc-in :file "pass.js" :line 208}))))
+             (report/->testing-fn-repr {:function 'assoc-in :file "pass.js" :line 208 :expression? false}))))
     (deftest ->testing-fn-repr-test
-      (is (= [['assoc-in] ["pass.cljc:208"]]
-             (report/->testing-fn-repr {:function 'assoc-in :file "pass.cljc" :line 208}))))))
+      (is (= ["pass.js:208"]
+             (report/->testing-fn-repr {:function 'assoc-in :file "pass.js" :line 208 :expression? true}))))))
 
 #?(:clj
   (deftest ->testing-fn-repr-test
     (is (= [['assoc-in] ["pass.cljc:208"]]
-           (report/->testing-fn-repr {:function 'assoc-in :file "pass.cljc" :line 208})))))
-
+           (report/->testing-fn-repr {:function 'assoc-in :file "pass.cljc" :line 208 :expression? false})))
+    (is (= ["pass.cljc:208"]
+           (report/->testing-fn-repr {:function 'assoc-in :file "pass.cljc" :line 208 :expression? true})))))
 
 (eg true? true true)
 
