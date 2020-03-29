@@ -1,4 +1,4 @@
-# eg [![Clojars Project](https://img.shields.io/clojars/v/eg.svg)](https://clojars.org/eg) [![CircleCI](https://circleci.com/gh/ccfontes/eg.svg?style=svg)](https://circleci.com/gh/ccfontes/eg) [![codecov](https://codecov.io/gh/ccfontes/eg/branch/master/graph/badge.svg)](https://codecov.io/gh/ccfontes/eg) [![Universal Permissive License v1.0](https://img.shields.io/badge/license-UPL-%23f80000.svg)](LICENSE.md)
+# eg [![Clojars Project](https://img.shields.io/clojars/v/eg.svg)](https://clojars.org/eg) [![CircleCI](https://circleci.com/gh/ccfontes/eg.svg?style=svg)](https://circleci.com/gh/ccfontes/eg) [![codecov](https://codecov.io/gh/ccfontes/eg/branch/master/graph/badge.svg)](https://codecov.io/gh/ccfontes/eg) [![Universal Permissive License v1.0](https://img.shields.io/badge/license-MIT-black.svg)](LICENSE.md)
 
 ```clj
 (deftest inc-test
@@ -268,6 +268,6 @@ ClojureScript tests in the REPL:
   * https://github.com/clojure/clojurescript/blob/master/src/main/cljs/cljs/test.cljc
 
 ## [License](LICENSE.md)
-Copyright (c) 2019 Carlos da Cunha Fontes
+Copyright (c) 2020 Carlos da Cunha Fontes
 
-The Universal Permissive License (UPL), Version 1.0
+The MIT License
