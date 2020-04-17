@@ -120,6 +120,15 @@
                   :expression? ~expression?}))
     result#))
 
+(defn print-report
+  [{:keys [params expected actual expression?] :as m}]
+  (if expression?
+      (println "\nFAIL in expression" (->testing-fn-repr m))
+      (do (println "\nFAIL in function" (->testing-fn-repr m))
+          (println "      params: " (pr-str params))))
+  (println "    expected: " (pr-str expected))
+  (println "      actual: " (pr-str actual)))
+
 #?(:clj
     (do
       ; defmethods for cljs JVM

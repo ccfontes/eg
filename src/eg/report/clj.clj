@@ -2,7 +2,7 @@
   (:require [clojure.string :as str]
             [clojure.test :as clj.test]
             [eg.platform]
-            [eg.report :refer [->testing-fn-repr do-equal-report do-spec-report]]))
+            [eg.report :refer [->testing-fn-repr do-equal-report do-spec-report print-report]]))
 
 (defmethod clj.test/assert-expr 'eg.platform/valid-spec?
   [_ form] (do-spec-report form true))
@@ -23,7 +23,7 @@
     (let [example-code? (or (not= example example-code) (not expect-valid?))]
       (clj.test/inc-report-counter :fail)
       (println "\nFAIL in spec" (list spec-kw) (list (str file ":" line)))
-      (if example-code? (println "in example:" (if expect-valid? "" "!") example-code))
+      (if example-code? (println "in example:" (if expect-valid? "" "!") (pr-str example-code)))
       (println (str (if example-code? "   ") "because:")
                (if expect-valid?
                  (->> (str/split reason #" spec: ") butlast (str/join " spec: "))
@@ -31,12 +31,6 @@
 
 (defmethod clj.test/report :fail-equal
   ; Source: https://github.com/clojure/clojure/blob/master/src/clj/clojure/test.clj
-  [{:keys [params expected actual expression?] :as m}]
-  (clj.test/with-test-out
-    (clj.test/inc-report-counter :fail)
-    (if expression?
-      (println "\nFAIL in expression at" (->testing-fn-repr m))
-      (do (apply println "\nFAIL in function" (->testing-fn-repr m))
-         (println "      params: " params)))
-    (println "    expected: " expected)
-    (println "      actual: " actual)))
+  [m] (clj.test/with-test-out
+        (clj.test/inc-report-counter :fail)
+        (print-report m)))

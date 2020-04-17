@@ -2,7 +2,7 @@
   (:require [clojure.string :as str]
             [cljs.test]
             [eg.platform]
-            [eg.report :refer [->file-and-line-repr ->testing-fn-repr do-spec-report do-equal-report]]))
+            [eg.report :refer [->file-and-line-repr ->testing-fn-repr do-spec-report do-equal-report print-report]]))
 
 (when (exists? js/cljs.test$macros)
   ; defmethods for cljs JS
@@ -35,11 +35,5 @@
 
 (defmethod cljs.test/report [:cljs.test/default :fail-equal]
   ; Source: https://github.com/clojure/clojurescript/blob/master/src/main/cljs/cljs/test.cljs
-  [{:keys [params expected actual expression?] :as m}]
-  (cljs.test/inc-report-counter! :fail)
-  (if expression?
-    (println "\nFAIL in expression at" (->testing-fn-repr m))
-    (do (apply println "\nFAIL in function" (->testing-fn-repr m))
-        (println "      params: " params)))
-  (println "    expected: " expected)
-  (println "      actual: " actual))
+  [m] (cljs.test/inc-report-counter! :fail)
+      (print-report m))
