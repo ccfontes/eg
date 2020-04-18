@@ -124,7 +124,7 @@
   [{:keys [params expected actual expression?] :as m}]
   (if expression?
       (println "\nFAIL in expression" (->testing-fn-repr m))
-      (do (println "\nFAIL in function" (->testing-fn-repr m))
+      (do (apply println "\nFAIL in function test" (->testing-fn-repr m))
           (println "      params: " (pr-str params))))
   (println "    expected: " (pr-str expected))
   (println "      actual: " (pr-str actual)))

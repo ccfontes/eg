@@ -247,16 +247,27 @@ Finally, run your tests as you normally would with `clojure.test`.
 ```
 
 ### ClojureScript tests in the REPL
+Also see below *Enable line information for ClojureScript (JVM) tests on Node.js*.
 ```clj
 (cljs.test/run-all-tests)
 ; or
 (cljs.test/run-tests some.ns)
 ```
-If you're running ClojureScript (JVM) on Node.js, install the following before proceeding:
+
+### Enable line information for ClojureScript (JVM) tests on Node.js
+Get accurate test line information on reports.
+
+First install source maps support node package:
 ```
 npm install source-map-support
 ```
-in order to get accurate test line information on reports.
+Enable source maps on your `project.clj` test build config:
+```clj
+{:cljsbuild
+  {:builds
+    {...
+      {:compiler {:source-map true}}}}}
+```
 
 # Run eg's own tests
 [Run eg's own tests](doc/egs-own-tests.md) expected to pass, fail, targeting Clojure, ClojureScript JVM, and ClojureScript JS.

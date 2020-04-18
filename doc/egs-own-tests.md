@@ -13,10 +13,19 @@ lein clj-test-fail
 ```
 
 ## Tests targeting ClojureScript JVM->nodejs
-Install the following before proceeding, in order to get accurate test line
-information on reports:
+Do the following config before proceeding, in order to get accurate test line
+information on reports.
+
+First install source maps support node package:
 ```
 npm install source-map-support
+```
+Enable source maps on your `project.clj` test build config:
+```clj
+{:cljsbuild
+  {:builds
+    {...
+      {:compiler {:source-map true}}}}}
 ```
 
 ### Passing tests
