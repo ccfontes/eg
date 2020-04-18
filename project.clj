@@ -1,7 +1,7 @@
 (defproject eg "0.4.16-alpha"
   :description "eg delivers clojure.test function tests with conciseness."
-  :license {:name "The Universal Permissive License (UPL), Version 1.0"
-            :url "https://opensource.org/licenses/UPL"}
+  :license {:name "The MIT License"
+            :url "https://github.com/ccfontes/eg/blob/master/LICENSE.md"}
   :url "https://github.com/ccfontes/eg"
   :scm {:name "git"
         :url "https://github.com/ccfontes/eg"}
