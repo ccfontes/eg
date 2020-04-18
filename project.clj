@@ -43,7 +43,8 @@
                             :output-to     "target/out/test/pass/runner.js"
                             :output-dir    "target/out/test/pass"
                             :optimizations :none
-                            :warnings {:single-segment-namespace false}}}}}}
+                            :source-map    true
+                            :warnings      {:single-segment-namespace false}}}}}}
      :cljs-test-fail
       {:cljsbuild
         {:test-commands {"fail-node" ["node" "target/out/test/fail/runner.js"]}
@@ -55,4 +56,4 @@
                             :output-to     "target/out/test/fail/runner.js"
                             :output-dir    "target/out/test/fail"
                             :optimizations :none
-                            :warnings {:single-segment-namespace false}}}}}}})
+                            :warnings      {:single-segment-namespace false}}}}}}})

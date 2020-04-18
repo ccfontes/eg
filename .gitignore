@@ -13,3 +13,5 @@ pom.xml.asc
 .nrepl-port
 .cpcache/
 .swp
+node_modules/
+package-lock.json

@@ -1,30 +1,42 @@
 # Run eg's own tests
 
-## Passing tests
-Run tests expected to pass, targeting Clojure:
-```clj
-> lein clj-test-pass
+## Tests targeting Clojure
+
+### Passing tests
 ```
-Run tests expected to pass, targeting ClojureScript JVM->nodejs:
-```clj
-> lein cljs-test-pass
-```
-Run tests expected to pass, targeting ClojureScript JS:
-```sh
-> lein tach planck
-# or
-> lein tach lumo
+lein clj-test-pass
 ```
 
-## Failing tests
-Run tests expected to fail, targeting Clojure:
-```clj
-> lein clj-test-fail
+### Failing tests
 ```
-Run tests expected to fail, targeting ClojureScript JVM->nodejs:
-```clj
-> lein cljs-test-fail
+lein clj-test-fail
 ```
+
+## Tests targeting ClojureScript JVM->nodejs
+Install the following before proceeding, in order to get accurate test line
+information on reports:
+```
+npm install source-map-support
+```
+
+### Passing tests
+```
+lein cljs-test-pass
+```
+
+### Failing tests
+```
+lein cljs-test-fail
+```
+
+## Passing tests targeting ClojureScript JS
+```sh
+lein tach planck
+# or
+lein tach lumo
+```
+
+## Failing tests notes
 The test report should look like this:
 ```
 Ran 12 tests containing 21 assertions.

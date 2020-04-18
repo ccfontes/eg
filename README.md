@@ -234,24 +234,29 @@ When building with ClojureScript JVM, remove `WARNING: eg is a single segment na
 ## Run your tests
 Finally, run your tests as you normally would with `clojure.test`.
 
-Clojure tests in the REPL:
+### Clojure tests in the REPL
 ```clj
 (clojure.test/run-all-tests)
 ; or
 (clojure.test/run-tests some.ns)
 ```
 
-Clojure tests in the terminal:
+### Clojure tests in the terminal
 ```
 > lein test
 ```
 
-ClojureScript tests in the REPL:
+### ClojureScript tests in the REPL
 ```clj
 (cljs.test/run-all-tests)
 ; or
 (cljs.test/run-tests some.ns)
 ```
+If you're running ClojureScript (JVM) on Node.js, install the following before proceeding:
+```
+npm install source-map-support
+```
+in order to get accurate test line information on reports.
 
 # Run eg's own tests
 [Run eg's own tests](doc/egs-own-tests.md) expected to pass, fail, targeting Clojure, ClojureScript JVM, and ClojureScript JS.
