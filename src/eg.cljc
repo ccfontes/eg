@@ -2,7 +2,7 @@
          :license {:name "The Universal Permissive License (UPL), Version 1.0"
                    :url "https://github.com/ccfontes/eg/blob/master/LICENSE.md"}}
   #?(:cljs (:require-macros [eg :refer [eg ge ex]]))
-  (:require [eg.platform :refer [deftest is cross-throw ->clj valid-spec? invalid-spec? equal? equal-ex?]]
+  (:require [eg.platform :as plat :refer [deftest is cross-throw ->clj valid-spec? invalid-spec? equal? equal-ex? fn-identity-intercept]]
             [eg.report] ; here for side-effects extending clj.test/assert-expr, cljs.test/assert-expr, and js/cljs.test$macros.assert_expr
             [clojure.walk :refer [postwalk]]
             [clojure.string :as str]
@@ -135,9 +135,10 @@
                                       ; to avoid CompilerException on unreached branch: 'Can't call nil'
                                       normalised-expected (if (nil? expected) 'nil? expected)]
                                   `(cond
-                                    (and (fn? ~normalised-expected) (not ~equal?)) (is (~normalised-expected (~fn-sym ~@param-vec)))
-                                    (and (qualified-keyword? ~normalised-expected) (not ~equal?)) (is (valid-spec? ~normalised-expected (~fn-sym ~@param-vec)))
-                                    :else (is (equal? ~normalised-expected (~fn-sym ~@param-vec)))))))
+                                    ; changing assertion expression order of args may break reports 
+                                    (and (fn? ~normalised-expected) (not ~equal?)) (is (fn-identity-intercept (~normalised-expected (~fn-sym ~@param-vec))))
+                                    (and (qualified-keyword? ~normalised-expected) (not ~equal?)) (is (valid-spec? ~normalised-expected (~fn-sym ~@param-vec))) ; TODO unneeded?
+                                    :else (is (plat/equal? ~normalised-expected (~fn-sym ~@param-vec)))))))
                             examples)))]
       ; passing down ^:focus meta to clj.test: see alter-test-var-update-fn
       ; FIXME not associng in cljs

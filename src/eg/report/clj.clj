@@ -2,19 +2,26 @@
   (:require [clojure.string :as str]
             [clojure.test :as clj.test]
             [eg.platform]
-            [eg.report :refer [->testing-fn-repr do-equal-report do-spec-report print-report]]))
+            [eg.report :refer [->testing-fn-repr
+                               do-equal-report
+                               do-fn-report
+                               do-spec-report
+                               print-report]]))
 
 (defmethod clj.test/assert-expr 'eg.platform/valid-spec?
-  [_ form] (do-spec-report form true))
+  [_ assert-expr] (do-spec-report assert-expr true))
 
 (defmethod clj.test/assert-expr 'eg.platform/invalid-spec?
-  [_ form] (do-spec-report form false))
+  [_ assert-expr] (do-spec-report assert-expr false))
 
 (defmethod clj.test/assert-expr 'eg.platform/equal?
-  [_ form] (apply do-equal-report (concat form [false])))
+  [_ assert-expr] (do-equal-report assert-expr false))
 
 (defmethod clj.test/assert-expr 'eg.platform/equal-ex?
-  [_ form] (apply do-equal-report (concat form [true])))
+  [_ assert-expr] (do-equal-report assert-expr true))
+
+(defmethod clj.test/assert-expr 'eg.platform/fn-identity-intercept
+  [_ assert-expr] (do-fn-report assert-expr false))
 
 (defmethod clj.test/report :fail-spec
   ; Source: https://github.com/clojure/clojure/blob/master/src/clj/clojure/test.clj
@@ -23,8 +30,8 @@
     (let [example-code? (or (not= example example-code) (not expect-valid?))]
       (clj.test/inc-report-counter :fail)
       (println "\nFAIL in spec" (list spec-kw) (list (str file ":" line)))
-      (if example-code? (println "in example:" (if expect-valid? "" "!") (pr-str example-code)))
-      (println (str (if example-code? "   ") "because:")
+      (if example-code? (println (str "  in example:" (if-not expect-valid? "!")) (pr-str example-code)))
+      (println "     because:"
                (if expect-valid?
                  (->> (str/split reason #" spec: ") butlast (str/join " spec: "))
                  (str example " - is a valid example"))))))

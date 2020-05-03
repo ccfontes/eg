@@ -34,13 +34,19 @@
   [& args] (not (apply spec/valid? args)))
 
 (defn equal?
-  "Create alias for '=, so that we don't override or be overriden by libraries dispatching on '= for assert-expr, 
-  and to apply our custom assert-expr only to function tests, i.e., not expression tests."
+  "Create alias for '=, so that we don't override or be overriden by libraries
+  dispatching on '= for clojure.test/assert-expr, and to apply our custom
+  clojure.test/assert-expr only to function tests, i.e., not expression tests."
   [& args] (apply = args))
 
 (defn equal-ex?
   "Same as 'equal?', but for expression tests."
   [& args] (apply equal? args))
+
+(defn fn-identity-intercept
+  "Create alias for 'fn, so that we don't override or be overriden by libraries
+  dispatching on 'fn for clojure.test/assert-expr."
+  [arg] (identity arg))
 
 (defmacro is
   "Source: http://blog.nberger.com.ar/blog/2015/09/18/more-portable-complex-macro-musing"
