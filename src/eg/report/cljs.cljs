@@ -1,4 +1,6 @@
-(ns eg.report.cljs
+(ns eg.report.cljs ^{:author "Carlos da Cunha Fontes"
+                     :license {:name "The MIT License"
+                               :url "https://github.com/ccfontes/eg/blob/master/LICENSE.md"}}
   (:require [clojure.string :as str]
             [cljs.test]
             [eg.platform]

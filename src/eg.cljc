@@ -1,5 +1,5 @@
 (ns eg ^{:author "Carlos da Cunha Fontes"
-         :license {:name "The Universal Permissive License (UPL), Version 1.0"
+         :license {:name "The MIT License"
                    :url "https://github.com/ccfontes/eg/blob/master/LICENSE.md"}}
   #?(:cljs (:require-macros [eg :refer [eg ge ex]]))
   (:require [eg.platform :as plat :refer [deftest is cross-throw ->clj valid-spec? invalid-spec? equal? equal-ex? fn-identity-intercept]]

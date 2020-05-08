@@ -1,4 +1,6 @@
-(ns eg.platform
+(ns eg.platform ^{:author "Carlos da Cunha Fontes"
+                  :license {:name "The MIT License"
+                            :url "https://github.com/ccfontes/eg/blob/master/LICENSE.md"}}
   #?(:cljs (:require-macros [eg.platform :refer [deftest is testing]]))
   (:require [clojure.string :as str]
             [clojure.spec.alpha :as spec]
