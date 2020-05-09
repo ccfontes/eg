@@ -95,7 +95,7 @@
           (->file-and-line-repr file line))))
 
 (defn do-spec-report
-  "Support customised spec examples in a test result and call report."
+  "Call do-report with a prepared params map for a spec example."
   [[f spec-kw example] expect-valid?]
   `(let [result# (~f ~spec-kw ~example)]
     (if result#
@@ -109,7 +109,7 @@
     result#))
 
 (defn do-equal-report
-  "Support customised spec examples in a test result and call report."
+  "Call do-report with a prepared params map for a function example."
   [[equal expected [f & params :as actual]] expression?]
   `(let [result# (~equal (->clj ~expected) (->clj ~actual))]
     (if result#
@@ -123,29 +123,45 @@
     result#))
 
 (defn do-fn-report
-  "Support customised spec examples in a test result and call report."
+  "Call do-report with a prepared params map for a function example taking a predicate checker."
   [[_ [pred [f & params :as actual] :as result]] expression?]
   `(let [result# ~result]
     (if result#
       (do-report {:type :pass})
       (do-report {:type     :fail-equal
                   :function '~f
-                  :predicate '~pred
+                  :property '~pred
                   :actual ~actual
                   :params   (vec '~params)
                   :expression? ~expression?}))
     result#))
 
+(defn do-expected-spec-report
+  "Call do-report with a prepared params map for a function example taking a spec checker."
+  [[_ spec-kw [f & params :as actual] :as result] expression?]
+  `(let [result# ~result]
+    (if result#
+      (do-report {:type :pass})
+      (do-report {:type     :fail-equal
+                  :function '~f
+                  :property '~spec-kw
+                  :actual ~actual
+                  :params   (vec '~params)
+                  :expression? ~expression?
+                  :reason (explain-str ~spec-kw ~actual)}))
+    result#))
+
 (defn print-report
-  [{:keys [params expected actual expression? predicate] :as m}]
+  [{:keys [params expected actual expression? property reason] :as m}]
   (if expression?
     (println "\nFAIL in expression" (->testing-fn-repr m))
     (do (apply println "\nFAIL in function" (->testing-fn-repr m))
         (println "      params:" (pr-str params))))
-  (if predicate
-    (println "     because:" actual "- failed" predicate)
-    (do (println "    expected:" (pr-str expected))
-        (println "      actual:" (pr-str actual)))))
+  (cond
+    (fn? property)      (println "     because:" actual "- failed" property)
+    (keyword? property) (println "     because:" (->> (str/split reason #" spec: ") butlast str/join))
+    :else (do (println "    expected:" (pr-str expected))
+              (println "      actual:" (pr-str actual)))))
 
 #?(:clj
     (do
@@ -163,4 +179,7 @@
         [_ _ assert-expr] (do-equal-report assert-expr true))
         
       (defmethod cljs.test/assert-expr 'eg.platform/fn-identity-intercept
-        [_ _ assert-expr] (do-fn-report assert-expr true))))
+        [_ _ assert-expr] (do-fn-report assert-expr true)) ; TODO revisit this. Shouldn't expression? = false?
+
+      (defmethod cljs.test/assert-expr 'eg.platform/valid-expected-spec?
+        [_ _ assert-expr] (do-expected-spec-report assert-expr false))))

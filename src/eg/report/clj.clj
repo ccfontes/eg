@@ -8,13 +8,14 @@
                                do-equal-report
                                do-fn-report
                                do-spec-report
+                               do-expected-spec-report
                                print-report]]))
 
 (defmethod clj.test/assert-expr 'eg.platform/valid-spec?
   [_ assert-expr] (do-spec-report assert-expr true))
 
 (defmethod clj.test/assert-expr 'eg.platform/invalid-spec?
-  [_ assert-expr] (do-spec-report assert-expr false))
+  [_ assert-expr] (do-spec-report assert-expr false)) ; TODO revisit this. Shouldn't expression? = true?
 
 (defmethod clj.test/assert-expr 'eg.platform/equal?
   [_ assert-expr] (do-equal-report assert-expr false))
@@ -24,6 +25,9 @@
 
 (defmethod clj.test/assert-expr 'eg.platform/fn-identity-intercept
   [_ assert-expr] (do-fn-report assert-expr false))
+
+(defmethod clj.test/assert-expr 'eg.platform/valid-expected-spec?
+  [_ assert-expr] (do-expected-spec-report assert-expr false))
 
 (defmethod clj.test/report :fail-spec
   ; Source: https://github.com/clojure/clojure/blob/master/src/clj/clojure/test.clj
@@ -35,7 +39,7 @@
       (if example-code? (println (str "  in example:" (if-not expect-valid? "!")) (pr-str example-code)))
       (println "     because:"
                (if expect-valid?
-                 (->> (str/split reason #" spec: ") butlast (str/join " spec: "))
+                 (->> (str/split reason #" spec: ") butlast str/join)
                  (str example " - is a valid example"))))))
 
 (defmethod clj.test/report :fail-equal

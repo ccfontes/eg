@@ -9,6 +9,7 @@
                                do-equal-report
                                do-fn-report
                                do-spec-report
+                               do-expected-spec-report
                                print-report]]))
 
 (when (exists? js/cljs.test$macros)
@@ -17,7 +18,7 @@
     [_ _ assert-expr] (do-spec-report assert-expr true))
 
   (defmethod js/cljs.test$macros.assert_expr 'eg.platform/invalid-spec?
-    [_ _ assert-expr] (do-spec-report assert-expr false))
+    [_ _ assert-expr] (do-spec-report assert-expr false)) ; TODO revisit this. Shouldn't expression? = true?
 
   (defmethod js/cljs.test$macros.assert_expr 'eg.platform/equal?
     [_ _ assert-expr] (do-equal-report assert-expr false))
@@ -26,7 +27,10 @@
     [_ _ assert-expr] (do-equal-report assert-expr true))
 
   (defmethod js/cljs.test$macros.assert_expr 'eg.platform/fn-identity-intercept
-    [_ _ assert-expr] (do-fn-report assert-expr true)))
+    [_ _ assert-expr] (do-fn-report assert-expr true)) ; TODO revisit this. Shouldn't expression? = false?
+
+  (defmethod js/cljs.test$macros.assert_expr 'eg.platform/valid-expected-spec?
+    [_ _ assert-expr] (do-expected-spec-report assert-expr false)))
 
 (defmethod cljs.test/report [:cljs.test/default :fail-spec]
   ; Source: https://github.com/clojure/clojurescript/blob/master/src/main/cljs/cljs/test.cljs
@@ -40,7 +44,7 @@
              (if expect-valid?
                (if (exists? js/cljs.test$macros)
                  reason ; TODO improve error msg for same quality as in clj, and cljs JVM
-                 (->> (str/split reason #" spec: ") butlast (str/join " spec: ")))
+                 (->> (str/split reason #" spec: ") butlast str/join))
                (str example " - is a valid example")))))
 
 (defmethod cljs.test/report [:cljs.test/default :fail-equal]

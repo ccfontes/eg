@@ -2,7 +2,7 @@
          :license {:name "The MIT License"
                    :url "https://github.com/ccfontes/eg/blob/master/LICENSE.md"}}
   #?(:cljs (:require-macros [eg :refer [eg ge ex]]))
-  (:require [eg.platform :as plat :refer [deftest is cross-throw ->clj valid-spec? invalid-spec? equal? equal-ex? fn-identity-intercept]]
+  (:require [eg.platform :as plat :refer [deftest is cross-throw ->clj valid-spec? invalid-spec? equal? equal-ex? fn-identity-intercept valid-expected-spec?]]
             [eg.report] ; here for side-effects extending clj.test/assert-expr, cljs.test/assert-expr, and js/cljs.test$macros.assert_expr
             [clojure.walk :refer [postwalk]]
             [clojure.string :as str]
@@ -137,7 +137,7 @@
                                   `(cond
                                     ; changing assertion expression order of args may break reports 
                                     (and (fn? ~normalised-expected) (not ~equal?)) (is (fn-identity-intercept (~normalised-expected (~fn-sym ~@param-vec))))
-                                    (and (qualified-keyword? ~normalised-expected) (not ~equal?)) (is (valid-spec? ~normalised-expected (~fn-sym ~@param-vec))) ; TODO unneeded?
+                                    (and (qualified-keyword? ~normalised-expected) (not ~equal?)) (is (valid-expected-spec? ~normalised-expected (~fn-sym ~@param-vec)))
                                     :else (is (plat/equal? ~normalised-expected (~fn-sym ~@param-vec)))))))
                             examples)))]
       ; passing down ^:focus meta to clj.test: see alter-test-var-update-fn

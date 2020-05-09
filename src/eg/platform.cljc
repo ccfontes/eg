@@ -35,6 +35,10 @@
   "Complement of valid-spec? to able a distinct dispatch fn arg in clojure.test/assert-expr."
   [& args] (not (apply spec/valid? args)))
 
+(defn valid-expected-spec?
+  "Play fairly with other libraries dispatching with clojure.spec.alpha/valid? for clojure.test/assert-expr."
+  [& args] (apply spec/valid? args))
+
 (defn equal?
   "Create alias for '=, so that we don't override or be overriden by libraries
   dispatching on '= for clojure.test/assert-expr, and to apply our custom
