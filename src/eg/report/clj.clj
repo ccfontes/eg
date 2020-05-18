@@ -16,7 +16,7 @@
   [_ assert-expr] (do-spec-report assert-expr true))
 
 (defmethod clj.test/assert-expr 'eg.platform/invalid-spec?
-  [_ assert-expr] (do-spec-report assert-expr false)) ; TODO revisit this. Shouldn't expression? = true?
+  [_ assert-expr] (do-spec-report assert-expr false))
 
 (defmethod clj.test/assert-expr 'eg.platform/equal?
   [_ assert-expr] (do-equal-report assert-expr false))

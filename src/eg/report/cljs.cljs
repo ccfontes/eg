@@ -19,7 +19,7 @@
     [_ _ assert-expr] (do-spec-report assert-expr true))
 
   (defmethod js/cljs.test$macros.assert_expr 'eg.platform/invalid-spec?
-    [_ _ assert-expr] (do-spec-report assert-expr false)) ; TODO revisit this. Shouldn't expression? = true?
+    [_ _ assert-expr] (do-spec-report assert-expr false))
 
   (defmethod js/cljs.test$macros.assert_expr 'eg.platform/equal?
     [_ _ assert-expr] (do-equal-report assert-expr false))
@@ -28,7 +28,7 @@
     [_ _ assert-expr] (do-equal-report assert-expr true))
 
   (defmethod js/cljs.test$macros.assert_expr 'eg.platform/fn-identity-intercept
-    [_ _ assert-expr] (do-fn-report assert-expr true)) ; TODO revisit this. Shouldn't expression? = false?
+    [_ _ assert-expr] (do-fn-report assert-expr true))
 
   (defmethod js/cljs.test$macros.assert_expr 'eg.platform/valid-expected-spec?
     [_ _ assert-expr] (do-expected-spec-report assert-expr false)))

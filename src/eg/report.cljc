@@ -198,7 +198,7 @@
         [_ _ assert-expr] (do-equal-report assert-expr true))
         
       (defmethod cljs.test/assert-expr 'eg.platform/fn-identity-intercept
-        [_ _ assert-expr] (do-fn-report assert-expr true)) ; TODO revisit this. Shouldn't expression? = false?
+        [_ _ assert-expr] (do-fn-report assert-expr true))
 
       (defmethod cljs.test/assert-expr 'eg.platform/valid-expected-spec?
         [_ _ assert-expr] (do-expected-spec-report assert-expr false))))
