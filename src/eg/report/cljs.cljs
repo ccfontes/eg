@@ -10,7 +10,8 @@
                                do-fn-report
                                do-spec-report
                                do-expected-spec-report
-                               print-report]]))
+                               print-report
+                               spec-because]]))
 
 (when (exists? js/cljs.test$macros)
   ; defmethods for cljs JS
@@ -34,18 +35,13 @@
 
 (defmethod cljs.test/report [:cljs.test/default :fail-spec]
   ; Source: https://github.com/clojure/clojurescript/blob/master/src/main/cljs/cljs/test.cljs
-  [{:keys [spec-kw example example-code reason expect-valid? file line]}]
+  [{:keys [spec-kw example example-code spec-error-data expect-valid? file line]}]
   (let [example-code? (or (not= example example-code) (not expect-valid?))
         file-and-line (->file-and-line-repr file line)]
     (cljs.test/inc-report-counter! :fail)
     (println "\nFAIL in spec" (list spec-kw) file-and-line)
-    (if example-code? (println (str "  in example:" (if-not expect-valid? "!")) example-code))
-    (println "     because:"
-             (if expect-valid?
-               (if (exists? js/cljs.test$macros)
-                 reason ; TODO improve error msg for same quality as in clj, and cljs JVM
-                 (->> (str/split reason #" spec: ") butlast str/join))
-               (str example " - is a valid example")))))
+    (if example-code? (println (str "  in example:" (if-not expect-valid? " !")) example-code))
+    (println (spec-because example spec-error-data expect-valid?))))
 
 (defmethod cljs.test/report [:cljs.test/default :fail-equal]
   ; Source: https://github.com/clojure/clojurescript/blob/master/src/main/cljs/cljs/test.cljs

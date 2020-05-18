@@ -54,6 +54,11 @@
   dispatching on 'fn for clojure.test/assert-expr."
   [arg] (identity arg))
 
+(defn explain-data
+  "By wrapping spec/explain-data inside this function, prevents the macro using this code
+  from expanding the wrong version of explain-data - clojure.spec.alpha/explain-data."
+  [& args] (apply spec/explain-data args))
+
 (defmacro is
   "Source: http://blog.nberger.com.ar/blog/2015/09/18/more-portable-complex-macro-musing"
   [& args]

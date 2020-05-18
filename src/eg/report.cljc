@@ -1,14 +1,33 @@
 (ns eg.report ^{:author "Carlos da Cunha Fontes"
                 :license {:name "The MIT License"
                           :url "https://github.com/ccfontes/eg/blob/master/LICENSE.md"}}
-  (:require [clojure.spec.alpha :as spec]
-            [clojure.string :as str]
+  (:require [clojure.string :as str]
             [cljs.test :include-macros true]
             [clojure.test :as clj.test]
-            [eg.platform :refer [if-cljs ->clj]]))
+            [eg.platform :refer [if-cljs ->clj explain-data]]))
 
-(defn explain-str
-  [& args] (apply spec/explain-str args))
+(defn normalise-pred
+  "If predicate is part of clj core, omit the namespace"
+  [pred]
+  (if (#{"clojure.core" "cljs.core"} (namespace pred))
+    (-> pred name symbol)
+    pred))
+
+(defn spec-fail-expected
+  "Unify report behavior for failing spec tests expected to be valid."
+  [{clj-problems :clojure.spec.alpha/problems
+    cljs-problems :cljs.spec.alpha/problems}]
+  (let [problems (or clj-problems cljs-problems)
+        {:keys [pred val]} (first problems)]
+    (str (pr-str val) " fails: " (normalise-pred pred))))
+
+(defn spec-because
+  "Unify report behavior for failing spec tests expected to be valid and invalid."
+  [example explained-data expect-valid?]
+  (str "     because: "
+       (if expect-valid?
+         (spec-fail-expected explained-data)
+         (str example " is a valid example"))))
 
 #?(:clj
   (defn- stacktrace-file-and-line
@@ -105,7 +124,7 @@
                   :example       ~example
                   :example-code  '~example
                   :expect-valid? ~expect-valid?
-                  :reason        (explain-str ~spec-kw ~example)}))
+                  :spec-error-data (explain-data ~spec-kw ~example)}))
     result#))
 
 (defn do-equal-report
@@ -142,24 +161,24 @@
   `(let [result# ~result]
     (if result#
       (do-report {:type :pass})
-      (do-report {:type     :fail-equal
+      (do-report {:type     :fail-equal ; TODO revisit this dispatch naming: probably means "fail-default"
                   :function '~f
                   :property '~spec-kw
                   :actual ~actual
                   :params   (vec '~params)
                   :expression? ~expression?
-                  :reason (explain-str ~spec-kw ~actual)}))
+                  :spec-error-data (explain-data ~spec-kw ~actual)}))
     result#))
 
 (defn print-report
-  [{:keys [params expected actual expression? property reason] :as m}]
+  [{:keys [params expected actual expression? property spec-error-data] :as m}]
   (if expression?
     (println "\nFAIL in expression" (->testing-fn-repr m))
     (do (apply println "\nFAIL in function" (->testing-fn-repr m))
         (println "      params:" (pr-str params))))
   (cond
-    (fn? property)      (println "     because:" actual "- failed" property)
-    (keyword? property) (println "     because:" (->> (str/split reason #" spec: ") butlast str/join))
+    (fn? property)      (println "     because:" (pr-str actual) "- failed" property)
+    (keyword? property) (println (spec-because nil spec-error-data true))
     :else (do (println "    expected:" (pr-str expected))
               (println "      actual:" (pr-str actual)))))
 
