@@ -170,7 +170,6 @@
         focus? (:focus fn-meta)]
     (assoc focus-metas- qualified-fn-kw focus?)))
 
-; FIXME function not executing in cljs
 (defn alter-test-var-update-fn
   "Meant for use with 'alter-var-root' to decorate 'clj.test/test-var' with
   test check on focus state."
@@ -250,10 +249,8 @@
     `(->expression-test ~examples)))
 
 #?(:clj
+  ; FIXME alter-test-var-update-fn not executing in cljs
   (alter-var-root (var clj.test/test-var) alter-test-var-update-fn))
-
-#?(:cljs ; FIXME this is not redefining 'test-var'
-  (set! cljs.test/test-var (alter-test-var-update-fn cljs.test/test-var)))
 
 #?(:clj
   (defn set-eg-no-refresh!
