@@ -74,7 +74,7 @@
      Modified clj.test fn to convert :fail-spec into :fail, in order to get file:line.
      Source: https://github.com/clojure/clojure/blob/master/src/clj/clojure/test.clj"
     [m] (clj.test/report
-          (case (:type (update m :type #(if (#{:fail-spec :fail-equal} %) :fail %)))
+          (case (:type (update m :type #(if (#{:fail-spec :fail-default} %) :fail %)))
             :fail (merge (stacktrace-file-and-line (drop-while
                                                      #(let [classname (.getClassName ^StackTraceElement %)
                                                             classname-blacklist ["eg.report$" "eg.platform$" "java.lang." "clojure.test$" "clojure.core$ex_info"]]
@@ -90,7 +90,7 @@
     If you are writing a custom assert-expr method, call this function to pass test results to report.
     Source: https://github.com/clojure/clojurescript/blob/master/src/main/cljs/cljs/test.cljs"
     [m] (let [st-depth (if (exists? js/cljs.test$macros) 2 3)
-              m (case (:type (update m :type #(if (#{:fail-spec :fail-equal} %) :fail %)))
+              m (case (:type (update m :type #(if (#{:fail-spec :fail-default} %) :fail %)))
                   :fail (merge (file-and-line (js/Error.) st-depth) m)
                   :error (merge (file-and-line (:actual m) 0) m)
                   m)]
@@ -133,7 +133,7 @@
   `(let [result# (~equal (->clj ~expected) (->clj ~actual))]
     (if result#
       (do-report {:type :pass})
-      (do-report {:type     :fail-equal
+      (do-report {:type     :fail-default
                   :function '~f
                   :params   (vec '~params)
                   :expected ~expected
@@ -147,7 +147,7 @@
   `(let [result# ~result]
     (if result#
       (do-report {:type :pass})
-      (do-report {:type     :fail-equal
+      (do-report {:type     :fail-default
                   :function '~f
                   :property '~pred
                   :actual ~actual
@@ -161,7 +161,7 @@
   `(let [result# ~result]
     (if result#
       (do-report {:type :pass})
-      (do-report {:type     :fail-equal ; TODO revisit this dispatch naming: probably means "fail-default"
+      (do-report {:type     :fail-default
                   :function '~f
                   :property '~spec-kw
                   :actual ~actual

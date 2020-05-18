@@ -40,7 +40,7 @@
       (if example-code? (println (str "  in example:" (if-not expect-valid? " !")) (pr-str example-code)))
       (println (spec-because example spec-error-data expect-valid?)))))
 
-(defmethod clj.test/report :fail-equal
+(defmethod clj.test/report :fail-default
   ; Source: https://github.com/clojure/clojure/blob/master/src/clj/clojure/test.clj
   [m] (clj.test/with-test-out
         (clj.test/inc-report-counter :fail)

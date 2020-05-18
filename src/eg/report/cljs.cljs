@@ -43,7 +43,7 @@
     (if example-code? (println (str "  in example:" (if-not expect-valid? " !")) example-code))
     (println (spec-because example spec-error-data expect-valid?))))
 
-(defmethod cljs.test/report [:cljs.test/default :fail-equal]
+(defmethod cljs.test/report [:cljs.test/default :fail-default]
   ; Source: https://github.com/clojure/clojurescript/blob/master/src/main/cljs/cljs/test.cljs
   [m] (cljs.test/inc-report-counter! :fail)
       (print-report m))
