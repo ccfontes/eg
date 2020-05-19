@@ -38,7 +38,7 @@
     (let [example-code? (or (not= example example-code) (not expect-valid?))]
       (clj.test/inc-report-counter :fail)
       (println "\nFAIL in spec" (list spec-kw) (list (str file ":" line)))
-      (if example-code? (println (str "  in example:" (if-not expect-valid? " !")) (pr-str example-code)))
+      (if example-code? (println (str "in example:" (if-not expect-valid? " !")) (pr-str example-code)))
       (println (spec-because example (some-> spec-error-data spec->because-error) expect-valid?)))))
 
 (defmethod clj.test/report :fail-default

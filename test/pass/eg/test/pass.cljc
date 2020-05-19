@@ -221,9 +221,9 @@
   (is (=  "\"foo\" fails: int?" (report/->because-error-msg {:pred 'clojure.core/int?, :val "foo"}))))
 
 (deftest spec-because-test
-  (is (= "     because: 1 fails: string?"
+  (is (= "   because: 1 fails: string?"
          (report/spec-because 1 {:pred 'clojure.core/string? :val 1} true)))
-  (is (= "     because: 1 is a valid example"
+  (is (= "   because: 1 is a valid example"
          (report/spec-because 1 {:pred 'clojure.core/int? :val 1} false))))
 
 (eg true? true true)

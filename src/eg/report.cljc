@@ -32,7 +32,7 @@
 (defn spec-because
   "Unify report behavior for failing spec tests expected to be valid and invalid."
   [example because-error expect-valid?]
-  (str "     because: "
+  (str "   because: "
        (if expect-valid?
          (->because-error-msg because-error)
          (str example " is a valid example"))))
@@ -183,12 +183,12 @@
   (if expression?
     (println "\nFAIL in expression" (->testing-fn-repr m))
     (do (apply println "\nFAIL in function" (->testing-fn-repr m))
-        (println "      params:" (pr-str params))))
+        (println "    params:" (pr-str params))))
   (cond
     pred    (println (spec-because nil {:pred pred, :val actual} true))
     spec-kw (println (spec-because nil (spec->because-error spec-error-data) true))
-    :else   (do (println "    expected:" (pr-str expected))
-              (println "      actual:" (pr-str actual)))))
+    :else   (do (println "  expected:" (pr-str expected))
+                (println "    actual:" (pr-str actual)))))
 
 #?(:clj
     (do

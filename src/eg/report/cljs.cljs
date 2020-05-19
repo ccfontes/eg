@@ -41,7 +41,7 @@
         file-and-line (->file-and-line-repr file line)]
     (cljs.test/inc-report-counter! :fail)
     (println "\nFAIL in spec" (list spec-kw) file-and-line)
-    (if example-code? (println (str "  in example:" (if-not expect-valid? " !")) example-code))
+    (if example-code? (println (str "in example:" (if-not expect-valid? " !")) example-code))
     (println (spec-because example (some-> spec-error-data spec->because-error) expect-valid?))))
 
 (defmethod cljs.test/report [:cljs.test/default :fail-default]
