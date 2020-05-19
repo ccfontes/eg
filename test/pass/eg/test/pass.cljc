@@ -203,19 +203,28 @@
            (report/->testing-fn-repr {:function 'assoc-in :file "pass.cljc" :line 208 :expression? true})))))
 
 (deftest normalise-pred-test
-  (is (= 'int? (report/normalise-pred 'clojure.core/int?)))
-  (is (= 'int? (report/normalise-pred 'cljs.core/int?)))
-  (is (= 'clojure.string/join (report/normalise-pred 'clojure.string/join))))
+  (is (= "int?" (report/normalise-pred 'clojure.core/int?)))
+  (is (= "int?" (report/normalise-pred 'cljs.core/int?)))
+  (is (= "clojure.string/join" (report/normalise-pred 'clojure.string/join))))
 
-(deftest spec-fail-expected-test
-  (is (=  "\"foo\" fails: int?" (report/spec-fail-expected #:clojure.spec.alpha{:problems [{:pred 'clojure.core/int?, :val "foo"}]})))
-  (is (= "\"foo\" fails: int?" (report/spec-fail-expected #:cljs.spec.alpha{:problems [{:pred 'clojure.core/int?, :val "foo"}]}))))
+(deftest normalise-because-error-test
+  (is (= {:pred "int?", :val "\"foo\""}
+         (report/normalise-because-error {:pred 'clojure.core/int?, :val "foo"}))))
+
+(deftest spec->because-error-test
+  (is (= {:pred 'clojure.core/int? :val "foo"}
+         (report/spec->because-error #:clojure.spec.alpha{:problems [{:pred 'clojure.core/int?, :val "foo"}]})))
+  (is (= {:pred 'clojure.core/int? :val "foo"}
+           (report/spec->because-error #:cljs.spec.alpha{:problems [{:pred 'clojure.core/int?, :val "foo"}]}))))
+
+(deftest ->because-error-msg-test
+  (is (=  "\"foo\" fails: int?" (report/->because-error-msg {:pred 'clojure.core/int?, :val "foo"}))))
 
 (deftest spec-because-test
-  (is (= "     because: 1 fails: string?" 
-         (report/spec-because 1 #:cljs.spec.alpha{:problems [{:pred 'clojure.core/string?, :val 1}]} true)))
+  (is (= "     because: 1 fails: string?"
+         (report/spec-because 1 {:pred 'clojure.core/string? :val 1} true)))
   (is (= "     because: 1 is a valid example"
-         (report/spec-because 1 #:cljs.spec.alpha{:problems [{:pred 'clojure.core/int?, :val 1}]} false))))
+         (report/spec-because 1 {:pred 'clojure.core/int? :val 1} false))))
 
 (eg true? true true)
 

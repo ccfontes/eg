@@ -10,6 +10,7 @@
                                do-spec-report
                                do-expected-spec-report
                                print-report
+                               spec->because-error
                                spec-because]]))
 
 (defmethod clj.test/assert-expr 'eg.platform/valid-spec?
@@ -38,7 +39,7 @@
       (clj.test/inc-report-counter :fail)
       (println "\nFAIL in spec" (list spec-kw) (list (str file ":" line)))
       (if example-code? (println (str "  in example:" (if-not expect-valid? " !")) (pr-str example-code)))
-      (println (spec-because example spec-error-data expect-valid?)))))
+      (println (spec-because example (some-> spec-error-data spec->because-error) expect-valid?)))))
 
 (defmethod clj.test/report :fail-default
   ; Source: https://github.com/clojure/clojure/blob/master/src/clj/clojure/test.clj

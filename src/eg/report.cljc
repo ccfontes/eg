@@ -7,26 +7,34 @@
             [eg.platform :refer [if-cljs ->clj explain-data]]))
 
 (defn normalise-pred
-  "If predicate is part of clj core, omit the namespace"
+  "If predicate is part of clj core, omit the namespace."
   [pred]
   (if (#{"clojure.core" "cljs.core"} (namespace pred))
-    (-> pred name symbol)
-    pred))
+    (name pred)
+    (str pred)))
 
-(defn spec-fail-expected
-  "Unify report behavior for failing spec tests expected to be valid."
+(defn normalise-because-error
+  [{:keys [pred val]}]
+  {:pred (normalise-pred pred), :val (pr-str val)})
+
+(defn spec->because-error
+  "Prepare a spec error for a 'because' report error message."
   [{clj-problems :clojure.spec.alpha/problems
     cljs-problems :cljs.spec.alpha/problems}]
-  (let [problems (or clj-problems cljs-problems)
-        {:keys [pred val]} (first problems)]
-    (str (pr-str val) " fails: " (normalise-pred pred))))
+  (first (or clj-problems cljs-problems)))
+
+(defn ->because-error-msg
+  "Unify report behavior for failing spec tests expected to be valid."
+  [because-error]
+  (let [{:keys [pred val]} (normalise-because-error because-error)]
+    (str val " fails: " pred)))
 
 (defn spec-because
   "Unify report behavior for failing spec tests expected to be valid and invalid."
-  [example explained-data expect-valid?]
+  [example because-error expect-valid?]
   (str "     because: "
        (if expect-valid?
-         (spec-fail-expected explained-data)
+         (->because-error-msg because-error)
          (str example " is a valid example"))))
 
 #?(:clj
@@ -119,11 +127,11 @@
   `(let [result# (~f ~spec-kw ~example)]
     (if result#
       (do-report {:type :pass})
-      (do-report {:type          :fail-spec
-                  :spec-kw       ~spec-kw
-                  :example       ~example
-                  :example-code  '~example
-                  :expect-valid? ~expect-valid?
+      (do-report {:type            :fail-spec
+                  :spec-kw         ~spec-kw
+                  :example         ~example
+                  :example-code    '~example
+                  :expect-valid?   ~expect-valid?
                   :spec-error-data (explain-data ~spec-kw ~example)}))
     result#))
 
@@ -133,11 +141,11 @@
   `(let [result# ~result]
     (if result#
       (do-report {:type :pass})
-      (do-report {:type     :fail-default
-                  :function '~f
-                  :property '~pred
-                  :actual ~actual
-                  :params   (vec '~params)
+      (do-report {:type        :fail-default
+                  :function    '~f
+                  :pred        '~pred
+                  :actual      ~actual
+                  :params      (vec '~params)
                   :expression? ~expression?}))
     result#))
 
@@ -147,12 +155,12 @@
   `(let [result# ~result]
     (if result#
       (do-report {:type :pass})
-      (do-report {:type     :fail-default
-                  :function '~f
-                  :property '~spec-kw
-                  :actual ~actual
-                  :params   (vec '~params)
-                  :expression? ~expression?
+      (do-report {:type            :fail-default
+                  :function        '~f
+                  :spec-kw         '~spec-kw
+                  :actual          ~actual
+                  :params          (vec '~params)
+                  :expression?     ~expression?
                   :spec-error-data (explain-data ~spec-kw ~actual)}))
     result#))
 
@@ -162,24 +170,24 @@
   `(let [result# (~equal (->clj ~expected) (->clj ~actual))]
     (if result#
       (do-report {:type :pass})
-      (do-report {:type     :fail-default
-                  :function '~f
-                  :params   (vec '~params)
-                  :expected ~expected
-                  :actual   ~actual
+      (do-report {:type        :fail-default
+                  :function    '~f
+                  :params      (vec '~params)
+                  :expected    ~expected
+                  :actual      ~actual
                   :expression? ~expression?}))
     result#))
 
 (defn print-report
-  [{:keys [params expected actual expression? property spec-error-data] :as m}]
+  [{:keys [params expected actual expression? pred spec-kw spec-error-data] :as m}]
   (if expression?
     (println "\nFAIL in expression" (->testing-fn-repr m))
     (do (apply println "\nFAIL in function" (->testing-fn-repr m))
         (println "      params:" (pr-str params))))
   (cond
-    (fn? property)      (println "     because:" (pr-str actual) "- failed" property)
-    (keyword? property) (println (spec-because nil spec-error-data true))
-    :else (do (println "    expected:" (pr-str expected))
+    pred    (println (spec-because nil {:pred pred, :val actual} true))
+    spec-kw (println (spec-because nil (spec->because-error spec-error-data) true))
+    :else   (do (println "    expected:" (pr-str expected))
               (println "      actual:" (pr-str actual)))))
 
 #?(:clj
@@ -198,7 +206,7 @@
         [_ _ assert-expr] (do-default-report assert-expr true))
         
       (defmethod cljs.test/assert-expr 'eg.platform/fn-identity-intercept
-        [_ _ assert-expr] (do-pred-report assert-expr true))
+        [_ _ assert-expr] (do-pred-report assert-expr false))
 
       (defmethod cljs.test/assert-expr 'eg.platform/valid-expected-spec?
         [_ _ assert-expr] (do-expected-spec-report assert-expr false))))

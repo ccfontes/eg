@@ -11,6 +11,7 @@
                                do-spec-report
                                do-expected-spec-report
                                print-report
+                               spec->because-error
                                spec-because]]))
 
 (when (exists? js/cljs.test$macros)
@@ -28,7 +29,7 @@
     [_ _ assert-expr] (do-default-report assert-expr true))
 
   (defmethod js/cljs.test$macros.assert_expr 'eg.platform/fn-identity-intercept
-    [_ _ assert-expr] (do-pred-report assert-expr true))
+    [_ _ assert-expr] (do-pred-report assert-expr false))
 
   (defmethod js/cljs.test$macros.assert_expr 'eg.platform/valid-expected-spec?
     [_ _ assert-expr] (do-expected-spec-report assert-expr false)))
@@ -41,7 +42,7 @@
     (cljs.test/inc-report-counter! :fail)
     (println "\nFAIL in spec" (list spec-kw) file-and-line)
     (if example-code? (println (str "  in example:" (if-not expect-valid? " !")) example-code))
-    (println (spec-because example spec-error-data expect-valid?))))
+    (println (spec-because example (some-> spec-error-data spec->because-error) expect-valid?))))
 
 (defmethod cljs.test/report [:cljs.test/default :fail-default]
   ; Source: https://github.com/clojure/clojurescript/blob/master/src/main/cljs/cljs/test.cljs
