@@ -6,8 +6,8 @@
             [eg.platform]
             [eg.report :refer [->file-and-line-repr
                                ->testing-fn-repr
-                               do-equal-report
-                               do-fn-report
+                               do-default-report
+                               do-pred-report
                                do-spec-report
                                do-expected-spec-report
                                print-report
@@ -22,13 +22,13 @@
     [_ _ assert-expr] (do-spec-report assert-expr false))
 
   (defmethod js/cljs.test$macros.assert_expr 'eg.platform/equal?
-    [_ _ assert-expr] (do-equal-report assert-expr false))
+    [_ _ assert-expr] (do-default-report assert-expr false))
 
   (defmethod js/cljs.test$macros.assert_expr 'eg.platform/equal-ex?
-    [_ _ assert-expr] (do-equal-report assert-expr true))
+    [_ _ assert-expr] (do-default-report assert-expr true))
 
   (defmethod js/cljs.test$macros.assert_expr 'eg.platform/fn-identity-intercept
-    [_ _ assert-expr] (do-fn-report assert-expr true))
+    [_ _ assert-expr] (do-pred-report assert-expr true))
 
   (defmethod js/cljs.test$macros.assert_expr 'eg.platform/valid-expected-spec?
     [_ _ assert-expr] (do-expected-spec-report assert-expr false)))

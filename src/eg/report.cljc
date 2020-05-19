@@ -127,21 +127,7 @@
                   :spec-error-data (explain-data ~spec-kw ~example)}))
     result#))
 
-(defn do-equal-report
-  "Call do-report with a prepared params map for a function example."
-  [[equal expected [f & params :as actual]] expression?]
-  `(let [result# (~equal (->clj ~expected) (->clj ~actual))]
-    (if result#
-      (do-report {:type :pass})
-      (do-report {:type     :fail-default
-                  :function '~f
-                  :params   (vec '~params)
-                  :expected ~expected
-                  :actual   ~actual
-                  :expression? ~expression?}))
-    result#))
-
-(defn do-fn-report
+(defn do-pred-report
   "Call do-report with a prepared params map for a function example taking a predicate checker."
   [[_ [pred [f & params :as actual] :as result]] expression?]
   `(let [result# ~result]
@@ -170,6 +156,20 @@
                   :spec-error-data (explain-data ~spec-kw ~actual)}))
     result#))
 
+(defn do-default-report
+  "Call do-report with a prepared params map for a function example."
+  [[equal expected [f & params :as actual]] expression?]
+  `(let [result# (~equal (->clj ~expected) (->clj ~actual))]
+    (if result#
+      (do-report {:type :pass})
+      (do-report {:type     :fail-default
+                  :function '~f
+                  :params   (vec '~params)
+                  :expected ~expected
+                  :actual   ~actual
+                  :expression? ~expression?}))
+    result#))
+
 (defn print-report
   [{:keys [params expected actual expression? property spec-error-data] :as m}]
   (if expression?
@@ -192,13 +192,13 @@
         [_ _ assert-expr] (do-spec-report assert-expr false))
       
       (defmethod cljs.test/assert-expr 'eg.platform/equal?
-        [_ _ assert-expr] (do-equal-report assert-expr false))
+        [_ _ assert-expr] (do-default-report assert-expr false))
       
       (defmethod cljs.test/assert-expr 'eg.platform/equal-ex?
-        [_ _ assert-expr] (do-equal-report assert-expr true))
+        [_ _ assert-expr] (do-default-report assert-expr true))
         
       (defmethod cljs.test/assert-expr 'eg.platform/fn-identity-intercept
-        [_ _ assert-expr] (do-fn-report assert-expr true))
+        [_ _ assert-expr] (do-pred-report assert-expr true))
 
       (defmethod cljs.test/assert-expr 'eg.platform/valid-expected-spec?
         [_ _ assert-expr] (do-expected-spec-report assert-expr false))))

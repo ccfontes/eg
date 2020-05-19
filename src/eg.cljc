@@ -249,7 +249,7 @@
     `(->expression-test ~examples)))
 
 #?(:clj
-  ; FIXME alter-test-var-update-fn not executing in cljs
+  ; TODO support alter-test-var-update-fn for cljs
   (alter-var-root (var clj.test/test-var) alter-test-var-update-fn))
 
 #?(:clj

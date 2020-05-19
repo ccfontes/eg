@@ -5,8 +5,8 @@
             [clojure.test :as clj.test]
             [eg.platform]
             [eg.report :refer [->testing-fn-repr
-                               do-equal-report
-                               do-fn-report
+                               do-default-report
+                               do-pred-report
                                do-spec-report
                                do-expected-spec-report
                                print-report
@@ -19,13 +19,13 @@
   [_ assert-expr] (do-spec-report assert-expr false))
 
 (defmethod clj.test/assert-expr 'eg.platform/equal?
-  [_ assert-expr] (do-equal-report assert-expr false))
+  [_ assert-expr] (do-default-report assert-expr false))
 
 (defmethod clj.test/assert-expr 'eg.platform/equal-ex?
-  [_ assert-expr] (do-equal-report assert-expr true))
+  [_ assert-expr] (do-default-report assert-expr true))
 
 (defmethod clj.test/assert-expr 'eg.platform/fn-identity-intercept
-  [_ assert-expr] (do-fn-report assert-expr false))
+  [_ assert-expr] (do-pred-report assert-expr false))
 
 (defmethod clj.test/assert-expr 'eg.platform/valid-expected-spec?
   [_ assert-expr] (do-expected-spec-report assert-expr false))
