@@ -7,6 +7,7 @@
             [eg.report :refer [->testing-fn-repr
                                do-default-report
                                do-pred-report
+                               do-example-pred-report
                                do-spec-report
                                do-expected-spec-report
                                print-report
@@ -30,6 +31,9 @@
 
 (defmethod clj.test/assert-expr 'eg.platform/valid-expected-spec?
   [_ assert-expr] (do-expected-spec-report assert-expr false))
+  
+(defmethod clj.test/assert-expr 'eg.platform/pred-ex
+  [_ assert-expr] (do-example-pred-report assert-expr true))
 
 (defmethod clj.test/report :fail-spec
   ; Source: https://github.com/clojure/clojure/blob/master/src/clj/clojure/test.clj

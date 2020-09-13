@@ -274,7 +274,7 @@ Enable source maps on your `project.clj` test build config:
   * [eftest](https://github.com/weavejester/eftest) – Eftest is a fast and pretty Clojure test runner.
   * [humane-test-output](https://github.com/pjstadig/humane-test-output) – Humane test output for clojure.test
 
-## The following readings were of special importance to write eg
+## Background readings
   * https://seespotcode.net/2018/01/13/portable-clojure-test-assert-expr/
   * http://blog.nberger.com.ar/blog/2015/09/18/more-portable-complex-macro-musing
   * https://github.com/clojure/clojure/blob/master/src/clj/clojure/test.clj

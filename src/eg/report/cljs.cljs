@@ -7,6 +7,7 @@
             [eg.report :refer [->file-and-line-repr
                                ->testing-fn-repr
                                do-default-report
+                               do-example-pred-report
                                do-pred-report
                                do-spec-report
                                do-expected-spec-report
@@ -32,7 +33,10 @@
     [_ _ assert-expr] (do-pred-report assert-expr false))
 
   (defmethod js/cljs.test$macros.assert_expr 'eg.platform/valid-expected-spec?
-    [_ _ assert-expr] (do-expected-spec-report assert-expr false)))
+    [_ _ assert-expr] (do-expected-spec-report assert-expr false))
+
+  (defmethod js/cljs.test$macros.assert_expr 'eg.platform/pred-ex
+    [_ _ assert-expr] (do-example-pred-report assert-expr true)))
 
 (defmethod cljs.test/report [:cljs.test/default :fail-spec]
   ; Source: https://github.com/clojure/clojurescript/blob/master/src/main/cljs/cljs/test.cljs

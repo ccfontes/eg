@@ -49,6 +49,10 @@
   "Same as 'equal?', but for expression tests."
   [& args] (apply equal? args))
 
+(defn pred-ex
+  "Meant to be used as a clojure.test/assert-expr dispatch value on truthy expression tests."
+  [arg] (identity arg))
+
 (defn fn-identity-intercept
   "Create alias for 'fn, so that we don't override or be overriden by libraries
   dispatching on 'fn for clojure.test/assert-expr."

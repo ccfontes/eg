@@ -2,7 +2,17 @@
          :license {:name "The MIT License"
                    :url "https://github.com/ccfontes/eg/blob/master/LICENSE.md"}}
   #?(:cljs (:require-macros [eg :refer [eg ge ex]]))
-  (:require [eg.platform :as plat :refer [deftest is cross-throw ->clj valid-spec? invalid-spec? equal? equal-ex? fn-identity-intercept valid-expected-spec?]]
+  (:require [eg.platform :as plat :refer [deftest
+                                          is
+                                          cross-throw
+                                          ->clj
+                                          valid-spec?
+                                          invalid-spec?
+                                          equal?
+                                          equal-ex?
+                                          fn-identity-intercept
+                                          valid-expected-spec?
+                                          pred-ex]]
             [eg.report] ; here for side-effects extending clj.test/assert-expr, cljs.test/assert-expr, and js/cljs.test$macros.assert_expr
             [clojure.walk :refer [postwalk]]
             [clojure.string :as str]
@@ -154,11 +164,11 @@
         test-name (symbol (str "eg-test-" rand-id))]
     `(deftest ~test-name
       ~@(map (fn [[res op expected]]
-               ; to avoid CompilerException on unreached branch: 'Can't call nil'
                (let [equal? (= op '=)
+                     ; to avoid CompilerException on unreached branch: 'Can't call nil'
                      normalised-expected (if (nil? expected) 'nil? expected)]
                  `(if (and (fn? ~normalised-expected) (not ~equal?))
-                   (is (~normalised-expected ~res))  ; TODO improve report here
+                   (is (pred-ex (~normalised-expected ~res)))
                    (is (equal-ex? (->clj ~normalised-expected) (->clj ~res))))))
              examples))))
 

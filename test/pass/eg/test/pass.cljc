@@ -167,6 +167,9 @@
 (deftest equal-ex?-test
   (is (boolean? (platform/equal-ex? 3 3))))
 
+(deftest pred-ex-test
+  (is (= "truthy" (platform/pred-ex "truthy"))))
+
 #?(:cljs
   (deftest rm-cljsjs-st-fname-prefix-fluff-test
     (is (= "eg/test/pass.js:2590:27"
@@ -256,6 +259,8 @@
 
 (ex (true? false) => false)
 
+; TODO visit (ex nil) (ex false)
+
 (eg clojure.core/false? [false] true)
 
 (eg vector
@@ -310,3 +315,5 @@
 
 #?(:cljs
   (ex (fixtures/js-eggs #js {:a [2]}) => #js {:a [2]}))
+
+(ex 4 => int?)

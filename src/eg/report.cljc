@@ -135,6 +135,18 @@
                   :spec-error-data (explain-data ~spec-kw ~example)}))
     result#))
 
+(defn do-example-pred-report
+  "Call do-report with a prepared params map for a function example taking a predicate checker."
+  [[_ [pred actual :as result]] expression?]
+  `(let [result# ~result]
+    (if result#
+      (do-report {:type :pass})
+      (do-report {:type        :fail-default
+                  :pred        '~pred
+                  :actual      ~actual
+                  :expression? ~expression?}))
+    result#))
+
 (defn do-pred-report
   "Call do-report with a prepared params map for a function example taking a predicate checker."
   [[_ [pred [f & params :as actual] :as result]] expression?]
@@ -209,4 +221,7 @@
         [_ _ assert-expr] (do-pred-report assert-expr false))
 
       (defmethod cljs.test/assert-expr 'eg.platform/valid-expected-spec?
-        [_ _ assert-expr] (do-expected-spec-report assert-expr false))))
+        [_ _ assert-expr] (do-expected-spec-report assert-expr false))
+
+      (defmethod cljs.test/assert-expr 'eg.platform/pred-ex
+        [_ _ assert-expr] (do-example-pred-report assert-expr true))))
