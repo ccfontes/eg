@@ -1,4 +1,4 @@
-(defproject eg "0.4.20-alpha"
+(defproject eg "0.4.21-alpha"
   :description "eg delivers clojure.test function tests with conciseness."
   :license {:name "The MIT License"
             :url "https://github.com/ccfontes/eg/blob/master/LICENSE.md"}
