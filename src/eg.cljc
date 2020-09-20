@@ -142,7 +142,7 @@
                                 (let [equal? (= (second example) '=)
                                       param-vec (first example)
                                       expected (last example)
-                                      ; to avoid CompilerException on unreached branch: 'Can't call nil'
+                                      ; in JVM CLJS, 'normalised-expected' code prevents: Caused by: clojure.lang.ExceptionInfo: Can't call nil
                                       normalised-expected (if (nil? expected) 'nil? expected)]
                                   `(cond
                                     ; changing assertion expression order of args may break reports 
@@ -156,21 +156,19 @@
       test#)))
 
 (defmacro ->expression-test
-  "Creates a clojure.test test for expressions being tested.
-  Assertions are generated under the test using provided expressions.
+  "Creates a clojure.test test for expression being tested.
+  Assertion is generated under the test using provided expression.
   Test name is created as 'eg-test-<rand-id>'."
-  [examples]
+  [res op expected]
   (let [rand-id (int (* (rand) 100000))
-        test-name (symbol (str "eg-test-" rand-id))]
+        test-name (symbol (str "eg-test-" rand-id))
+        equal? (= op '=)]
     `(deftest ~test-name
-      ~@(map (fn [[res op expected]]
-               (let [equal? (= op '=)
-                     ; to avoid CompilerException on unreached branch: 'Can't call nil'
-                     normalised-expected (if (nil? expected) 'nil? expected)]
-                 `(if (and (fn? ~normalised-expected) (not ~equal?))
-                   (is (pred-ex (~normalised-expected ~res)))
-                   (is (equal-ex? (->clj ~normalised-expected) (->clj ~res))))))
-             examples))))
+      ~(let [; in JVM CLJS, 'normalised-expected' code prevents: Caused by: clojure.lang.ExceptionInfo: Can't call nil
+             normalised-expected (if (nil? expected) 'nil? expected)]
+        `(if (and (fn? ~normalised-expected) (not ~equal?))
+          (is (pred-ex (~normalised-expected ~res)))
+          (is (equal-ex? (->clj ~normalised-expected) (->clj ~res))))))))
 
 (defn assoc-focus-metas
   "Creates a new entry in fn to focus? map for qualified function in params."
@@ -255,8 +253,8 @@
   "Test arbitrary expressions against corresponding expected values.
   See readme for usage."
   [& body]
-  (let [examples (->> body (partition 3) (map parse-expression))]
-    `(->expression-test ~examples)))
+  (let [example (parse-expression body)]
+    `(->expression-test ~@example)))
 
 #?(:clj
   ; TODO support alter-test-var-update-fn for cljs

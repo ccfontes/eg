@@ -250,12 +250,12 @@
   [1 2]    => #(integer? %)
   integer? <= [1 2])
 
-(let [test-eg-ret (ex (inc 0) 1)
+(let [test-eg-ret (ex (inc 0) => 1)
       f-len (count "eg-test-")]
-  (ex var? <= test-eg-ret
-      (-> test-eg-ret meta :test) => boolean
-      (-> test-eg-ret meta :test) => fn?
-      (-> test-eg-ret meta :name name (subs f-len)) => not-empty))
+  (ex var? <= test-eg-ret)
+  (ex (-> test-eg-ret meta :test) => boolean)
+  (ex (-> test-eg-ret meta :test) => fn?)
+  (ex (-> test-eg-ret meta :name name (subs f-len)) => not-empty))
 
 (ex (true? false) => false)
 

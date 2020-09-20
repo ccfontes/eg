@@ -97,13 +97,15 @@ override the default example direction of `eg` or `ge`.
 `ex` makes it possible to test the result of calling an arbitrary form **ex**pression. Typical scenarios include testing the result of calling a macro (`eg`, and `ge` only support function testing), or decomposing the assertion of different properties or values from calling a form:
 ```clj
 ; let must be used outside of 'ex' when surrounding examples
+(let [test-eg-ret (ex (inc 0) => 1)
+      f-len (count "eg-test-")]
+  ; using arrows/equal is compulsory
 (let [test-eg-ret (ex (inc 0) 1)
       f-len (count "eg-test-")]
-  ; arrows are compulsory
-  (ex var? <= test-eg-ret
-      (-> test-eg-ret meta :test) => boolean
-      (-> test-eg-ret meta :test) => fn?
-      (-> test-eg-ret meta :name name (subs f-len)) => not-empty))
+  (ex var? <= test-eg-ret)
+  (ex (-> test-eg-ret meta :test) => boolean)
+  (ex (-> test-eg-ret meta :test) => fn?)
+  (ex (-> test-eg-ret meta :name name (subs f-len)) => not-empty))
   ;=> eg-test-<rand-id>
 
   (ex (true? false) => false) ;=> eg-test-<rand-id>
