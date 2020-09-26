@@ -21,10 +21,6 @@
   1 [1]
   2 [2 4])
 
-(ex (true? true) => false)
-
-(ex string? <= (ex (inc 0) 1))
-
 (eg ::int
   "spam"
   ! 4
@@ -37,9 +33,17 @@
 
 (eg foo 2 = dec)
 
+(ex (true? true) => false)
+
+(ex string? <= (inc 0))
+
 (ex (foo 2) = inc)
 
 (ex inc = (foo 2))
+
+(ex nil)
+
+(ex false)
 
 (eg identity
   1 => ::string

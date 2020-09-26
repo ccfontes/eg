@@ -6,6 +6,7 @@
                                           is
                                           cross-throw
                                           ->clj
+                                          cross-invalid-spec-kw
                                           valid-spec?
                                           invalid-spec?
                                           equal?
@@ -17,12 +18,17 @@
             [clojure.walk :refer [postwalk]]
             [clojure.string :as str]
             [clojure.test :as clj.test]
+            [clojure.spec.alpha :as spec]
    #?(:cljs [cljs.test :include-macros true])
     #?(:clj [clojure.tools.namespace.repl])
    #?(:clj  [eg.report.clj])    ; here for side-effects extending clojure.test/assert-expr
    #?(:cljs [eg.report.cljs]))) ; here for side-effects extending cljs.test/report    
 
 (defonce focus-metas (atom {}))
+
+(spec/def ::expr-spec (spec/or :one-arg (spec/tuple any?)
+                               :three-args-normal (spec/tuple any? #{'= '=>} any?)
+                               :three-args-inverted (spec/tuple any? #{'<=} any?)))
 
 (def operators #{'=> '<= '=})
 
@@ -41,6 +47,11 @@
            (cons (apply f first-items)
                  (map* f rest-colls))))))
   f colls))
+
+(def normalize-inverted-expr
+  "Normalize inverted expression.
+  E.g.: [3 '<= 3], becomes: [3 '=> 3]"
+  (juxt last (constantly '=>) first))
 
 (defn examples-acc
   "Accumulates examples, mainly taking into account operator used in example."
@@ -87,14 +98,25 @@
         normalized-params (if (vector? params) params [params])]
     (cons normalized-params (rest parsed-ex))))
 
-(defn parse-expression
-  "Normalizes an 'ex' expression's operator, and order of test expression vs expected result."
-  [expr]
-  (if (#{'=> '=} (second expr))
-    expr
-    (if (= (second expr) '<=)
-      ((juxt last (constantly '=>) first) expr)
-      (cross-throw (str "Was expecting an arrow, but found '" (second expr) "' instead..")))))
+(defmulti parse-expression
+  "Normalizes an 'ex' expression's operator,
+  and order of test expression vs expected result."
+  (fn [expr]
+    (let [conformed-expr (spec/conform ::expr-spec (vec expr))]
+      (if (= conformed-expr cross-invalid-spec-kw)
+        :invalid
+        (first conformed-expr)))))
+
+(defmethod parse-expression :one-arg [expr]
+  [(-> expr first boolean) '=> true])
+
+(defmethod parse-expression :three-args-normal [expr] expr)
+
+(defmethod parse-expression :three-args-inverted [expr]
+  (normalize-inverted-expr expr))
+
+(defmethod parse-expression :invalid [expr]
+  (cross-throw (apply str "Invalid expression: (ex " (str/join (interpose " " expr)) ")")))
 
 (defn test?
   "Used to determine if function will be tested based on its focus state,

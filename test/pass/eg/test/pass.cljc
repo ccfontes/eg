@@ -4,6 +4,7 @@
               [eg :refer [eg
                           ge
                           ex
+                          normalize-inverted-expr
                           examples-acc
                           spec-eg-acc
                           parse-example
@@ -20,6 +21,9 @@
                           variadic-bang?]]
               [eg.report :as report]
       #?(:clj [eg :refer [set-eg-no-refresh!]])))
+
+(deftest normalize-inverted-expr-test
+  (is (= [3 '=> 3] (normalize-inverted-expr [3 '<= 3]))))
 
 (deftest examples-acc-test
   (is (= [ [] [2] ] (examples-acc [ [] [] ] 2)))
@@ -72,7 +76,9 @@
   (is (= [4 '=> 2] (parse-expression [4 '=> 2])))
   (is (= [3 '=> 2] (parse-expression [2 '<= 3])))
   (is (= [2 '= 5] (parse-expression [2 '= (+ 1 4)])))
-  (is (= "Was expecting an arrow, but found '3' instead.."
+  (is (= [true '=> true] (parse-expression ["foo"])))
+  (is (= [false '=> true] (parse-expression [nil])))
+  (is (= "Invalid expression: (ex 2 3)"
          (try (parse-expression [2 3])
            (catch #?(:clj Exception :cljs :default) e
              #?(:clj (-> e Throwable->map :cause))
@@ -250,17 +256,6 @@
   [1 2]    => #(integer? %)
   integer? <= [1 2])
 
-(let [test-eg-ret (ex (inc 0) => 1)
-      f-len (count "eg-test-")]
-  (ex var? <= test-eg-ret)
-  (ex (-> test-eg-ret meta :test) => boolean)
-  (ex (-> test-eg-ret meta :test) => fn?)
-  (ex (-> test-eg-ret meta :name name (subs f-len)) => not-empty))
-
-(ex (true? false) => false)
-
-; TODO visit (ex nil) (ex false)
-
 (eg clojure.core/false? [false] true)
 
 (eg vector
@@ -300,6 +295,13 @@
   ::fixtures/int = ::fixtures/int
   [nil] nil)
 
+(let [test-eg-ret (ex (inc 0) => 1)
+      f-len (count "eg-test-")]
+  (ex var? <= test-eg-ret)
+  (ex (-> test-eg-ret meta :test) => boolean)
+  (ex (-> test-eg-ret meta :test) => fn?)
+  (ex (-> test-eg-ret meta :name name (subs f-len)) => not-empty))
+
 (ex (identity nil) => nil)
 
 (ex (fixtures/foo 2) = inc)
@@ -317,3 +319,7 @@
   (ex (fixtures/js-eggs #js {:a [2]}) => #js {:a [2]}))
 
 (ex 4 => int?)
+
+(ex (true? false) => false)
+
+(ex "foo")

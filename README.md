@@ -109,6 +109,9 @@ override the default example direction of `eg` or `ge`.
   ;=> eg-test-<rand-id>
 
   (ex (true? false) => false) ;=> eg-test-<rand-id>
+
+  ; tests truthy expression
+  (ex "bar")
 ```
 
 If we want to check if the expected value is a function or a spec, the operator `=` is used:

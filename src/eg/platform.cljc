@@ -26,6 +26,10 @@
   #?(:clj datum)
   #?(:cljs (js->clj datum)))
 
+(def cross-invalid-spec-kw
+  #?(:clj :clojure.spec.alpha/invalid)
+  #?(:cljs :cljs.spec.alpha/invalid))
+
 (defn valid-spec?
   "Solves a clojure.spec.alpha/valid? resolve issue in cljs JVM.
   Check client code for use cases."
