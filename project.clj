@@ -9,7 +9,8 @@
   :jar-exclusions [#"\.swp|\.swo|\.DS_Store"]
   :source-paths ["src"]
   :test-paths ["test/pass" "test/fail"]
-  :deploy-repositories [["releases" :clojars]]
+  :repositories [["releases" {:url "https://repo.clojars.org"
+                              :creds :gpg}]]
   :aliases {"clj-test-pass"  ["test" "eg.test.pass"]
             "cljs-test-pass" ["with-profiles" "+cljs-test-pass" "cljsbuild" "test"]
             "clj-test-fail"  ["test" "eg.test.fail"]
