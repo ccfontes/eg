@@ -5,7 +5,7 @@
   (:require [clojure.string :as str]
             [clojure.spec.alpha :as spec]
             [clojure.test :as clj.test]
-            [cljs.test :include-macros true]))
+   #?(:cljs [cljs.test :include-macros true])))
 
 (defn cross-throw [msg]
   (throw #?(:cljs (js/Error. msg)
