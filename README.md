@@ -21,11 +21,11 @@ Check the [ideas driving eg](doc/ideas.md).
 **Leiningen/Boot**
 
 ```clj
-[eg "0.5.0-alpha"]
+[eg "0.5.1-alpha"]
 ```
 **Clojure CLI/deps.edn**
 ```clj
-eg {:mvn/version "0.5.0-alpha"}
+eg {:mvn/version "0.5.1-alpha"}
 ```
 
 ## Usage
