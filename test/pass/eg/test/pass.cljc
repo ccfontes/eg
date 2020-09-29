@@ -304,6 +304,8 @@
 
 (ex (identity nil) => nil)
 
+(ex (identity nil) = nil)
+
 (ex (fixtures/foo 2) = inc)
 
 (ex inc = (fixtures/foo 2))

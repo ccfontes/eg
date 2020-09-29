@@ -116,7 +116,8 @@
   (normalize-inverted-expr expr))
 
 (defmethod parse-expression :invalid [expr]
-  (cross-throw (apply str "Invalid expression: (ex " (str/join (interpose " " expr)) ")")))
+  (cross-throw (apply str "Invalid expression: (ex "
+                           (str/join (interpose " " expr)) ")")))
 
 (defn test?
   "Used to determine if function will be tested based on its focus state,
@@ -168,9 +169,9 @@
                                       normalised-expected (if (nil? expected) 'nil? expected)]
                                   `(cond
                                     ; changing assertion expression order of args may break reports 
-                                    (and (fn? ~normalised-expected) (not ~equal?)) (is (fn-identity-intercept (~normalised-expected (~fn-sym ~@param-vec))))
+                                    (and (fn? ~normalised-expected) (not ~equal?))                (is (fn-identity-intercept (~normalised-expected (~fn-sym ~@param-vec))))
                                     (and (qualified-keyword? ~normalised-expected) (not ~equal?)) (is (valid-expected-spec? ~normalised-expected (~fn-sym ~@param-vec)))
-                                    :else (is (plat/equal? ~normalised-expected (~fn-sym ~@param-vec)))))))
+                                    :else                                                         (is (plat/equal? ~normalised-expected (~fn-sym ~@param-vec)))))))
                             examples)))]
       ; passing down ^:focus meta to clj.test: see alter-test-var-update-fn
       ; FIXME not associng in cljs
@@ -186,9 +187,10 @@
         test-name (symbol (str "eg-test-" rand-id))
         equal? (= op '=)]
     `(deftest ~test-name
-      ~(let [; in JVM CLJS, 'normalised-expected' code prevents: Caused by: clojure.lang.ExceptionInfo: Can't call nil
-             normalised-expected (if (nil? expected) 'nil? expected)]
-        `(if (and (fn? ~normalised-expected) (not ~equal?))
+      ; in JVM CLJS, 'normalised-expected' code prevents: Caused by: clojure.lang.ExceptionInfo: Can't call nil
+      ~(let [normalised-expected (if (nil? expected) 'nil? expected)]
+        `(if (or (and (fn? ~normalised-expected) (not ~equal?))
+                 (nil? ~expected))
           (is (pred-ex (~normalised-expected ~res)))
           (is (equal-ex? (->clj ~normalised-expected) (->clj ~res))))))))
 
