@@ -37,6 +37,8 @@
 
 (ex string? <= (inc 0))
 
+(ex false => #(true? %))
+
 (ex (foo 2) = inc)
 
 (ex inc = (foo 2))

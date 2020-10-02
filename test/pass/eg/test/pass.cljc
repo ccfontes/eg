@@ -214,7 +214,9 @@
 (deftest normalise-pred-test
   (is (= "int?" (report/normalise-pred 'clojure.core/int?)))
   (is (= "int?" (report/normalise-pred 'cljs.core/int?)))
-  (is (= "clojure.string/join" (report/normalise-pred 'clojure.string/join))))
+  (is (= "clojure.string/join" (report/normalise-pred 'clojure.string/join)))
+  (is (= "clojure.string/join" (report/normalise-pred 'clojure.string/join)))
+  (is (= "(fn [x] (+ x 1))" (report/normalise-pred '(fn [x] (+ x 1))))))
 
 (deftest normalise-because-error-test
   (is (= {:pred "int?", :val "\"foo\""}
@@ -323,5 +325,7 @@
 (ex 4 => int?)
 
 (ex (true? false) => false)
+
+(ex false => #(false? %))
 
 (ex "foo")

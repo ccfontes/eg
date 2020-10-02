@@ -48,7 +48,7 @@ lein tach lumo
 ## Failing tests notes
 The test report should look like this:
 ```
-Ran 12 tests containing 21 assertions.
-19 failures, 0 errors.
+Ran 15 tests containing 24 assertions.
+22 failures, 0 errors.
 Tests failed.
 ```

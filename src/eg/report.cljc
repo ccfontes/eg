@@ -7,9 +7,11 @@
             [eg.platform :refer [if-cljs ->clj explain-data]]))
 
 (defn normalise-pred
-  "If predicate is part of clj core, omit the namespace."
+  "Represent predicate as a string.
+  If predicate is part of clj core, omit the namespace."
   [pred]
-  (if (#{"clojure.core" "cljs.core"} (namespace pred))
+  (if (and (symbol? pred)
+           (#{"clojure.core" "cljs.core"} (namespace pred)))
     (name pred)
     (str pred)))
 
