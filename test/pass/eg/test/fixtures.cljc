@@ -1,5 +1,8 @@
 (ns eg.test.fixtures
-  (:require [clojure.spec.alpha :as spec]))
+  ; Alias below named 'fixtures-spec', rather than 'spec' as in other
+  ; namespaces, in order to uncover potential missing require for
+  ; 'clojure.spec.alpha' ns in integration tests
+  (:require [clojure.spec.alpha :as fixtures-spec]))
 
 (defn foo [x] inc)
 
@@ -9,8 +12,8 @@
 
 (defn js-eggs [x] x)
 
-(spec/def ::string string?)
+(fixtures-spec/def ::string string?)
 
-(spec/def ::int int?)
+(fixtures-spec/def ::int int?)
 
-(spec/def ::map map?)
+(fixtures-spec/def ::map map?)

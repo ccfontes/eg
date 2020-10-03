@@ -1,10 +1,7 @@
-(ns eg.test.pass
+(ns eg.test.pass.unit
     (:require [eg.platform :as platform :refer [deftest is testing cross-throw]]
               [eg.test.fixtures :as fixtures]
-              [eg :refer [eg
-                          ge
-                          ex
-                          normalize-inverted-expr
+              [eg :refer [normalize-inverted-expr
                           examples-acc
                           spec-eg-acc
                           parse-example
@@ -19,8 +16,7 @@
                           cljs-safe-namespace
                           rm-lead-colon
                           variadic-bang?]]
-              [eg.report :as report]
-      #?(:clj [eg :refer [set-eg-no-refresh!]])))
+              [eg.report :as report]))
 
 (deftest normalize-inverted-expr-test
   (is (= [3 '=> 3] (normalize-inverted-expr [3 '<= 3]))))
@@ -216,7 +212,9 @@
   (is (= "int?" (report/normalise-pred 'cljs.core/int?)))
   (is (= "clojure.string/join" (report/normalise-pred 'clojure.string/join)))
   (is (= "clojure.string/join" (report/normalise-pred 'clojure.string/join)))
-  (is (= "(fn [x] (+ x 1))" (report/normalise-pred '(fn [x] (+ x 1))))))
+  (is (= "(fn [x] (+ x 1))" (report/normalise-pred '(fn [x] (+ x 1)))))
+  (let [f '(fn [x] (+ x 1))]
+    (is (= "(fn [x] (+ x 1))" (report/normalise-pred f)))))
 
 (deftest normalise-because-error-test
   (is (= {:pred "int?", :val "\"foo\""}
@@ -226,106 +224,14 @@
   (is (= {:pred 'clojure.core/int? :val "foo"}
          (report/spec->because-error #:clojure.spec.alpha{:problems [{:pred 'clojure.core/int?, :val "foo"}]})))
   (is (= {:pred 'clojure.core/int? :val "foo"}
-           (report/spec->because-error #:cljs.spec.alpha{:problems [{:pred 'clojure.core/int?, :val "foo"}]}))))
+         (report/spec->because-error #:cljs.spec.alpha{:problems [{:pred 'clojure.core/int?, :val "foo"}]}))))
 
 (deftest ->because-error-msg-test
-  (is (=  "\"foo\" fails: int?" (report/->because-error-msg {:pred 'clojure.core/int?, :val "foo"}))))
+  (is (=  "\"foo\" fails: int?"
+          (report/->because-error-msg {:pred 'clojure.core/int?, :val "foo"}))))
 
 (deftest spec-because-test
   (is (= "   because: 1 fails: string?"
          (report/spec-because 1 {:pred 'clojure.core/string? :val 1} true)))
   (is (= "   because: 1 is a valid example"
          (report/spec-because 1 {:pred 'clojure.core/int? :val 1} false))))
-
-(eg true? true true)
-
-(eg fixtures/noargs [] "foo")
-
-(eg not [(not true)] true)
-
-(eg set [[1 2]] #{1 2})
-
-(ge * #(= 9 %) [3 3])
-
-(eg -
-  [1 2]       integer?
-  [1 2]       ::fixtures/int
-  [1 2]    => -1
-  integer? <= [1 2])
-
-(ge +
-  3           [1 2]
-  [1 2]    => #(integer? %)
-  integer? <= [1 2])
-
-(eg clojure.core/false? [false] true)
-
-(eg vector
-  [5 6 _ 8]   vector?
-  [4 _ 5]     vector?
-  [3 $mono]   vector?
-  [$thing $2] [$thing $2])
-
-(eg assoc-in
-  [{} [:a :b] {:eggs "boiled"}] => {:a {:b {:eggs "boiled"}}}
-  [_ $spam _] => map?
-  [_ _ $eggs] => {:a {:b $eggs}})
-
-#?(:clj
-  (let [set-eg-ret (set-eg-no-refresh! '[eg ge])]
-    (ex '#{eg ge} <= (set (map (comp :name meta) set-eg-ret)))))
-
-(eg ::fixtures/string "foo" (! 2 3))
-
-(ge ::fixtures/int
-  (identity 4)
-  !"eggs"
-  (! 4.5 2.3)
-  3)
-
-(eg ::fixtures/map {:foo "bar"})
-
-(eg fixtures/foo 2 = inc)
-
-(ge fixtures/bar inc = 2)
-
-(eg identity
-  nil   nil
-  1 => ::fixtures/int
-  "eggs" ::fixtures/string
-  ::fixtures/string <= "foo"
-  ::fixtures/int = ::fixtures/int
-  [nil] nil)
-
-(let [test-eg-ret (ex (inc 0) => 1)
-      f-len (count "eg-test-")]
-  (ex var? <= test-eg-ret)
-  (ex (-> test-eg-ret meta :test) => boolean)
-  (ex (-> test-eg-ret meta :test) => fn?)
-  (ex (-> test-eg-ret meta :name name (subs f-len)) => not-empty))
-
-(ex (identity nil) => nil)
-
-(ex (identity nil) = nil)
-
-(ex (fixtures/foo 2) = inc)
-
-(ex inc = (fixtures/foo 2))
-
-#?(:cljs
-  (eg fixtures/js-eggs
-    #js {:a [1]} => #js {:a [1]}
-    #js {:a [1]} => (clj->js {:a [1]})
-    (clj->js {:a [1]}) => #js {:a [1]}
-    (clj->js {:a [1]}) => (clj->js {:a [1]})))
-
-#?(:cljs
-  (ex (fixtures/js-eggs #js {:a [2]}) => #js {:a [2]}))
-
-(ex 4 => int?)
-
-(ex (true? false) => false)
-
-(ex false => #(false? %))
-
-(ex "foo")

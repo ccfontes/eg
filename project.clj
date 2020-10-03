@@ -11,8 +11,10 @@
   :test-paths ["test/pass" "test/fail"]
   :repositories [["releases" {:url "https://repo.clojars.org"
                               :creds :gpg}]]
-  :aliases {"clj-test-pass"  ["test" "eg.test.pass"]
-            "cljs-test-pass" ["with-profiles" "+cljs-test-pass" "cljsbuild" "test"]
+  :aliases {"clj-test-pass-unit"  ["test" "eg.test.pass.unit"]
+            "cljs-test-pass-unit" ["with-profiles" "+cljs-test-pass-unit" "cljsbuild" "test"]
+            "clj-test-pass-integration"  ["test" "eg.test.pass.integration"]
+            "cljs-test-pass-integration" ["with-profiles" "+cljs-test-pass-integration" "cljsbuild" "test"]
             "clj-test-fail"  ["test" "eg.test.fail"]
             "cljs-test-fail" ["with-profiles" "+cljs-test-fail" "cljsbuild" "test"]
             "coverage"       ["with-profiles" "+cloverage" "cloverage" "--codecov"]}
@@ -21,7 +23,7 @@
   :repl-options {:init (clojure.tools.namespace.repl/refresh)
                  :welcome (do (println "To refresh all namespaces, run: (refresh)")
                               (println "To run all tests, run: (run-tests)"))}
-  :tach {:test-runner-ns eg.test.pass.runner
+  :tach {:test-runner-ns eg.test.pass.integration.runner
          :source-paths ["src" "test/pass"]
          :force-non-zero-exit-on-test-failure? true}
   :profiles
@@ -32,20 +34,34 @@
            :injections [(require 'pjstadig.humane-test-output)
                         (pjstadig.humane-test-output/activate!)]}
      :cloverage {:plugins [[lein-cloverage "1.1.1"]]
-                 :cloverage {:test-ns-regex [#"^eg\.test\.pass$"]}}
-     :cljs-test-pass
-      {:cljsbuild
-        {:test-commands {"pass-node" ["node" "target/out/test/pass/runner.js"]}
-         :builds
-          {:test
-            {:source-paths ["src" "test/pass"]
-             :compiler     {:target        :nodejs
-                            :main          eg.test.pass.runner
-                            :output-to     "target/out/test/pass/runner.js"
-                            :output-dir    "target/out/test/pass"
-                            :optimizations :none
-                            :source-map    true
-                            :warnings      {:single-segment-namespace false}}}}}}
+                 :cloverage {:test-ns-regex [#"^eg\.test\.pass\.unit$"
+                                             #"^eg\.test\.pass\.integration$"]}}
+     :cljs-test-pass-unit
+       {:cljsbuild
+         {:test-commands {"pass-unit-node" ["node" "target/out/test/pass/unit/runner.js"]}
+          :builds
+           {:test
+             {:source-paths ["src" "test/pass"]
+              :compiler     {:target        :nodejs
+                             :main          eg.test.pass.unit.runner
+                             :output-to     "target/out/test/pass/unit/runner.js"
+                             :output-dir    "target/out/test/pass/unit"
+                             :optimizations :none
+                             :source-map    true
+                             :warnings      {:single-segment-namespace false}}}}}}
+     :cljs-test-pass-integration
+       {:cljsbuild
+         {:test-commands {"pass-integration-node" ["node" "target/out/test/pass/integration/runner.js"]}
+           :builds
+            {:test
+              {:source-paths ["src" "test/pass"]
+               :compiler     {:target        :nodejs
+                              :main          eg.test.pass.integration.runner
+                              :output-to     "target/out/test/pass/integration/runner.js"
+                              :output-dir    "target/out/test/pass/integratoin"
+                              :optimizations :none
+                              :source-map    true
+                              :warnings      {:single-segment-namespace false}}}}}}
      :cljs-test-fail
       {:cljsbuild
         {:test-commands {"fail-node" ["node" "target/out/test/fail/runner.js"]}

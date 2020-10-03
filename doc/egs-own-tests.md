@@ -3,8 +3,13 @@
 ## Tests targeting Clojure
 
 ### Passing tests
+Unit tests:
 ```
-lein clj-test-pass
+lein clj-test-pass-unit
+```
+Integration tests:
+```
+lein clj-test-pass-integration
 ```
 
 ### Failing tests
@@ -29,8 +34,13 @@ Enable source maps on your `project.clj` test build config:
 ```
 
 ### Passing tests
+Unit tests:
 ```
-lein cljs-test-pass
+lein cljs-test-pass-unit
+```
+Integration tests:
+```
+lein cljs-test-pass-integration
 ```
 
 ### Failing tests
