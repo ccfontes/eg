@@ -58,7 +58,7 @@
                :compiler     {:target        :nodejs
                               :main          eg.test.pass.integration.runner
                               :output-to     "target/out/test/pass/integration/runner.js"
-                              :output-dir    "target/out/test/pass/integratoin"
+                              :output-dir    "target/out/test/pass/integration"
                               :optimizations :none
                               :source-map    true
                               :warnings      {:single-segment-namespace false}}}}}}

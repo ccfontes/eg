@@ -2,8 +2,7 @@
                 :license {:name "The MIT License"
                           :url "https://github.com/ccfontes/eg/blob/master/LICENSE.md"}}
   (:require [clojure.string :as str]
-            [cljs.test :include-macros true]
-            [clojure.test :as clj.test]
+            [clojure.test]
             [eg.platform :refer [if-cljs ->clj explain-data]]))
 
 (defn normalise-pred
@@ -69,9 +68,9 @@
                                     (get depth)
                                     (if-cljs-js-then-normalise)
                                     (str/trim)))]
-        (let [fname (cljs.test/js-filename stack-element)
-              [line column] (cljs.test/js-line-and-column stack-element)
-              [fname line column] (cljs.test/mapped-line-and-column fname line column)]
+        (let [fname (clojure.test/js-filename stack-element)
+              [line column] (clojure.test/js-line-and-column stack-element)
+              [fname line column] (clojure.test/mapped-line-and-column fname line column)]
           {:file fname :line line :column column})
         {:file (.-fileName exception)
          :line (.-lineNumber exception)}))))
@@ -81,9 +80,9 @@
     "Add file and line information to a test result and call report.
      If you are writing a custom assert-expr method, call this function
      to pass test results to report.
-     Modified clj.test fn to convert :fail-spec into :fail, in order to get file:line.
+     Modified clojure.test fn to convert :fail-spec into :fail, in order to get file:line.
      Source: https://github.com/clojure/clojure/blob/master/src/clj/clojure/test.clj"
-    [m] (clj.test/report
+    [m] (clojure.test/report
           (case (:type (update m :type #(if (#{:fail-spec :fail-default} %) :fail %)))
             :fail (merge (stacktrace-file-and-line (drop-while
                                                      #(let [classname (.getClassName ^StackTraceElement %)
@@ -104,7 +103,7 @@
                   :fail (merge (file-and-line (js/Error.) st-depth) m)
                   :error (merge (file-and-line (:actual m) 0) m)
                   m)]
-          (cljs.test/report m))))
+          (clojure.test/report m))))
 
 (defn ->file-and-line-repr
   "Takes path to a test file, and test line.
@@ -207,23 +206,23 @@
 #?(:clj
     (do
       ; defmethods for cljs JVM
-      (defmethod cljs.test/assert-expr 'eg.platform/valid-spec?
+      (defmethod clojure.test/assert-expr 'eg.platform/valid-spec?
         [_ _ assert-expr] (do-spec-report assert-expr true))
       
-      (defmethod cljs.test/assert-expr 'eg.platform/invalid-spec?
+      (defmethod clojure.test/assert-expr 'eg.platform/invalid-spec?
         [_ _ assert-expr] (do-spec-report assert-expr false))
       
-      (defmethod cljs.test/assert-expr 'eg.platform/equal?
+      (defmethod clojure.test/assert-expr 'eg.platform/equal?
         [_ _ assert-expr] (do-default-report assert-expr false))
       
-      (defmethod cljs.test/assert-expr 'eg.platform/equal-ex?
+      (defmethod clojure.test/assert-expr 'eg.platform/equal-ex?
         [_ _ assert-expr] (do-default-report assert-expr true))
         
-      (defmethod cljs.test/assert-expr 'eg.platform/fn-identity-intercept
+      (defmethod clojure.test/assert-expr 'eg.platform/fn-identity-intercept
         [_ _ assert-expr] (do-pred-report assert-expr false))
 
-      (defmethod cljs.test/assert-expr 'eg.platform/valid-expected-spec?
+      (defmethod clojure.test/assert-expr 'eg.platform/valid-expected-spec?
         [_ _ assert-expr] (do-expected-spec-report assert-expr false))
 
-      (defmethod cljs.test/assert-expr 'eg.platform/pred-ex
+      (defmethod clojure.test/assert-expr 'eg.platform/pred-ex
         [_ _ assert-expr] (do-example-pred-report assert-expr true))))
