@@ -14,15 +14,15 @@
                                           fn-identity-intercept
                                           valid-expected-spec?
                                           pred-ex]]
-            [eg.report] ; here for side-effects extending clj.test/assert-expr, cljs.test/assert-expr, and js/cljs.test$macros.assert_expr
             [clojure.walk :refer [postwalk]]
             [clojure.string :as str]
             [clojure.test :as clj.test]
             [clojure.spec.alpha :as spec]
    #?(:cljs [cljs.test :include-macros true])
     #?(:clj [clojure.tools.namespace.repl])
-   #?(:clj  [eg.report.clj])    ; here for side-effects extending clojure.test/assert-expr
-   #?(:cljs [eg.report.cljs]))) ; here for side-effects extending cljs.test/report    
+   #?(:clj  [eg.report.clj])    ; here for side-effects to extend clojure.test/assert-expr
+   #?(:clj  [eg.report.cljs])   ; here for side-effects to extend cljs.test/assert-expr
+   #?(:cljs [eg.report.cljs]))) ; here for side-effects to extend cljs.test/report, and js/cljs.test$macros.assert_expr
 
 (defonce focus-metas (atom {}))
 

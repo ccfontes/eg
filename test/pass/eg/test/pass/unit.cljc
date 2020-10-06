@@ -157,10 +157,10 @@
                     #?(:cljs (.-message e)))))))
 
 (deftest if-cljs-test
-  #?(:cljs (do (is (= "cljs" (platform/if-cljs "cljs" "clj")))
-               (is (= "cljs" (platform/if-cljs "cljs"))))
-     :clj (do (is (= "clj" (platform/if-cljs "cljs" "clj")))
-              (is (= nil (platform/if-cljs "clj"))))))
+  #?(:cljs (do (is (= "cljs" (platform/if-target-is-cljs "cljs" "clj")))
+               (is (= "cljs" (platform/if-target-is-cljs "cljs"))))
+     :clj (do (is (= "clj" (platform/if-target-is-cljs "cljs" "clj")))
+              (is (= nil (platform/if-target-is-cljs "clj"))))))
 
 (deftest equal?-test
   (is (true? (platform/equal? 3 3)))

@@ -19,7 +19,12 @@
             "cljs-test-fail" ["with-profiles" "+cljs-test-fail" "cljsbuild" "test"]
             "coverage"       ["with-profiles" "+cloverage" "cloverage" "--codecov"]}
   :plugins [[lein-cljsbuild "1.1.7"] [lein-tach "1.0.0"]]
-  :dependencies [[org.clojure/tools.namespace "0.3.0-alpha4"]]
+  :dependencies [[org.clojure/tools.namespace "0.3.0-alpha4"]
+                 [org.clojure/clojure "1.10.0" :scope "provided"]
+                 ; clojurescript not provided, otherwise Clojure programs would
+                 ; need to include clojurescript in their dependencies in order
+                 ; to not break 'eg.report.cljs.clj'
+                 [org.clojure/clojurescript "1.10.520"]]
   :repl-options {:init (clojure.tools.namespace.repl/refresh)
                  :welcome (do (println "To refresh all namespaces, run: (refresh)")
                               (println "To run all tests, run: (run-tests)"))}
@@ -28,9 +33,7 @@
          :force-non-zero-exit-on-test-failure? true}
   :profiles
     {:repl {:source-paths ["repl"]}
-     :dev {:dependencies [[org.clojure/clojure "1.10.0"]
-                          [org.clojure/clojurescript "1.10.520" :scope "provided"]
-                          [pjstadig/humane-test-output "0.9.0"]]
+     :dev {:dependencies [[pjstadig/humane-test-output "0.9.0"]]
            :injections [(require 'pjstadig.humane-test-output)
                         (pjstadig.humane-test-output/activate!)]}
      :cloverage {:plugins [[lein-cloverage "1.1.1"]]

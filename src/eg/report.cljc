@@ -3,7 +3,7 @@
                           :url "https://github.com/ccfontes/eg/blob/master/LICENSE.md"}}
   (:require [clojure.string :as str]
             [clojure.test]
-            [eg.platform :refer [if-cljs ->clj explain-data]]))
+            [eg.platform :refer [if-target-is-cljs ->clj explain-data]]))
 
 (defn normalise-pred
   "Represent predicate as a string.
@@ -110,7 +110,7 @@
   Returns a list of path to a test file and test line concatenated as a string.
   If runtime is cljs JS, test line is not concatenated to path to test file."
   [file line]
-  (->> (if-not (if-cljs (exists? js/cljs.test$macros)) (str ":" line))
+  (->> (if-not (if-target-is-cljs (exists? js/cljs.test$macros)) (str ":" line))
     (str file)
     (list)))
 
@@ -202,27 +202,3 @@
     spec-kw (println (spec-because nil (spec->because-error spec-error-data) true))
     :else   (do (println "  expected:" (pr-str expected))
                 (println "    actual:" (pr-str actual)))))
-
-#?(:clj
-    (do
-      ; defmethods for cljs JVM
-      (defmethod clojure.test/assert-expr 'eg.platform/valid-spec?
-        [_ _ assert-expr] (do-spec-report assert-expr true))
-      
-      (defmethod clojure.test/assert-expr 'eg.platform/invalid-spec?
-        [_ _ assert-expr] (do-spec-report assert-expr false))
-      
-      (defmethod clojure.test/assert-expr 'eg.platform/equal?
-        [_ _ assert-expr] (do-default-report assert-expr false))
-      
-      (defmethod clojure.test/assert-expr 'eg.platform/equal-ex?
-        [_ _ assert-expr] (do-default-report assert-expr true))
-        
-      (defmethod clojure.test/assert-expr 'eg.platform/fn-identity-intercept
-        [_ _ assert-expr] (do-pred-report assert-expr false))
-
-      (defmethod clojure.test/assert-expr 'eg.platform/valid-expected-spec?
-        [_ _ assert-expr] (do-expected-spec-report assert-expr false))
-
-      (defmethod clojure.test/assert-expr 'eg.platform/pred-ex
-        [_ _ assert-expr] (do-example-pred-report assert-expr true))))
