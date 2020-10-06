@@ -28,8 +28,8 @@ jobs:
           key: v1-dependencies-{{ checksum "project.clj" }}
 
       - run: lein clj-test-pass-integration  # dup from 'lein coverage' because we want to catch missing requires
-      - run: lein cljs-test-pass-unit
-      - run: lein cljs-test-pass-integration
+      - run: lein cljs-test-pass-unit | tee /dev/tty | (! grep -qE 'FAIL|ERROR|Error')
+      - run: lein cljs-test-pass-integration | tee /dev/tty | (! grep -qE 'FAIL|ERROR|Error')
       - run: npm install -g --unsafe-perm lumo-cljs
       - run: lein tach lumo
       - run: CLOVERAGE_VERSION=1.1.1 lein coverage
