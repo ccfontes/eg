@@ -55,6 +55,11 @@ lein tach planck
 lein tach lumo
 ```
 
+## Run all passing test batteries
+```sh
+./script/run_all_passing_tests.sh
+```
+
 ## Failing tests notes
 The test report should look like this:
 ```
