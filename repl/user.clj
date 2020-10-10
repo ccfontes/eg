@@ -1,13 +1,13 @@
 (ns user
   (:require [clojure.tools.namespace.repl :refer [refresh]]
-            [clojure.test :refer [deftest is]]
+            [clojure.test :as test :refer [deftest is]]
             [eg :refer [eg ge ex]]
             [eg.test.pass.unit]
             [eg.test.pass.integration]))
 
 (defn run-tests []
   (refresh)
-  (clojure.test/run-tests 'eg.test.pass.unit 'eg.test.pass.integration 'user))
+  (test/run-tests 'eg.test.pass.unit 'eg.test.pass.integration 'user))
 
 (intern 'eg 'refresh refresh)
 (intern 'eg.platform 'refresh refresh)

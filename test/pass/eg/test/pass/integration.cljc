@@ -105,3 +105,8 @@
 
 (let [f (constantly true)]
   (ex "foo" => f))
+
+; prove that expressions are evaluated inside 'deftest'
+(ex fixtures/exception-report => #(re-find #"ERROR in" %))
+; prove that expressions are evaluated inside 'is', because "expected:" is not nil
+(ex fixtures/exception-report => #(re-find #"expected: \(eg.platform/pred-ex \(string" %))
