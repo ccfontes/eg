@@ -1,7 +1,8 @@
 (ns eg.test.pass.unit
     (:require [eg.platform :as platform :refer [deftest is testing cross-throw]]
               [eg.test.fixtures :as fixtures]
-              [eg :refer [map-dregs
+              [eg :refer [ffilter
+                          map-dregs
                           normalize-inverted-expr
                           examples-acc
                           spec-eg-acc
@@ -19,7 +20,14 @@
                           variadic-bang?]]
               [eg.report :as report]))
 
+(deftest ffilter-test
+  (is (= nil (ffilter odd? nil)))
+  (is (= nil (ffilter odd? [])))
+  (is (= 4 (ffilter even? [4])))
+  (is (= 1 (ffilter odd? [2 1 4]))))
+
 (deftest map-dregs-test
+  (is (= [] (map-dregs vector nil)))
   (is (= [] (map-dregs vector '())))
   (is (= [ [1] ] (map-dregs vector [1])))
   (is (= [ [1 1] [2] ] (map-dregs vector '(1) [] [1 2]))))
