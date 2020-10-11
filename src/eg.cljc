@@ -37,16 +37,14 @@
 
 (defn map-dregs
   "Like map but when there is a different count between colls, applies input fn
-   to the coll values until the biggest coll is empty."
+  to the coll values until the biggest coll is empty."
   [f & colls]
-  ((fn map* [f colls]
-     (lazy-seq
-       (if-let [non-empty-colls (seq (filter seq colls))]
-         (let [first-items (map first non-empty-colls)
-               rest-colls (map rest non-empty-colls)]
-           (cons (apply f first-items)
-                 (map* f rest-colls))))))
-  f colls))
+  (lazy-seq
+    (if-let [non-empty-colls (seq (filter seq colls))]
+      (let [first-items (map first non-empty-colls)
+            rest-colls (map rest non-empty-colls)]
+        (cons (apply f first-items)
+              (apply map-dregs f rest-colls))))))
 
 (def normalize-inverted-expr
   "Normalize inverted expression.

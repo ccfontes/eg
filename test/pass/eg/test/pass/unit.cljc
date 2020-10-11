@@ -1,7 +1,8 @@
 (ns eg.test.pass.unit
     (:require [eg.platform :as platform :refer [deftest is testing cross-throw]]
               [eg.test.fixtures :as fixtures]
-              [eg :refer [normalize-inverted-expr
+              [eg :refer [map-dregs
+                          normalize-inverted-expr
                           examples-acc
                           spec-eg-acc
                           parse-example
@@ -17,6 +18,11 @@
                           rm-lead-colon
                           variadic-bang?]]
               [eg.report :as report]))
+
+(deftest map-dregs-test
+  (is (= [] (map-dregs vector '())))
+  (is (= [ [1] ] (map-dregs vector [1])))
+  (is (= [ [1 1] [2] ] (map-dregs vector '(1) [] [1 2]))))
 
 (deftest normalize-inverted-expr-test
   (is (= [3 '=> 3] (normalize-inverted-expr [3 '<= 3]))))
