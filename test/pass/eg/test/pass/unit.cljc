@@ -3,7 +3,6 @@
               [eg.test.fixtures :as fixtures]
               [eg :refer [ffilter
                           map-dregs
-                          normalize-inverted-expr
                           examples-acc
                           spec-eg-acc
                           parse-example
@@ -31,9 +30,6 @@
   (is (= [] (map-dregs vector '())))
   (is (= [ [1] ] (map-dregs vector [1])))
   (is (= [ [1 1] [2] ] (map-dregs vector '(1) [] [1 2]))))
-
-(deftest normalize-inverted-expr-test
-  (is (= [3 '=> 3] (normalize-inverted-expr [3 '<= 3]))))
 
 (deftest examples-acc-test
   (is (= [ [] [2] ] (examples-acc [ [] [] ] 2)))
@@ -86,10 +82,11 @@
   (is (= [4 '=> 2] (parse-expression [4 '=> 2])))
   (is (= [3 '=> 2] (parse-expression [2 '<= 3])))
   (is (= [2 '= 5] (parse-expression [2 '= (+ 1 4)])))
+  (is (= [2 '=> 4] (parse-expression [4 2])))
   (is (= [true '=> true] (parse-expression ["foo"])))
   (is (= [false '=> true] (parse-expression [nil])))
-  (is (= "Invalid expression: (ex 2 3)"
-         (try (parse-expression [2 3])
+  (is (= "Invalid expression: (ex 2 3 7)"
+         (try (parse-expression [2 3 7])
            (catch #?(:clj Exception :cljs :default) e
              #?(:clj (-> e Throwable->map :cause))
              #?(:cljs (.-message e)))))))

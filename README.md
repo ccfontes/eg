@@ -94,7 +94,7 @@ override the default example direction of `eg` or `ge`.
   {:a 1} coll?) ; when no operator is used, 'is' operator semantics are assumed
 ```
 
-`ex` makes it possible to test the result of calling an arbitrary form **ex**pression. Typical scenarios include testing the result of calling a macro (`eg`, and `ge` only support function testing), or decomposing the assertion of different properties or values from calling a form:
+`ex` makes it possible to test the result from evaluating an arbitrary s-**ex**pression. Typical scenarios include testing the result of calling a macro (`eg`, and `ge` only support function testing), or decomposing the assertion of different properties or values from calling a form:
 ```clj
 ; let must be used outside of 'ex' when surrounding examples
 (let [test-eg-ret (ex (inc 0) => 1)
@@ -110,8 +110,20 @@ override the default example direction of `eg` or `ge`.
 
   (ex (true? false) => false) ;=> eg-test-<rand-id>
 
-  ; tests truthy expression
-  (ex "bar")
+; when '=>' is omitted, <expected | checker> and <actual> placeholders are
+; reversed. This syntax is ideal for multiline tests
+
+(ex "Long string to examplify 'ex' syntax that is ideal for multiline tests"
+    (identity "Long string to examplify 'ex' syntax that is ideal for multiline tests"))
+;=> eg-test-<rand-id>
+
+(ex string?
+    "Long string to examplify 'ex' syntax that is ideal for multiline tests")
+;=> eg-test-<rand-id>
+
+; tests truthy expression
+(ex "bar")
+;=> eg-test-<rand-id>
 ```
 
 If we want to check if the expected value is a function or a spec, the operator `=` is used:

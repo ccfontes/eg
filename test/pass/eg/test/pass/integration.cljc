@@ -101,6 +101,12 @@
 
 (ex false => #(false? %))
 
+(ex "Long string to examplify 'ex' syntax that is ideal for multiline tests"
+    "Long string to examplify 'ex' syntax that is ideal for multiline tests")
+
+(ex string?
+    "Long string to examplify 'ex' syntax that is ideal for multiline tests")
+
 (ex "foo")
 
 (let [f (constantly true)]
@@ -109,4 +115,5 @@
 ; prove that expressions are evaluated inside 'deftest'
 (ex fixtures/exception-report => #(re-find #"ERROR in" %))
 ; prove that expressions are evaluated inside 'is', because "expected:" is not nil
-(ex fixtures/exception-report => #(re-find #"expected: \(eg.platform/pred-ex \(string" %))
+(ex #(re-find #"expected: \(eg.platform/pred-ex \(string" %)
+    fixtures/exception-report)

@@ -27,6 +27,7 @@
 (defonce focus-metas (atom {}))
 
 (spec/def ::expr-spec (spec/or :one-arg (spec/tuple any?)
+                               :two-arg (spec/tuple any? any?)
                                :three-args-normal (spec/tuple any? #{'= '=>} any?)
                                :three-args-inverted (spec/tuple any? #{'<=} any?)))
 
@@ -45,11 +46,6 @@
             rest-colls (map rest non-empty-colls)]
         (cons (apply f first-items)
               (apply map-dregs f rest-colls))))))
-
-(def normalize-inverted-expr
-  "Normalize inverted expression.
-  E.g.: [3 '<= 3], becomes: [3 '=> 3]"
-  (juxt last (constantly '=>) first))
 
 (defn examples-acc
   "Accumulates examples, mainly taking into account operator used in example."
@@ -105,13 +101,13 @@
         :invalid
         (first conformed-expr)))))
 
-(defmethod parse-expression :one-arg [expr]
-  [(-> expr first boolean) '=> true])
+(defmethod parse-expression :one-arg [[truthy]] [(boolean truthy) '=> true])
+
+(defmethod parse-expression :two-arg [[f l]] [l '=> f])
 
 (defmethod parse-expression :three-args-normal [expr] expr)
 
-(defmethod parse-expression :three-args-inverted [expr]
-  (normalize-inverted-expr expr))
+(defmethod parse-expression :three-args-inverted [[f back-arrow l]] [l '=> f])
 
 (defmethod parse-expression :invalid [expr]
   (cross-throw (apply str "Invalid expression: (ex "
