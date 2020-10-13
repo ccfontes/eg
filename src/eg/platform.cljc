@@ -44,23 +44,24 @@
   [& args] (apply spec/valid? args))
 
 (defn equal?
-  "Create alias for '=, so that we don't override or be overriden by libraries
-  dispatching on '= for clojure.test/assert-expr, and to apply our custom
-  clojure.test/assert-expr only to function tests, i.e., not expression tests."
-  [& args] (apply = args))
+  "Create a two args version of '=, so that we don't override or be overriden
+  by libraries dispatching on '= for clojure.test/assert-expr, and to apply
+  our custom clojure.test/assert-expr only to function tests, i.e., not
+  expression tests."
+  [x y] (= (->clj x) (->clj y)))
 
 (defn equal-ex?
-  "Same as 'equal?', but for expression tests."
-  [& args] (apply equal? args))
+  "The same as 'equal?', but to be used for expression tests."
+  [x y] (= (->clj x) (->clj y)))
 
 (defn pred-ex
   "Meant to be used as a clojure.test/assert-expr dispatch value on truthy expression tests."
-  [arg] (identity arg))
+  [arg] arg)
 
 (defn fn-identity-intercept
   "Create alias for 'fn, so that we don't override or be overriden by libraries
   dispatching on 'fn for clojure.test/assert-expr."
-  [arg] (identity arg))
+  [arg] arg)
 
 (defn explain-data
   "By wrapping spec/explain-data inside this function, prevents the macro using this code

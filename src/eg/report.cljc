@@ -108,18 +108,20 @@
 (defn ->file-and-line-repr
   "Takes path to a test file, and test line.
   Returns a list of path to a test file and test line concatenated as a string.
-  If runtime is cljs JS, test line is not concatenated to path to test file."
-  [file line]
-  (->> (if-not (if-target-is-cljs (exists? js/cljs.test$macros)) (str ":" line))
-    (str file)
-    (list)))
+  If runtime is cljs JS, expression is returned."
+  [file line & [expression-code]]
+  (if (if-target-is-cljs (exists? js/cljs.test$macros))
+    (if expression-code
+      (str ": "  expression-code)
+      "")
+    (str " (" file ":" line ")")))
 
 (defn ->testing-fn-repr
   "Returns a heading representation of the current test."
-  [{:keys [function file line expression?]}]
-  (if expression?
-    (->file-and-line-repr file line)
-    (list (list function)
+  [{:keys [function file line expression-code actual]}]
+  (if expression-code
+    (->file-and-line-repr file line expression-code)
+    (str " (" function ")"
           (->file-and-line-repr file line))))
 
 (defn do-spec-report
@@ -136,21 +138,21 @@
                   :spec-error-data (explain-data ~spec-kw ~example)}))
     result#))
 
-(defn do-example-pred-report
-  "Call do-report with a prepared params map for a function example taking a predicate checker."
-  [[_ [pred actual :as result]] expression?]
+(defn do-expression-pred-report
+  "Call do-report for an expression checked against a predicate."
+  [[_ [pred actual :as result]]]
   `(let [result# ~result]
     (if result#
       (do-report {:type :pass})
       (do-report {:type        :fail-default
                   :pred        '~pred
                   :actual      ~actual
-                  :expression? ~expression?}))
+                  :expression-code (str '~actual " => " '~pred)}))
     result#))
 
-(defn do-pred-report
+(defn do-example-pred-report
   "Call do-report with a prepared params map for a function example taking a predicate checker."
-  [[_ [pred [f & params :as actual] :as result]] expression?]
+  [[_ [pred [f & params :as actual] :as result]]]
   `(let [result# ~result]
     (if result#
       (do-report {:type :pass})
@@ -158,13 +160,12 @@
                   :function    '~f
                   :pred        '~pred
                   :actual      ~actual
-                  :params      (vec '~params)
-                  :expression? ~expression?}))
+                  :params      (vec '~params)}))
     result#))
 
 (defn do-expected-spec-report
   "Call do-report with a prepared params map for a function example taking a spec checker."
-  [[_ spec-kw [f & params :as actual] :as result] expression?]
+  [[_ spec-kw [f & params :as actual] :as result]]
   `(let [result# ~result]
     (if result#
       (do-report {:type :pass})
@@ -173,29 +174,39 @@
                   :spec-kw         '~spec-kw
                   :actual          ~actual
                   :params          (vec '~params)
-                  :expression?     ~expression?
                   :spec-error-data (explain-data ~spec-kw ~actual)}))
     result#))
 
-(defn do-default-report
+(defn do-expression-equal-report
+  "Call do-report for an expression test with an expected value."
+  [[equal expected actual] expression?]
+  `(let [result# (~equal ~actual ~expected)]
+    (if result#
+      (do-report {:type :pass})
+      (do-report {:type        :fail-default
+                  :expected    ~expected
+                  :actual      ~actual
+                  :expression-code (if ~expression? (str '~actual " => " '~expected))}))
+    result#))
+
+(defn do-example-equal-report
   "Call do-report with a prepared params map for a function example."
   [[equal expected [f & params :as actual]] expression?]
-  `(let [result# (~equal (->clj ~expected) (->clj ~actual))]
+  `(let [result# (~equal ~actual ~expected)]
     (if result#
       (do-report {:type :pass})
       (do-report {:type        :fail-default
                   :function    '~f
                   :params      (vec '~params)
                   :expected    ~expected
-                  :actual      ~actual
-                  :expression? ~expression?}))
+                  :actual      ~actual}))
     result#))
 
 (defn print-report
-  [{:keys [params expected actual expression? pred spec-kw spec-error-data] :as m}]
-  (if expression?
-    (println "\nFAIL in expression" (->testing-fn-repr m))
-    (do (apply println "\nFAIL in function" (->testing-fn-repr m))
+  [{:keys [params actual op expected expression-code pred spec-kw spec-error-data] :as m}]
+  (if expression-code
+    (println (str "\nFAIL in expression" (->testing-fn-repr m)))
+    (do (println (str "\nFAIL in function" (->testing-fn-repr m)))
         (println "    params:" (pr-str params))))
   (cond
     pred    (println (spec-because nil {:pred pred, :val actual} true))

@@ -6,11 +6,12 @@
             [eg.platform]
             [eg.report :refer [->file-and-line-repr
                                ->testing-fn-repr
-                               do-default-report
+                               do-example-equal-report
                                do-example-pred-report
-                               do-pred-report
-                               do-spec-report
+                               do-expression-equal-report
+                               do-expression-pred-report
                                do-expected-spec-report
+                               do-spec-report
                                print-report
                                spec->because-error
                                spec-because]]))
@@ -24,19 +25,19 @@
     [_ _ assert-expr] (do-spec-report assert-expr false))
 
   (defmethod js/cljs.test$macros.assert_expr 'eg.platform/equal?
-    [_ _ assert-expr] (do-default-report assert-expr false))
+    [_ _ assert-expr] (do-example-equal-report assert-expr false))
 
   (defmethod js/cljs.test$macros.assert_expr 'eg.platform/equal-ex?
-    [_ _ assert-expr] (do-default-report assert-expr true))
+    [_ _ assert-expr] (do-expression-equal-report assert-expr true))
 
   (defmethod js/cljs.test$macros.assert_expr 'eg.platform/fn-identity-intercept
-    [_ _ assert-expr] (do-pred-report assert-expr false))
+    [_ _ assert-expr] (do-example-pred-report assert-expr))
 
   (defmethod js/cljs.test$macros.assert_expr 'eg.platform/valid-expected-spec?
-    [_ _ assert-expr] (do-expected-spec-report assert-expr false))
+    [_ _ assert-expr] (do-expected-spec-report assert-expr))
 
   (defmethod js/cljs.test$macros.assert_expr 'eg.platform/pred-ex
-    [_ _ assert-expr] (do-example-pred-report assert-expr true)))
+    [_ _ assert-expr] (do-expression-pred-report assert-expr)))
 
 (defmethod cljs.test/report [:cljs.test/default :fail-spec]
   ; Source: https://github.com/clojure/clojurescript/blob/master/src/main/cljs/cljs/test.cljs

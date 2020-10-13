@@ -186,7 +186,7 @@
         `(if (or (and (fn? ~normalised-expected) (not ~equal?))
                  (nil? ~expected))
           (is (pred-ex (~normalised-expected ~res)))
-          (is (equal-ex? (->clj ~normalised-expected) (->clj ~res))))))))
+          (is (equal-ex? ~normalised-expected ~res)))))))
 
 (defn assoc-focus-metas
   "Creates a new entry in fn to focus? map for qualified function in params."

@@ -191,32 +191,30 @@
 #?(:cljs
   (if (exists? js/cljs.test$macros)
     (deftest ->file-and-line-repr-test
-      (is (= ["eg/test/pass.js"]
+      (is (= ""
              (report/->file-and-line-repr "eg/test/pass.js" 5))))
     (deftest ->file-and-line-repr-test
-      (is (= ["eg/test/pass.js:5"]
+      (is (= " (eg/test/pass.js:5)"
              (report/->file-and-line-repr "eg/test/pass.js" 5))))))
 
 #?(:clj
   (deftest ->file-and-line-repr-test
-    (is (= ["eg/test/pass.js:5"]
+    (is (= " (eg/test/pass.js:5)"
            (report/->file-and-line-repr "eg/test/pass.js" 5)))))
 
 #?(:cljs
-  (if (exists? js/cljs.test$macros)
-    (deftest ->testing-fn-repr-test
-      (is (= [['assoc-in] ["pass.js"]]
-             (report/->testing-fn-repr {:function 'assoc-in :file "pass.js" :line 208 :expression? false}))))
-    (deftest ->testing-fn-repr-test
-      (is (= ["pass.js:208"]
-             (report/->testing-fn-repr {:function 'assoc-in :file "pass.js" :line 208 :expression? true}))))))
+    (if (exists? js/cljs.test$macros)
+      (deftest ->testing-fn-repr-test
+        (is (= " (assoc-in)"
+               (report/->testing-fn-repr {:function 'assoc-in :file "pass.js" :line 208}))))
+      (deftest ->testing-fn-repr-test
+        (is (= " (assoc-in) (pass.js:208)"
+               (report/->testing-fn-repr {:function 'assoc-in :file "pass.js" :line 208}))))))
 
 #?(:clj
   (deftest ->testing-fn-repr-test
-    (is (= [['assoc-in] ["pass.cljc:208"]]
-           (report/->testing-fn-repr {:function 'assoc-in :file "pass.cljc" :line 208 :expression? false})))
-    (is (= ["pass.cljc:208"]
-           (report/->testing-fn-repr {:function 'assoc-in :file "pass.cljc" :line 208 :expression? true})))))
+    (is (= " (assoc-in) (pass.cljc:208)"
+           (report/->testing-fn-repr {:function 'assoc-in :file "pass.cljc" :line 208})))))
 
 (deftest normalise-pred-test
   (is (= "int?" (report/normalise-pred 'clojure.core/int?)))
