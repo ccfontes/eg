@@ -28,7 +28,7 @@
   :repl-options {:init (clojure.tools.namespace.repl/refresh)
                  :welcome (do (println "To refresh all namespaces, run: (refresh)")
                               (println "To run all tests, run: (run-tests)"))}
-  :tach {:test-runner-ns eg.test.pass.integration.runner
+  :tach {:test-runner-ns eg.test.pass.runner
          :source-paths ["src" "test/pass"]
          :force-non-zero-exit-on-test-failure? true}
   :profiles
