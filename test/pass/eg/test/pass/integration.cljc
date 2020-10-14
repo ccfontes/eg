@@ -40,8 +40,8 @@
   [$thing $2] [$thing $2])
 
 (eg assoc-in
-  [{} [:a :b] {:eggs "boiled"}] => {:a {:b {:eggs "boiled"}}}
   [_ $spam _] => map?
+  [{} [:a :b] {:eggs "boiled"}] => {:a {:b {:eggs "boiled"}}}
   [_ _ $eggs] => {:a {:b $eggs}})
 
 #?(:clj
