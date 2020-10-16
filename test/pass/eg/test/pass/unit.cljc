@@ -173,9 +173,9 @@
      :clj (do (is (= "clj" (platform/if-target-is-cljs "cljs" "clj")))
               (is (= nil (platform/if-target-is-cljs "clj"))))))
 
-(deftest equal?-test
-  (is (true? (platform/equal? 3 3)))
-  (is (= (= 3 3) (platform/equal? 3 3))))
+(deftest equal-eg?-test
+  (is (true? (platform/equal-eg? 3 3)))
+  (is (= (= 3 3) (platform/equal-eg? 3 3))))
 
 (deftest equal-ex?-test
   (is (boolean? (platform/equal-ex? 3 3))))

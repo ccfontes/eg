@@ -15,7 +15,7 @@
   (defmethod cljs.test/assert-expr 'eg.platform/invalid-spec?
     [_ _ assert-expr] (do-spec-report assert-expr false))
   
-  (defmethod cljs.test/assert-expr 'eg.platform/equal?
+  (defmethod cljs.test/assert-expr 'eg.platform/equal-eg?
     [_ _ assert-expr] (do-example-equal-report assert-expr false))
   
   (defmethod cljs.test/assert-expr 'eg.platform/equal-ex?

@@ -2,18 +2,17 @@
          :license {:name "The MIT License"
                    :url "https://github.com/ccfontes/eg/blob/master/LICENSE.md"}}
   #?(:cljs (:require-macros [eg :refer [eg ge ex]]))
-  (:require [eg.platform :as plat :refer [deftest
-                                          is
-                                          cross-throw
-                                          ->clj
-                                          cross-invalid-spec-kw
-                                          valid-spec?
-                                          invalid-spec?
-                                          equal?
-                                          equal-ex?
-                                          fn-identity-intercept
-                                          valid-expected-spec?
-                                          pred-ex]]
+  (:require [eg.platform :refer [deftest
+                                 is
+                                 cross-throw
+                                 cross-invalid-spec-kw
+                                 valid-spec?
+                                 invalid-spec?
+                                 equal-eg?
+                                 equal-ex?
+                                 fn-identity-intercept
+                                 valid-expected-spec?
+                                 pred-ex]]
             [clojure.walk :refer [postwalk]]
             [clojure.string :as str]
             [clojure.test :as clj.test]
@@ -165,7 +164,7 @@
                                     ; changing assertion expression order of args may break reports 
                                     (and (fn? ~normalised-expected) (not ~equal?))                (is (fn-identity-intercept (~normalised-expected (~fn-sym ~@param-vec))))
                                     (and (qualified-keyword? ~normalised-expected) (not ~equal?)) (is (valid-expected-spec? ~normalised-expected (~fn-sym ~@param-vec)))
-                                    :else                                                         (is (plat/equal? ~normalised-expected (~fn-sym ~@param-vec)))))))
+                                    :else                                                         (is (equal-eg? ~normalised-expected (~fn-sym ~@param-vec)))))))
                             examples)))]
       ; passing down ^:focus meta to clj.test: see alter-test-var-update-fn
       ; FIXME not associng in cljs

@@ -22,7 +22,12 @@
   Source: http://blog.nberger.com.ar/blog/2015/09/18/more-portable-complex-macro-musing"
   [then & [else]] (if (cljs-env? &env) then else))
 
-(defn ->clj [datum]
+(defn ->clj
+  "Recursively transform JS arrays into cljs vectors, and JS objects into cljs
+  maps, otherwise resulting data structure will be untouched.
+  We need this in order to compare for equality 'actual' JS arrays or objects,
+  with 'expected' ones in assertions."
+  [datum]
   #?(:clj datum)
   #?(:cljs (js->clj datum)))
 
@@ -43,7 +48,7 @@
   "Play fairly with other libraries dispatching with clojure.spec.alpha/valid? for clojure.test/assert-expr."
   [& args] (apply spec/valid? args))
 
-(defn equal?
+(defn equal-eg?
   "Create a two args version of '=, so that we don't override or be overriden
   by libraries dispatching on '= for clojure.test/assert-expr, and to apply
   our custom clojure.test/assert-expr only to function tests, i.e., not
@@ -51,8 +56,8 @@
   [x y] (= (->clj x) (->clj y)))
 
 (defn equal-ex?
-  "The same as 'equal?', but to be used for expression tests."
-  [x y] (= (->clj x) (->clj y)))
+  "The same as 'equal-eg?', but to be used for expression tests."
+  [x y] (equal-eg? x y))
 
 (defn pred-ex
   "Meant to be used as a clojure.test/assert-expr dispatch value on truthy expression tests."

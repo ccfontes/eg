@@ -3,7 +3,7 @@
                           :url "https://github.com/ccfontes/eg/blob/master/LICENSE.md"}}
   (:require [clojure.string :as str]
             [clojure.test]
-            [eg.platform :refer [if-target-is-cljs ->clj explain-data]]))
+            [eg.platform :refer [if-target-is-cljs explain-data]]))
 
 (defn normalise-pred
   "Represent predicate as a string.

@@ -21,7 +21,7 @@
 (defmethod clj.test/assert-expr 'eg.platform/invalid-spec?
   [_ assert-expr] (do-spec-report assert-expr false))
 
-(defmethod clj.test/assert-expr 'eg.platform/equal?
+(defmethod clj.test/assert-expr 'eg.platform/equal-eg?
   [_ assert-expr] (do-example-equal-report assert-expr false))
 
 (defmethod clj.test/assert-expr 'eg.platform/equal-ex?
