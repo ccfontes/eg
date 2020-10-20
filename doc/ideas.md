@@ -11,5 +11,5 @@
     - understand the focus of an assertion by using input *don't cares*
   - **Example inputs as data:** for trivial tool integration, its just data!
   - **Reach:**
-    - backed by clojure.test, along its excelent tool support
+    - Leverage clojure.test tools by using and extending clojure.test
     - supports Clojure, ClojureScript JVM, and ClojureScript JS
