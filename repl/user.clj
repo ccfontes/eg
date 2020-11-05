@@ -1,7 +1,10 @@
 (ns user
   (:require [clojure.tools.namespace.repl :refer [refresh]]
             [clojure.test :as test :refer [deftest is]]
-            [eg :refer [eg ge ex]]
+            [clojure.spec.alpha :as spec]
+            [eg :as eg :refer [eg ge ex]]
+            [eg.spec :as eg-spec]
+            [eg.test.fixtures :as fixtures]
             [eg.test.pass.unit]
             [eg.test.pass.integration]))
 

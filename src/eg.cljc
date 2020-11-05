@@ -13,6 +13,7 @@
                                  fn-identity-intercept
                                  valid-expected-spec?
                                  pred-ex]]
+            [eg.spec :as eg-spec]
             [clojure.walk :refer [postwalk]]
             [clojure.string :as str]
             [clojure.test :as clj.test]
@@ -24,11 +25,6 @@
    #?(:cljs [eg.report.cljs]))) ; here for side-effects to extend cljs.test/report, and js/cljs.test$macros.assert_expr
 
 (defonce focus-metas (atom {}))
-
-(spec/def ::expr-spec (spec/or :one-arg (spec/tuple any?)
-                               :two-arg (spec/tuple any? any?)
-                               :three-args-normal (spec/tuple any? #{'= '=>} any?)
-                               :three-args-inverted (spec/tuple any? #{'<=} any?)))
 
 (def operators #{'=> '<= '=})
 
@@ -46,56 +42,11 @@
         (cons (apply f first-items)
               (apply map-dregs f rest-colls))))))
 
-(defn examples-acc
-  "Accumulates examples, mainly taking into account operator used in example."
-  [[parts part] token]
-  (let [new-part (conj part token)]
-    (if (or (empty? part) (operators token))
-      [parts new-part]
-      [(conj parts new-part) []])))
-
-(defn variadic-bang?
-  "Checks if token is a list with '!' as first element."
-  [token]
-  (and (list? token)
-       (= (first token) '!)
-       (> (count token) 1)))
-
-(defn spec-eg-acc
-  "Accumulates examples for a spec, mainly because some could appear negated using '!'."
-  [[parts part] token]
-  (let [new-part (conj part token)]
-    (if (empty? part)
-      (cond
-        (= '! token)           [parts new-part]
-        (variadic-bang? token) [(->> token rest (interpose '!) (cons '!) (partition 2) (concat parts)) []]
-        :else                  [(conj parts new-part) []])
-      [(conj parts new-part) []])))
-
-(defn parse-example
-  "Normalizes an 'eg/ge' example's operator, and order of function parameters vs expected result."
-  [example ge?]
-  (let [normalise-rev-ex #(juxt last (constantly %) first)
-        normalise-ex #(juxt first (constantly %) last)
-        parsed-ex
-          (if (#{2 3} (count example))
-            (if (= (second example) '=)
-              ((normalise-ex '=) (if ge? (reverse example) example))
-              (if (or (and ge? (not= (second example) '=>))
-                      (= (second example) '<=))
-                ((normalise-rev-ex '=>) example)
-                ((normalise-ex '=>) example)))
-            (let [egge (if ge? "ge" "eg")]
-              (cross-throw (str egge " examples need to come in pairs, but found only: '" (first example) "'"))))
-        params (first parsed-ex)
-        normalized-params (if (vector? params) params [params])]
-    (cons normalized-params (rest parsed-ex))))
-
 (defmulti parse-expression
   "Normalizes an 'ex' expression's operator,
   and order of test expression vs expected result."
   (fn [expr]
-    (let [conformed-expr (spec/conform ::expr-spec (vec expr))]
+    (let [conformed-expr (spec/conform ::eg-spec/expr-spec (vec expr))]
       (if (= conformed-expr cross-invalid-spec-kw)
         :invalid
         (first conformed-expr)))))
@@ -151,20 +102,20 @@
                    (when (test? ~focus-metas- ~focus?)
                      ~@(map (fn [example]
                               (if (qualified-keyword? fn-sym)
-                                (let [example-val (last example)]
-                                  (if (= (first example) '!)
-                                    `(is (invalid-spec? ~fn-sym ~example-val))
-                                    `(is (valid-spec? ~fn-sym ~example-val))))
-                                (let [equal? (= (second example) '=)
-                                      param-vec (first example)
-                                      expected (last example)
+                                (let [{:keys [spec-example spec-example-bang-one spec-example-bang-variadic]} example]
+                                  (cond
+                                    spec-example               `(is (valid-spec? ~fn-sym ~spec-example))
+                                    spec-example-bang-one      `(is (invalid-spec? ~fn-sym ~(:any spec-example-bang-one)))
+                                    spec-example-bang-variadic `(map #(is (invalid-spec? ~fn-sym %)) ~(:any spec-example-bang-variadic))))
+                                (let [{:keys [params operator expected]} example
+                                      equal? (= operator '=)
                                       ; in JVM CLJS, 'normalised-expected' code prevents: Caused by: clojure.lang.ExceptionInfo: Can't call nil
                                       normalised-expected (if (nil? expected) 'nil? expected)]
                                   `(cond
                                     ; changing assertion expression order of args may break reports 
-                                    (and (fn? ~normalised-expected) (not ~equal?))                (is (fn-identity-intercept (~normalised-expected (~fn-sym ~@param-vec))))
-                                    (and (qualified-keyword? ~normalised-expected) (not ~equal?)) (is (valid-expected-spec? ~normalised-expected (~fn-sym ~@param-vec)))
-                                    :else                                                         (is (equal-eg? ~normalised-expected (~fn-sym ~@param-vec)))))))
+                                    (and (fn? ~normalised-expected) (not ~equal?))                (is (fn-identity-intercept (~normalised-expected (~fn-sym ~@params))))
+                                    (and (qualified-keyword? ~normalised-expected) (not ~equal?)) (is (valid-expected-spec? ~normalised-expected (~fn-sym ~@params)))
+                                    :else                                                         (is (equal-eg? ~normalised-expected (~fn-sym ~@params)))))))
                             examples)))]
       ; passing down ^:focus meta to clj.test: see alter-test-var-update-fn
       ; FIXME not associng in cljs
@@ -186,6 +137,7 @@
                  (nil? ~expected))
           (is (pred-ex (~normalised-expected ~res)))
           (is (equal-ex? ~normalised-expected ~res)))))))
+        
 
 (defn assoc-focus-metas
   "Creates a new entry in fn to focus? map for qualified function in params."
@@ -216,55 +168,57 @@
   Each named don't care (prefixed with '$'), is replaced the same way as in '_', then propagated to every occurrence under
   its expected value."
   [examples]
-  (let [input-examples (map first examples)
-        choices-per-param (apply map-dregs #(->> %& (remove dont-care?) vec) input-examples)
-        fo (fn [example]
+  (let [params (map :params examples)
+        choices-per-param (apply map-dregs #(->> %& (remove dont-care?) vec) params)
+        fo (fn [{:keys [params operator expected] :as example}]
              ; OPTIMIZE to choose at random
-             (let [params (first example)
-                   op (operators (second example))
-                   exp (last example)
-                   fi (fn [[param-acc op- exp] [param choices]]
+             (let [fi (fn [{:keys [params operator expected] :as example} [param choices]]
                         (if (dont-care? param)
                           (if-let [choice (first choices)]
                             (let [pw-f #(if (= param %) choice %)]
-                              [(concat param-acc [choice])
-                               op-
-                               (if (named-dont-care? param) (postwalk pw-f exp) exp)])
+                              {:params (concat params [choice])
+                               :operator operator
+                               :expected (if (named-dont-care? param)
+                                           (postwalk pw-f expected)
+                                           expected)})
                             (cross-throw (str "No choices found for don't care: " param)))
-                          [(concat param-acc [param]) op- exp]))
-                   ret-ex (reduce fi [[] op exp] (map #(vec %&) params choices-per-param))]
-               (if (-> ret-ex second nil?) [(first ret-ex) (last ret-ex)] ret-ex)))]
+                          (update example :params concat [param])))]
+               (reduce fi
+                       (assoc example :params [])
+                       (map #(vec %&) params choices-per-param))))]
     (map fo examples)))
 
-(defn ->examples
-  "Takes in an eg body, and returns example pairs."
-  [test-thing ge? body]
-  (cond
-    (symbol? test-thing)
-      (->> body
-        (reduce examples-acc [[] []])
-        (first)
-        (map #(parse-example % ge?))
-        (fill-dont-cares))
-    (keyword? test-thing) (first (reduce spec-eg-acc [[] []] body))
-    :else (cross-throw (str "Not a valid test name type: " test-thing))))
+(defn ensure-vec-wrapped-params [example]
+  (update example :params #(if (vector? %) % [%])))
 
-(defmacro eg-helper
+(defmulti prepare-examples (fn [[test-thing-type _]] test-thing-type))
+
+(defmethod prepare-examples :function [[_ {:keys [examples]}]]
+  (fill-dont-cares
+    (map (comp ensure-vec-wrapped-params second) examples)))
+
+(defmethod prepare-examples :spec [[_ {:keys [examples]}]]
+  (map #(apply hash-map %) examples))
+
+(defmacro ->eg-test
   "Common logic between 'eg' and 'ge'."
-  [[fn-sym & body] ge?]
-  (let [examples (->examples fn-sym ge? body)
-        fn-meta (meta fn-sym)
-        focus? (:focus fn-meta)]
-    `(do (swap! focus-metas assoc-focus-metas ~fn-meta ~fn-sym)
-         (->example-test ~fn-sym ~examples focus-metas ~focus?))))
+  [[test-thing & _ :as test-body] egge-spec]
+  (let [conformed-examples (spec/conform egge-spec test-body)]
+    (if (= conformed-examples cross-invalid-spec-kw)
+      `(cross-throw (spec/explain-str ~egge-spec ~test-body))
+      (let [fn-meta (meta test-thing)
+            focus? (:focus fn-meta)
+            examples (prepare-examples conformed-examples)]
+        `(do (swap! focus-metas assoc-focus-metas ~fn-meta ~test-thing)
+             (->example-test ~test-thing ~examples focus-metas ~focus?))))))
 
 (defmacro eg
   "Test function using examples of parameters / expected value. See readme for usage."
-  [& args] `(eg-helper ~args false))
+  [& args] `(->eg-test ~args ::eg-spec/eg-test))
 
 (defmacro ge
-  "Like 'eg' but example components are reversed. See readme for usage."
-  [& args] `(eg-helper ~args true))
+  "Test function using examples of parameters / expected value. See readme for usage."
+  [& args] `(->eg-test ~args ::eg-spec/ge-test))
 
 (defmacro ex
   "Test arbitrary expressions against corresponding expected values.

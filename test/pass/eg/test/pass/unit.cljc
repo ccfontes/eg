@@ -1,22 +1,21 @@
 (ns eg.test.pass.unit
     (:require [eg.platform :as platform :refer [deftest is testing cross-throw]]
+              [clojure.spec.alpha :as spec]
               [eg.test.fixtures :as fixtures]
-              [eg :refer [ffilter
-                          map-dregs
-                          examples-acc
-                          spec-eg-acc
-                          parse-example
-                          parse-expression
-                          test?
-                          assoc-focus-metas
-                          dont-care?
-                          named-dont-care?
-                          fill-dont-cares
-                          ->examples
-                          ->test-name
-                          cljs-safe-namespace
-                          rm-lead-colon
-                          variadic-bang?]]
+              [eg.spec :as eg-spec]
+              [eg :as eg :refer [ffilter
+                                 map-dregs
+                                 parse-expression
+                                 test?
+                                 assoc-focus-metas
+                                 dont-care?
+                                 named-dont-care?
+                                 fill-dont-cares
+                                 ensure-vec-wrapped-params
+                                 prepare-examples
+                                 ->test-name
+                                 cljs-safe-namespace
+                                 rm-lead-colon]]
               [eg.report :as report]))
 
 (deftest ffilter-test
@@ -30,53 +29,6 @@
   (is (= [] (map-dregs vector '())))
   (is (= [ [1] ] (map-dregs vector [1])))
   (is (= [ [1 1] [2] ] (map-dregs vector '(1) [] [1 2]))))
-
-(deftest examples-acc-test
-  (is (= [ [] [2] ] (examples-acc [ [] [] ] 2)))
-  (is (= [ [[2 1]] [] ] (examples-acc [ [] [2] ] 1)))
-  (is (= [ [] [2 '=>] ] (examples-acc [ [] [2] ] '=>)))
-  (is (= [ [[2 '=> 1]] [] ] (examples-acc [ [] [2 '=>] ] 1)))
-  (is (= [ [] [2 '<=] ] (examples-acc [ [] [2] ] '<=)))
-  (is (= [ [[2 '<= 1]] [] ] (examples-acc [ [] [2 '<=] ] 1)))
-  (is (= [ [] [2 '=] ] (examples-acc [ [] [2] ] '=)))
-  (is (= [ [[2 '= 1]] [] ] (examples-acc [ [] [2 '=] ] 1)))
-  (is (= [ [[2 '=> 1] [1 2]] [] ] (examples-acc [ [[2 '=> 1]] [1] ] 2)))
-  (is (= [ [] [nil] ] (examples-acc [ [] [] ] nil)))
-  (is (= [ [[nil nil]] [] ] (examples-acc [ [] [nil] ] nil)))
-  (is (= [ [] ['=>] ] (examples-acc [ [] [] ] '=>))))
-
-(deftest variadic-bang?-test
-  (is (not (variadic-bang? 1)))
-  (is (not (variadic-bang? '())))
-  (is (not (variadic-bang? '("a"))))
-  (is (not (variadic-bang? '(!))))
-  (is (variadic-bang? '(! 4)))
-  (is (variadic-bang? '(! 4 "b"))))
-
-(deftest spec-eg-acc-test
-  (is (= [ [[2]] ['!] ] (spec-eg-acc [ [[2]] [] ] '!)))
-  (is (= [ [[2] ['! 3] ['! 4]] [] ] (spec-eg-acc [ [[2]] [] ] '(! 3 4))))
-  (is (= [ [[2] [3]] [] ] (spec-eg-acc [ [[2]] [] ] 3)))
-  (is (= [ [[2] ['! 3]] [] ] (spec-eg-acc [ [[2]] ['!] ] 3))))
-
-(deftest parse-example-test
-  (testing "should be in order: input->output"
-    (is (= [[2] '=> 1] (parse-example [[2] 1] false)))
-    (is (= [[2] '=> 1] (parse-example [1 [2]] true)))
-    (is (= [[2] '=> 1] (parse-example [[2] '=> 1] false)))
-    (is (= [[2] '=> 1] (parse-example [[2] '=> 1] true)))
-    (is (= [[2] '=> 1] (parse-example [1 '<= [2]] false)))
-    (is (= [[2] '=> 1] (parse-example [1 '<= [2]] true)))
-    (is (= [[inc] '= inc] (parse-example [[inc] '= inc] false)))
-    (is (= [[inc] '= inc] (parse-example [inc '= [inc]] true)))
-    (is (= [[2] '=> 1] (parse-example [1 '<= 2] false)))
-    (is (= [[2] '=> 1] (parse-example [2 '=> 1] true)))
-    (is (= [[2] '=> 1] (parse-example [1 2] true)))
-    (is (= "eg examples need to come in pairs, but found only: '[2]'"
-         (try (parse-example [[2]] false)
-           (catch #?(:clj Exception :cljs :default) e
-             #?(:clj (-> e Throwable->map :cause))
-             #?(:cljs (.-message e))))))))
 
 (deftest parse-expression-test
   (is (= [4 '=> 2] (parse-expression [4 '=> 2])))
@@ -122,30 +74,49 @@
            (assoc-focus-metas {} inc-meta 'seq)))))
 
 (deftest fill-dont-cares-test
-  (is (= [[[1 2] :a] [[1 4] :b] [[5 6] :c]]
-         (fill-dont-cares [[[1 2] :a] [['_ 4] :b] [[5 6] :c]])))
-  (is (= [[[1 2] :a] [[1 4] :b] [[5] :c]]
-         (fill-dont-cares [[[1 2] :a] [['_ 4] :b] [[5] :c]])))
-  (is (= [[[5 2] :b] [[5 2] [{:a 5} 5]]]
-         (fill-dont-cares [[[5 2] :b] [['$1 2] [{:a '$1} '$1]]])))
-  (is (= [[[5 2] '= :b] [[5 2] '=> [{:a 5} 5]]]
-         (fill-dont-cares [[[5 2] '= :b] [['$1 2] '=> [{:a '$1} '$1]]])))
-  (is (= [[[1 2] nil] [[1 4] :b]]
-         (fill-dont-cares [[[1 2] nil] [['_ 4] :b]])))
+  (is (= [{:params [1 2] :expected :a}
+          {:params [1 4] :operator nil :expected :b}
+          {:params [5 6] :expected :c}]
+         (fill-dont-cares [{:params [1 2] :expected :a}
+                           {:params ['_ 4] :expected :b}
+                           {:params [5 6] :expected :c}])))
+  (is (= [{:params [1 2] :expected :a}
+          {:params [1 4] :operator nil :expected :b}
+          {:params [5] :expected :c}]
+         (fill-dont-cares [{:params [1 2] :expected :a}
+                           {:params ['_ 4] :expected :b}, {:params [5] :expected :c}])))
+  (is (= [{:params [5 2] :expected :b}
+          {:params [5 2] :operator nil :expected [{:a 5} 5]}]
+         (fill-dont-cares [{:params [5 2] :expected :b}
+                           {:params ['$1 2] :expected [{:a '$1} '$1]}])))
+  (is (= [{:params [5 2] :operator '= :expected :b}
+          {:params [5 2] :operator '=> :expected [{:a 5} 5]}]
+         (fill-dont-cares [{:params [5 2] :operator '= :expected :b}
+                           {:params ['$1 2] :operator '=> :expected [{:a '$1} '$1]}])))
+  (is (= [{:params [1 2] :expected nil}
+          {:params [1 4] :operator nil :expected :b}]
+         (fill-dont-cares [{:params [1 2] :expected nil}
+                           {:params ['_ 4] :expected :b}])))
   (is (= "No choices found for don't care: _"
-         (try (doall (fill-dont-cares [[['_ 4] :b]]))
+         (try (doall (fill-dont-cares [{:params ['_ 4] :expected :b}]))
            (catch #?(:clj Exception :cljs :default) e
              #?(:clj (-> e Throwable->map :cause))
              #?(:cljs (.-message e)))))))
 
-(deftest ->examples-test
-  (is (= [[[0] '=> false?] [[1] '=> 2]] (->examples 'inc true [false? [0] 2 [1]])))
-  (is (= [[3] ['! 5]] (->examples ::fixtures/int false [3 '! 5])))
-  (is (= "Not a valid test name type: inc"
-         (try (->examples "inc" false [[0]])
-           (catch #?(:clj Exception :cljs :default) e
-             #?(:clj (-> e Throwable->map :cause))
-             #?(:cljs (.-message e)))))))
+(deftest ensure-vec-wrapped-params-test
+  (is {:params ['(4)]} (ensure-vec-wrapped-params {:params '(4)}))
+  (is {:params [4]} (ensure-vec-wrapped-params {:params [4]})))
+
+(deftest prepare-examples-test
+  (is [{:params [3 2] :expected 5}
+       {:params [3 1] :expected 4}
+       {:params [4]}]
+      (prepare-examples [:function
+                         {:examples [[:implicit-straight-arrow {:params [3 2] :expected 5}]
+                                     [:implicit-straight-arrow {:params ['_ 1] :expected 4}]
+                                     [:implicit-straight-arrow {:params 4}]]}]))
+  (is [{:spec-example 4}]
+      (prepare-examples [:spec {:examples [[:spec-example 4]]}])))
 
 ; only Clojure can get metadata from a function using 'meta'
 #?(:clj (defmacro macro-fn-meta-fixture [f] (meta f)))
@@ -244,3 +215,49 @@
          (report/spec-because 1 {:pred 'clojure.core/string? :val 1} true)))
   (is (= "   because: 1 is a valid example"
          (report/spec-because 1 {:pred 'clojure.core/int? :val 1} false))))
+
+(deftest eg-spec-example-test
+  (is (spec/valid? ::eg-spec/example '([1] 1)))
+  (is (= :implicit-straight-arrow (first (spec/conform ::eg-spec/example '([1] 1)))))
+  (is (spec/valid? ::eg-spec/example '([1] => 1)))
+  (is (= :explicit-straight-op
+         (first (spec/conform ::eg-spec/example '([1] => 1)))))
+  (is (spec/valid? ::eg-spec/example '([1] = 1)))
+  (is (= :explicit-straight-op
+         (first (spec/conform ::eg-spec/example '([1] = 1)))))
+  (is (spec/valid? ::eg-spec/example '([1] <= 1)))
+  (is (= :explicit-inverted-arrow
+         (first (spec/conform ::eg-spec/example '([1] <= 1))))))
+
+(deftest eg-spec-rev-example-test
+  (is (spec/valid? ::eg-spec/rev-example '(1 [1])))
+  (is (= :implicit-inverted-arrow (first (spec/conform ::eg-spec/rev-example '(1 [1])))))
+  (is (spec/valid? ::eg-spec/rev-example '(1 <= [1])))
+  (is (= :explicit-inverted-op
+         (first (spec/conform ::eg-spec/rev-example '(1 <= [1])))))
+  (is (spec/valid? ::eg-spec/rev-example '(1 = [1])))
+  (is (= :explicit-inverted-op
+         (first (spec/conform ::eg-spec/rev-example '(1 = [1])))))
+  (is (spec/valid? ::eg-spec/example '([1] <= 1)))
+  (is (= :explicit-straight-arrow
+         (first (spec/conform ::eg-spec/rev-example '([1] => 1))))))
+
+(deftest eg-spec-spec-example-test
+  (is (spec/valid? ::eg-spec/spec-example '(! 1)))
+  (is (= :spec-example-bang-one (first (spec/conform ::eg-spec/spec-example '(! 1)))))
+  (is (spec/valid? ::eg-spec/spec-example '((! 1 2))))
+  (is (= :spec-example-bang-variadic (first (spec/conform ::eg-spec/spec-example '((! 1 2))))))
+  (is (spec/valid? ::eg-spec/spec-example '(1)))
+  (is (= :spec-example (first (spec/conform ::eg-spec/spec-example '(1))))))
+
+(deftest eg-test-test
+  (is (spec/valid? ::eg-spec/eg-test '(inc [1] 2, [2] 3)))
+  (is (= :function (-> (spec/conform ::eg-spec/eg-test '(inc [1] 2, [2] 3)) first)))
+  (is (spec/valid? ::eg-spec/eg-test '(::fixtures/int 1 '! "eggs")))
+  (is (= :spec (-> (spec/conform ::eg-spec/eg-test '(::fixtures/int 1 '! "eggs")) first))))
+
+(deftest ge-test-test
+  (is (spec/valid? ::eg-spec/ge-test '(inc 2 [1], 3 [2])))
+  (is (= :function (-> (spec/conform ::eg-spec/ge-test '(inc 2 [1], 3 [2])) first)))
+  (is (spec/valid? ::eg-spec/ge-test '(::fixtures/int 1 '! "eggs")))
+  (is (= :spec (-> (spec/conform ::eg-spec/ge-test '(::fixtures/int 1 '! "eggs")) first))))
