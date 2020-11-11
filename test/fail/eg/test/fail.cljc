@@ -39,9 +39,9 @@
 
 (ex false => #(true? %))
 
-(ex (foo 2) = inc)
+(ex (foo 2) = dec)
 
-(ex inc = (foo 2))
+(ex dec = (foo 2))
 
 (ex nil)
 

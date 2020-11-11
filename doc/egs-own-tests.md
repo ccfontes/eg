@@ -64,6 +64,6 @@ lein tach lumo
 The test report should look like this:
 ```
 Ran 15 tests containing 24 assertions.
-22 failures, 0 errors.
+24 failures, 0 errors.
 Tests failed.
 ```
