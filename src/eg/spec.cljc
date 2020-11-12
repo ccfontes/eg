@@ -3,10 +3,16 @@
                         :url "https://github.com/ccfontes/eg/blob/master/LICENSE.md"}}
   (:require [clojure.spec.alpha :as spec]))
 
-(spec/def ::expr-spec (spec/or :one-arg (spec/tuple any?)
-                               :two-arg (spec/tuple any? any?)
-                               :three-args-normal (spec/tuple any? #{'= '=>} any?)
-                               :three-args-inverted (spec/tuple any? #{'<=} any?)))
+(spec/def ::expr-spec
+  (spec/alt :one-arg (spec/cat :expression any?)
+            :two-arg (spec/cat :expected any?
+                               :expression any?)
+            :three-args-straight (spec/cat :expression any?
+                                           :operator #{'= '=>}
+                                           :expected any?)
+            :three-args-inverted (spec/cat :expected any?
+                                           :operator #{'<=}
+                                           :expression any?)))
 
 (spec/def ::example
   (spec/alt

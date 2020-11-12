@@ -4,8 +4,9 @@
               [eg.test.fixtures :as fixtures]
               [eg.spec :as eg-spec]
               [eg :as eg :refer [ffilter
+                                 assoc-if-new
                                  map-dregs
-                                 parse-expression
+                                 prepare-assertion-expression
                                  test?
                                  assoc-focus-metas
                                  dont-care?
@@ -24,24 +25,25 @@
   (is (= 4 (ffilter even? [4])))
   (is (= 1 (ffilter odd? [2 1 4]))))
 
+(deftest assoc-if-new-test
+  (is (= {:foo "bar"} (assoc-if-new nil :foo "bar")))
+  (is (= {:foo "bar"} (assoc-if-new {} :foo "bar")))
+  (is (= {:spam nil} (assoc-if-new {:spam nil} :spam "bar")))
+  (is (= {:foo "bar" :spam "baz"} (assoc-if-new {:spam "baz"} :foo "bar"))))
+
 (deftest map-dregs-test
   (is (= [] (map-dregs vector nil)))
   (is (= [] (map-dregs vector '())))
   (is (= [ [1] ] (map-dregs vector [1])))
   (is (= [ [1 1] [2] ] (map-dregs vector '(1) [] [1 2]))))
 
-(deftest parse-expression-test
-  (is (= [4 '=> 2] (parse-expression [4 '=> 2])))
-  (is (= [3 '=> 2] (parse-expression [2 '<= 3])))
-  (is (= [2 '= 5] (parse-expression [2 '= (+ 1 4)])))
-  (is (= [2 '=> 4] (parse-expression [4 2])))
-  (is (= [true '=> true] (parse-expression ["foo"])))
-  (is (= [false '=> true] (parse-expression [nil])))
-  (is (= "Invalid expression: (ex 2 3 7)"
-         (try (parse-expression [2 3 7])
-           (catch #?(:clj Exception :cljs :default) e
-             #?(:clj (-> e Throwable->map :cause))
-             #?(:cljs (.-message e)))))))
+(deftest prepare-assertion-expression-test
+  (is (= {:expression 4 :expected 'boolean} (prepare-assertion-expression [4])))
+  (is (re-find #"failed"
+               (try (prepare-assertion-expression [2 3 7])
+                 (catch #?(:clj Exception :cljs :default) e
+                   #?(:clj (-> e Throwable->map :cause))
+                   #?(:cljs (.-message e)))))))
 
 (deftest test?-test
   (is (test? (atom {:clojure.core/some false :clojure.core/any? nil})   true))
@@ -215,6 +217,18 @@
          (report/spec-because 1 {:pred 'clojure.core/string? :val 1} true)))
   (is (= "   because: 1 is a valid example"
          (report/spec-because 1 {:pred 'clojure.core/int? :val 1} false))))
+
+(deftest expr-spec-test
+  (is (spec/valid? ::eg-spec/expr-spec [3]))
+  (is (= :one-arg (first (spec/conform ::eg-spec/expr-spec [3]))))
+  (is (spec/valid? ::eg-spec/expr-spec ['(+ 1 1) 2]))
+  (is (= :two-arg (first (spec/conform ::eg-spec/expr-spec ['(+ 1 1) 2]))))
+  (is (spec/valid? ::eg-spec/expr-spec ['(+ 2 1) '=> 3]))
+  (is (= :three-args-straight (first (spec/conform ::eg-spec/expr-spec ['(+ 2 1) '=> 3]))))
+  (is (spec/valid? ::eg-spec/expr-spec [4 '= '(+ 2 2)]))
+  (is (= :three-args-straight (first (spec/conform ::eg-spec/expr-spec [4 '= '(+ 2 2)]))))
+  (is (spec/valid? ::eg-spec/expr-spec [4 '<= '(+ 3 1)]))
+  (is (= :three-args-inverted (first (spec/conform ::eg-spec/expr-spec [4 '<= '(+ 3 1)])))))
 
 (deftest eg-spec-example-test
   (is (spec/valid? ::eg-spec/example '([1] 1)))

@@ -31,6 +31,8 @@
 (defn ffilter
   [pred coll] (first (filter pred coll)))
 
+(defn assoc-if-new [coll k v] (merge {k v} coll))
+
 (defn map-dregs
   "Like map but when there is a different count between colls, applies input fn
   to the coll values until the biggest coll is empty."
@@ -42,26 +44,11 @@
         (cons (apply f first-items)
               (apply map-dregs f rest-colls))))))
 
-(defmulti parse-expression
-  "Normalizes an 'ex' expression's operator,
-  and order of test expression vs expected result."
-  (fn [expr]
-    (let [conformed-expr (spec/conform ::eg-spec/expr-spec (vec expr))]
-      (if (= conformed-expr cross-invalid-spec-kw)
-        :invalid
-        (first conformed-expr)))))
-
-(defmethod parse-expression :one-arg [[truthy]] [(boolean truthy) '=> true])
-
-(defmethod parse-expression :two-arg [[f l]] [l '=> f])
-
-(defmethod parse-expression :three-args-normal [expr] expr)
-
-(defmethod parse-expression :three-args-inverted [[f back-arrow l]] [l '=> f])
-
-(defmethod parse-expression :invalid [expr]
-  (cross-throw (apply str "Invalid expression: (ex "
-                           (str/join (interpose " " expr)) ")")))
+(defn prepare-assertion-expression [expr]
+  (let [conformed-expr (spec/conform ::eg-spec/expr-spec expr)]
+    (if (= conformed-expr cross-invalid-spec-kw)
+      (cross-throw (spec/explain-str ::eg-spec/expr-spec expr))
+      (assoc-if-new (second conformed-expr) :expected 'boolean))))
 
 (defn test?
   "Used to determine if function will be tested based on its focus state,
@@ -126,17 +113,17 @@
   "Creates a clojure.test test for expression being tested.
   Assertion is generated under the test using provided expression.
   Test name is created as 'eg-test-<rand-id>'."
-  [res op expected]
+  [{:keys [expression operator expected]}]
   (let [rand-id (int (* (rand) 100000))
         test-name (symbol (str "eg-test-" rand-id))
-        equal? (= op '=)]
+        equal? (= operator '=)]
     `(deftest ~test-name
       ; in JVM CLJS, 'normalised-expected' code prevents: Caused by: clojure.lang.ExceptionInfo: Can't call nil
       ~(let [normalised-expected (if (nil? expected) 'nil? expected)]
         `(if (or (and (fn? ~normalised-expected) (not ~equal?))
                  (nil? ~expected))
-          (is (pred-ex (~normalised-expected ~res)))
-          (is (equal-ex? ~normalised-expected ~res)))))))
+          (is (pred-ex (~normalised-expected ~expression)))
+          (is (equal-ex? ~normalised-expected ~expression)))))))
         
 
 (defn assoc-focus-metas
@@ -224,8 +211,8 @@
   "Test arbitrary expressions against corresponding expected values.
   See readme for usage."
   [& body]
-  (let [example (parse-expression body)]
-    `(->expression-test ~@example)))
+  (let [parsed-test-expr (prepare-assertion-expression body)]
+    `(->expression-test ~parsed-test-expr)))
 
 #?(:clj
   ; TODO support alter-test-var-update-fn for cljs
