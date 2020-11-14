@@ -3,7 +3,7 @@ version: 2.1
 jobs:
   build:
     docker:
-      - image: theasp/clojurescript-nodejs
+      - image: day8au/dev-ci:0
 
     working_directory: ~/eg
 
@@ -34,3 +34,5 @@ jobs:
       - run: lein tach lumo
       - run: CLOVERAGE_VERSION=1.1.1 lein coverage
       - run: curl -s https://codecov.io/bash | bash -s - -f target/coverage/codecov.json
+      - run: lein clj-test-fail | tee /dev/tty | rg --quiet --multiline '24 assertions.*\n.*24 failures'
+      - run: lein cljs-test-fail | tee /dev/tty | rg --quiet --multiline '24 assertions.*\n.*24 failures'
