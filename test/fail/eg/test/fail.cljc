@@ -1,5 +1,6 @@
 (ns eg.test.fail
   (:require [clojure.spec.alpha :as spec]
+            [eg.test.fixtures :as fixtures]
             [eg :refer [eg ge ex]]
     #?(:clj [eg :refer [set-eg-no-refresh!]])))
 
@@ -52,3 +53,5 @@
   "eggs" ::int
   ::int <= "foo"
   1 = ::int)
+
+(ex "foo" => ::fixtures/int)

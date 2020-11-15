@@ -117,3 +117,5 @@
 ; prove that expressions are evaluated inside 'is', because "expected:" is not nil
 (ex #(re-find #"expected: \(eg.platform/pred-ex \(string" %)
     fixtures/exception-report)
+
+(ex "foo" => ::fixtures/string)

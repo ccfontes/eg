@@ -48,6 +48,10 @@
   "Play fairly with other libraries dispatching with clojure.spec.alpha/valid? for clojure.test/assert-expr."
   [& args] (apply spec/valid? args))
 
+(defn valid-expected-spec-ex?
+  "Same as 'valid-expected-spec?'"
+  [& args] (apply spec/valid? args))
+
 (defn equal-eg?
   "Create a two args version of '=, so that we don't override or be overriden
   by libraries dispatching on '= for clojure.test/assert-expr, and to apply

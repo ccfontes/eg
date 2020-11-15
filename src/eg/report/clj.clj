@@ -11,6 +11,7 @@
                                do-expression-pred-report
                                do-spec-report
                                do-expected-spec-report
+                               do-expression-expected-spec-report
                                print-report
                                spec->because-error
                                spec-because]]))
@@ -30,11 +31,14 @@
 (defmethod clj.test/assert-expr 'eg.platform/fn-identity-intercept
   [_ assert-expr] (do-example-pred-report assert-expr))
 
-(defmethod clj.test/assert-expr 'eg.platform/valid-expected-spec?
-  [_ assert-expr] (do-expected-spec-report assert-expr))
-  
 (defmethod clj.test/assert-expr 'eg.platform/pred-ex
   [_ assert-expr] (do-expression-pred-report assert-expr))
+
+(defmethod clj.test/assert-expr 'eg.platform/valid-expected-spec?
+  [_ assert-expr] (do-expected-spec-report assert-expr))
+
+(defmethod clj.test/assert-expr 'eg.platform/valid-expected-spec-ex?
+  [_ assert-expr] (do-expression-expected-spec-report assert-expr true))
 
 (defmethod clj.test/report :fail-spec
   ; Source: https://github.com/clojure/clojure/blob/master/src/clj/clojure/test.clj

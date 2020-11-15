@@ -177,6 +177,19 @@
                   :spec-error-data (explain-data ~spec-kw ~actual)}))
     result#))
 
+(defn do-expression-expected-spec-report
+  "Call do-report on an expression test taking a spec checker."
+  [[_ spec-kw actual :as result] expression?]
+  `(let [result# ~result]
+    (if result#
+      (do-report {:type :pass})
+      (do-report {:type            :fail-default
+                  :spec-kw         '~spec-kw
+                  :actual          ~actual
+                  :spec-error-data (explain-data ~spec-kw ~actual)
+                  :expression-code (if ~expression? (str '~actual " => " '~spec-kw))}))
+    result#))
+
 (defn do-expression-equal-report
   "Call do-report for an expression test with an expected value."
   [[equal expected actual] expression?]

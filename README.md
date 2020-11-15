@@ -124,6 +124,12 @@ override the default example direction of `eg` or `ge`.
 ; tests truthy expression
 (ex "bar")
 ;=> eg-test-<rand-id>
+
+; checks expression against a spec
+; recommended to do (eg ::fixtures/string "foo") instead,
+; but implemented for consistency
+(ex "foo" => ::fixtures/string)
+;=> eg-test-<rand-id>
 ```
 
 If we want to check if the expected value is a function or a spec, the operator `=` is used:

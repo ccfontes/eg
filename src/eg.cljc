@@ -12,6 +12,7 @@
                                  equal-ex?
                                  fn-identity-intercept
                                  valid-expected-spec?
+                                 valid-expected-spec-ex?
                                  pred-ex]]
             [eg.spec :as eg-spec]
             [clojure.walk :refer [postwalk]]
@@ -120,10 +121,10 @@
     `(deftest ~test-name
       ; in JVM CLJS, 'normalised-expected' code prevents: Caused by: clojure.lang.ExceptionInfo: Can't call nil
       ~(let [normalised-expected (if (nil? expected) 'nil? expected)]
-        `(if (or (and (fn? ~normalised-expected) (not ~equal?))
-                 (nil? ~expected))
-          (is (pred-ex (~normalised-expected ~expression)))
-          (is (equal-ex? ~normalised-expected ~expression)))))))
+        `(cond
+          (or (and (fn? ~normalised-expected) (not ~equal?)) (nil? ~expected)) (is (pred-ex (~normalised-expected ~expression)))
+          (and (qualified-keyword? ~normalised-expected) (not ~equal?))        (is (valid-expected-spec-ex? ~normalised-expected ~expression))
+          :else                                                                (is (equal-ex? ~normalised-expected ~expression)))))))
         
 
 (defn assoc-focus-metas
