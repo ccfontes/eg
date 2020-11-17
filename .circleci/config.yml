@@ -3,7 +3,7 @@ version: 2.1
 jobs:
   build:
     docker:
-      - image: day8au/dev-ci:0
+      - image: day8au/dev-ci:0.0.10
 
     working_directory: ~/eg
 
@@ -33,6 +33,6 @@ jobs:
       - run: npm install -g --unsafe-perm lumo-cljs
       - run: lein tach lumo
       - run: CLOVERAGE_VERSION=1.1.1 lein coverage
-      - run: curl -s https://codecov.io/bash | bash -s - -f target/coverage/codecov.json
-      - run: lein clj-test-fail | tee /dev/tty | rg --quiet --multiline '25 assertions.*\n.*25 failures'
+      - run: ./script/codecov -v -f target/coverage/codecov.json
+      - run: (! lein clj-test-fail) | tee /dev/tty | rg --quiet --multiline '25 assertions.*\n.*25 failures'
       - run: lein cljs-test-fail | tee /dev/tty | rg --quiet --multiline '25 assertions.*\n.*25 failures'
