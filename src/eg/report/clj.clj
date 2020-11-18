@@ -23,10 +23,10 @@
   [_ assert-expr] (do-spec-report assert-expr false))
 
 (defmethod clj.test/assert-expr 'eg.platform/equal-eg?
-  [_ assert-expr] (do-example-equal-report assert-expr false))
+  [_ assert-expr] (do-example-equal-report assert-expr))
 
 (defmethod clj.test/assert-expr 'eg.platform/equal-ex?
-  [_ assert-expr] (do-expression-equal-report assert-expr true))
+  [_ assert-expr] (do-expression-equal-report assert-expr))
 
 (defmethod clj.test/assert-expr 'eg.platform/pred-eg
   [_ assert-expr] (do-example-pred-report assert-expr))
@@ -38,7 +38,7 @@
   [_ assert-expr] (do-expected-spec-report assert-expr))
 
 (defmethod clj.test/assert-expr 'eg.platform/valid-expected-spec-ex?
-  [_ assert-expr] (do-expression-expected-spec-report assert-expr true))
+  [_ assert-expr] (do-expression-expected-spec-report assert-expr))
 
 (defmethod clj.test/report :fail-spec
   ; Source: https://github.com/clojure/clojure/blob/master/src/clj/clojure/test.clj

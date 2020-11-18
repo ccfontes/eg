@@ -179,7 +179,7 @@
 
 (defn do-expression-expected-spec-report
   "Call do-report on an expression test taking a spec checker."
-  [[_ spec-kw actual :as result] expression?]
+  [[_ spec-kw actual :as result]]
   `(let [result# ~result]
     (if result#
       (do-report {:type :pass})
@@ -187,24 +187,24 @@
                   :spec-kw         '~spec-kw
                   :actual          ~actual
                   :spec-error-data (explain-data ~spec-kw ~actual)
-                  :expression-code (if ~expression? (str '~actual " => " '~spec-kw))}))
+                  :expression-code (str '~actual " => " '~spec-kw)}))
     result#))
 
 (defn do-expression-equal-report
   "Call do-report for an expression test with an expected value."
-  [[equal expected actual] expression?]
+  [[equal expected actual]]
   `(let [result# (~equal ~actual ~expected)]
     (if result#
       (do-report {:type :pass})
       (do-report {:type        :fail-default
                   :expected    ~expected
                   :actual      ~actual
-                  :expression-code (if ~expression? (str '~actual " => " '~expected))}))
+                  :expression-code (str '~actual " => " '~expected)}))
     result#))
 
 (defn do-example-equal-report
   "Call do-report with a prepared params map for a function example."
-  [[equal expected [f & params :as actual]] expression?]
+  [[equal expected [f & params :as actual]]]
   `(let [result# (~equal ~actual ~expected)]
     (if result#
       (do-report {:type :pass})

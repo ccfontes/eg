@@ -26,10 +26,10 @@
     [_ _ assert-expr] (do-spec-report assert-expr false))
 
   (defmethod js/cljs.test$macros.assert_expr 'eg.platform/equal-eg?
-    [_ _ assert-expr] (do-example-equal-report assert-expr false))
+    [_ _ assert-expr] (do-example-equal-report assert-expr))
 
   (defmethod js/cljs.test$macros.assert_expr 'eg.platform/equal-ex?
-    [_ _ assert-expr] (do-expression-equal-report assert-expr true))
+    [_ _ assert-expr] (do-expression-equal-report assert-expr))
 
   (defmethod js/cljs.test$macros.assert_expr 'eg.platform/pred-eg
     [_ _ assert-expr] (do-example-pred-report assert-expr))
@@ -41,7 +41,7 @@
     [_ _ assert-expr] (do-expected-spec-report assert-expr))
 
   (defmethod js/cljs.test$macros.assert_expr 'eg.platform/valid-expected-spec-ex?
-    [_ _ assert-expr] (do-expression-expected-spec-report assert-expr true)))
+    [_ _ assert-expr] (do-expression-expected-spec-report assert-expr)))
 
 (defmethod cljs.test/report [:cljs.test/default :fail-spec]
   ; Source: https://github.com/clojure/clojurescript/blob/master/src/main/cljs/cljs/test.cljs
