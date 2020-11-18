@@ -31,7 +31,7 @@
   (defmethod js/cljs.test$macros.assert_expr 'eg.platform/equal-ex?
     [_ _ assert-expr] (do-expression-equal-report assert-expr true))
 
-  (defmethod js/cljs.test$macros.assert_expr 'eg.platform/fn-identity-intercept
+  (defmethod js/cljs.test$macros.assert_expr 'eg.platform/pred-eg
     [_ _ assert-expr] (do-example-pred-report assert-expr))
 
   (defmethod js/cljs.test$macros.assert_expr 'eg.platform/pred-ex

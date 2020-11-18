@@ -10,9 +10,9 @@
                                  invalid-spec?
                                  equal-eg?
                                  equal-ex?
-                                 fn-identity-intercept
                                  valid-expected-spec?
                                  valid-expected-spec-ex?
+                                 pred-eg
                                  pred-ex]]
             [eg.spec :as eg-spec]
             [clojure.walk :refer [postwalk]]
@@ -101,7 +101,7 @@
                                       normalised-expected (if (nil? expected) 'nil? expected)]
                                   `(cond
                                     ; changing assertion expression order of args may break reports 
-                                    (and (fn? ~normalised-expected) (not ~equal?))                (is (fn-identity-intercept (~normalised-expected (~fn-sym ~@params))))
+                                    (and (fn? ~normalised-expected) (not ~equal?))                (is (pred-eg (~normalised-expected (~fn-sym ~@params))))
                                     (and (qualified-keyword? ~normalised-expected) (not ~equal?)) (is (valid-expected-spec? ~normalised-expected (~fn-sym ~@params)))
                                     :else                                                         (is (equal-eg? ~normalised-expected (~fn-sym ~@params)))))))
                             examples)))]

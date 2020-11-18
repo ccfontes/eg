@@ -22,7 +22,7 @@
 (defmethod cljs.test/assert-expr 'eg.platform/equal-ex?
   [_ _ assert-expr] (do-expression-equal-report assert-expr true))
   
-(defmethod cljs.test/assert-expr 'eg.platform/fn-identity-intercept
+(defmethod cljs.test/assert-expr 'eg.platform/pred-eg
   [_ _ assert-expr] (do-example-pred-report assert-expr))
 
 (defmethod cljs.test/assert-expr 'eg.platform/pred-ex

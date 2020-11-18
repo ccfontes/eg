@@ -28,7 +28,7 @@
 (defmethod clj.test/assert-expr 'eg.platform/equal-ex?
   [_ assert-expr] (do-expression-equal-report assert-expr true))
 
-(defmethod clj.test/assert-expr 'eg.platform/fn-identity-intercept
+(defmethod clj.test/assert-expr 'eg.platform/pred-eg
   [_ assert-expr] (do-example-pred-report assert-expr))
 
 (defmethod clj.test/assert-expr 'eg.platform/pred-ex

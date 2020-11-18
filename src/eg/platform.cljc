@@ -63,13 +63,12 @@
   "The same as 'equal-eg?', but to be used for expression tests."
   [x y] (equal-eg? x y))
 
-(defn pred-ex
-  "Meant to be used as a clojure.test/assert-expr dispatch value on truthy expression tests."
+(defn pred-eg
+  "Meant to be used as a clojure.test/assert-expr dispatch value which is a predicate 'eg' checker."
   [arg] arg)
 
-(defn fn-identity-intercept
-  "Create alias for 'fn, so that we don't override or be overriden by libraries
-  dispatching on 'fn for clojure.test/assert-expr."
+(defn pred-ex
+  "Same as 'eg', but called from an expression test."
   [arg] arg)
 
 (defn explain-data
