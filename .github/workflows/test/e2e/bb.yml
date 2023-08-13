@@ -1,0 +1,23 @@
+name: Run Babashka e2e tests
+
+on: [push]
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v2
+    - name: Install Babashka
+      run: |
+        bash < <(curl -s https://raw.githubusercontent.com/babashka/babashka/master/install)
+    - name: Checkout repo
+      uses: actions/checkout@v2
+    - name: Checkout current branch
+      uses: actions/checkout@v2
+      with:
+        ref: ${{ github.head_ref || github.ref_name }}
+    - name: Change to repo directory
+      run: cd ${GITHUB_WORKSPACE}
+    - name: Run e2e tests
+      working-directory: ${{ github.workspace }}/test/e2e/bb
+      run: bb test.clj

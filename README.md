@@ -9,7 +9,7 @@ in *eg* becomes:
 (eg inc 0 1)
 ```
 
-*eg* supports Clojure, ClojureScript JVM, and ClojureScript JS, the same as clojure.test.
+*eg* supports Clojure, Babashka, ClojureScript JVM, and ClojureScript JS, the same as clojure.test.
 
 Vanilla `clojure.test` and *eg* test results are included in the same report.
 Also, no custom test runner is required – run your clojure.test tests as usual.

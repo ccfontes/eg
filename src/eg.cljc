@@ -21,9 +21,10 @@
             [clojure.spec.alpha :as spec]
    #?(:cljs [cljs.test :include-macros true])
     #?(:clj [clojure.tools.namespace.repl])
-   #?(:clj  [eg.report.clj])    ; here for side-effects to extend clojure.test/assert-expr
-   #?(:clj  [eg.report.cljs])   ; here for side-effects to extend cljs.test/assert-expr
-   #?(:cljs [eg.report.cljs]))) ; here for side-effects to extend cljs.test/report, and js/cljs.test$macros.assert_expr
+   #?@(:bb  [eg.report.clj]
+       :clj [[eg.report.clj]     ; here for side-effects to extend clojure.test/assert-expr
+             [eg.report.cljs]]   ; here for side-effects to extend cljs.test/assert-expr
+       :cljs [eg.report.cljs]))) ; here for side-effects to extend cljs.test/report, and js/cljs.test$macros.assert_expr 
 
 (defonce focus-metas (atom {}))
 
