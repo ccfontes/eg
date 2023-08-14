@@ -1,0 +1,43 @@
+name: CI
+on: [push]
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+    - name: Checkout repo
+      uses: actions/checkout@v2
+    - name: Checkout current branch
+      uses: actions/checkout@v3
+      with:
+        ref: master
+    - name: Set up JDK 8
+      uses: actions/setup-java@v1
+      with:
+        java-version: 8
+    - name: Change to repo directory
+      run: cd ${GITHUB_WORKSPACE}
+    - name: Install Leiningen
+      run: |
+        curl https://raw.githubusercontent.com/technomancy/leiningen/stable/bin/lein > lein
+        mv lein /usr/local/bin/
+        chmod a+x /usr/local/bin/lein
+    - name: Install dependencies
+      run: lein deps
+    - name: Install ripgrep
+      run: |
+        apt-get update
+        apt-get install -y ripgrep
+    - name: Run tests
+      run: |
+        lein clj-test-pass-integration
+        lein cljs-test-pass-unit
+        lein cljs-test-pass-integration
+        npm install -g --unsafe-perm lumo-cljs
+        lein tach lumo
+        CLOVERAGE_VERSION=1.1.1 lein coverage
+        ./script/codecov
+        (! lein clj-test-fail) | tee /dev/tty | rg --quiet --multiline '25 assertions.*\n.*25 failures'
+        lein cljs-test-fail | tee /dev/tty | rg --quiet --multiline '25 assertions.*\n.*25 failures'
+    - name: Upload coverage
+      uses: codecov/codecov-action@v3
+      file: target/coverage/codecov.json
