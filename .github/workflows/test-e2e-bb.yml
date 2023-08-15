@@ -18,8 +18,8 @@ jobs:
       uses: actions/checkout@v3
       with:
         ref: ${{ github.head_ref || github.ref_name }}
-    - name: |
-        echo `pwd`
-        Run e2e tests
+    - name: Run e2e tests
       working-directory: ${{ github.workspace }}/test/e2e/bb
-      run: bb test.clj
+      run: |
+        echo `pwd`
+        bb test.clj
