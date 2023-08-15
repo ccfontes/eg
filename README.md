@@ -1,4 +1,4 @@
-# eg [![Clojars Project](https://img.shields.io/clojars/v/eg.svg)](https://clojars.org/eg) [![CI](https://github.com/ccfontes/eg/actions/workflows/checks.yml/badge.svg)](https://github.com/ccfontes/eg/actions/workflows/checks.yml) [![codecov](https://codecov.io/gh/ccfontes/eg/branch/master/graph/badge.svg?token=dUSRsSBOAW)](https://codecov.io/gh/ccfontes/eg) [![Universal Permissive License v1.0](https://img.shields.io/badge/license-MIT-black.svg)](LICENSE.md)
+# eg [![Clojars Project](https://img.shields.io/clojars/v/eg.svg)](https://clojars.org/eg) [![CI](https://github.com/ccfontes/eg/actions/workflows/checks.yml/badge.svg)](https://github.com/ccfontes/eg/actions/workflows/checks.yml) [![codecov](https://codecov.io/gh/ccfontes/eg/branch/master/graph/badge.svg?token=dUSRsSBOAW)](https://codecov.io/gh/ccfontes/eg) [![bb compatible](https://raw.githubusercontent.com/babashka/babashka/master/logo/badge.svg)](https://babashka.org) [![Universal Permissive License v1.0](https://img.shields.io/badge/license-MIT-black.svg)](LICENSE.md)
 
 ```clj
 (deftest inc-test
@@ -9,7 +9,7 @@ in *eg* becomes:
 (eg inc 0 1)
 ```
 
-*eg* supports Clojure, ClojureScript JVM, and ClojureScript JS, the same as clojure.test.
+*eg* supports Clojure, Babashka, ClojureScript JVM, and ClojureScript JS, the same as clojure.test.
 
 Vanilla `clojure.test` and *eg* test results are included in the same report.
 Also, no custom test runner is required – run your clojure.test tests as usual.

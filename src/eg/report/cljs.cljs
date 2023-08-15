@@ -5,7 +5,6 @@
             [cljs.test]
             [eg.platform]
             [eg.report :refer [->file-and-line-repr
-                               ->testing-fn-repr
                                do-example-equal-report
                                do-example-pred-report
                                do-expression-equal-report
