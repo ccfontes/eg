@@ -1,6 +1,10 @@
 name: Run Babashka e2e tests
 
-on: [push]
+on:
+  push:
+    branches:
+      - "*"
+  pull_request:
 
 jobs:
   test:
