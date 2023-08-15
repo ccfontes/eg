@@ -10,7 +10,6 @@ jobs:
   test:
     runs-on: ubuntu-latest
     steps:
-    - uses: actions/checkout@v2
     - name: Install Babashka
       run: |
         bash < <(curl -s https://raw.githubusercontent.com/babashka/babashka/master/install)
