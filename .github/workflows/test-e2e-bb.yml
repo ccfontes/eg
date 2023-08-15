@@ -14,10 +14,8 @@ jobs:
     - name: Install Babashka
       run: |
         bash < <(curl -s https://raw.githubusercontent.com/babashka/babashka/master/install)
-    - name: Checkout repo
-      uses: actions/checkout@v2
-    - name: Checkout current branch
-      uses: actions/checkout@v2
+    - name: Checkout this repo in current branch
+      uses: actions/checkout@v3
       with:
         ref: ${{ github.head_ref || github.ref_name }}
     - name: Run e2e tests
