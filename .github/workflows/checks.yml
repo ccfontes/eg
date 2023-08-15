@@ -39,8 +39,8 @@ jobs:
       run: lein cljs-test-pass-integration
     - name: Install ripgrep
       run: |
-        apt-get update
-        apt-get install -y ripgrep
+        sudo apt-get update
+        sudo apt-get install -y ripgrep
     - name: Run failing tests
       run: |
         (! lein clj-test-fail) | tee /dev/tty | rg --quiet --multiline '25 assertions.*\n.*25 failures'
@@ -53,4 +53,5 @@ jobs:
       run: CLOVERAGE_VERSION=1.1.1 lein coverage
     - name: Upload code coverage report to Codecov
       uses: codecov/codecov-action@v3
-      file: target/coverage/codecov.json
+      with:
+        file: target/coverage/codecov.json
