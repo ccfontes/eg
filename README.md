@@ -1,4 +1,4 @@
-# eg [![Clojars Project](https://img.shields.io/clojars/v/eg.svg)](https://clojars.org/eg) ![CI](https://github.com/github/docs/actions/workflows/checks.yml/badge.svg) [![codecov](https://codecov.io/gh/ccfontes/eg/branch/master/graph/badge.svg?token=dUSRsSBOAW)](https://codecov.io/gh/ccfontes/eg) [![Universal Permissive License v1.0](https://img.shields.io/badge/license-MIT-black.svg)](LICENSE.md)
+# eg [![Clojars Project](https://img.shields.io/clojars/v/eg.svg)](https://clojars.org/eg) [![CI](https://github.com/ccfontes/eg/actions/workflows/checks.yml/badge.svg)](https://github.com/ccfontes/eg/actions/workflows/checks.yml) [![codecov](https://codecov.io/gh/ccfontes/eg/branch/master/graph/badge.svg?token=dUSRsSBOAW)](https://codecov.io/gh/ccfontes/eg) [![Universal Permissive License v1.0](https://img.shields.io/badge/license-MIT-black.svg)](LICENSE.md)
 
 ```clj
 (deftest inc-test
