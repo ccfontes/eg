@@ -29,21 +29,28 @@ jobs:
         chmod a+x /usr/local/bin/lein
     - name: Install dependencies
       run: lein deps
+    - name: Run Clojure unit tests
+      run: lein clj-test-pass-unit
+    - name: Run ClojureScript unit tests
+      run: lein cljs-test-pass-unit
+    - name: Run Clojure integration tests
+      run: lein clj-test-pass-integration
+    - name: Run ClojureScript integration tests
+      run: lein cljs-test-pass-integration
     - name: Install ripgrep
       run: |
         apt-get update
         apt-get install -y ripgrep
-    - name: Run tests
+    - name: Run failing tests
       run: |
-        lein clj-test-pass-integration
-        lein cljs-test-pass-unit
-        lein cljs-test-pass-integration
-        npm install -g --unsafe-perm lumo-cljs
-        lein tach lumo
-        CLOVERAGE_VERSION=1.1.1 lein coverage
-        ./script/codecov
         (! lein clj-test-fail) | tee /dev/tty | rg --quiet --multiline '25 assertions.*\n.*25 failures'
         lein cljs-test-fail | tee /dev/tty | rg --quiet --multiline '25 assertions.*\n.*25 failures'
-    - name: Upload coverage
+    - name: Install Lumo
+      run: npm install -g --unsafe-perm lumo-cljs
+    - name: Test JavaScript JS using Lumo
+      run: lein tach lumo
+    - name: Create code coverage report
+      run: CLOVERAGE_VERSION=1.1.1 lein coverage
+    - name: Upload code coverage report to Codecov
       uses: codecov/codecov-action@v3
       file: target/coverage/codecov.json
