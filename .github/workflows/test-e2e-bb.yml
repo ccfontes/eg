@@ -17,12 +17,7 @@ jobs:
       uses: actions/checkout@v3
       with:
         ref: ${{ github.head_ref || github.ref_name }}
+    - name: Create POM file for bb e2e tests
+      run: lein pom
     - name: Run e2e tests
-      run: |
-        cd test/e2e/bb
-        echo `pwd`
-        echo dir1
-        ls ../../..
-        echo dir2
-        ls ../../..
-        bb test.clj
+      run: bb test.clj
