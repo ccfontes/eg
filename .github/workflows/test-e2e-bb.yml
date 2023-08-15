@@ -18,8 +18,8 @@ jobs:
       with:
         ref: ${{ github.head_ref || github.ref_name }}
     - name: Run e2e tests
-      working-directory: ${{ github.workspace }}/test/e2e/bb
       run: |
+        cd test/e2e/bb
         echo `pwd`
         echo dir1
         ls ../../..
