@@ -19,6 +19,6 @@ jobs:
         ref: ${{ github.head_ref || github.ref_name }}
     - name: Create POM file for bb e2e tests
       run: lein pom
-    - name: Run e2e tests
+    - name: Run bb e2e tests
       working-directory: ${{ github.workspace }}/test/e2e/bb
       run: bb test.clj
