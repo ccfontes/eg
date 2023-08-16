@@ -48,8 +48,8 @@ jobs:
         sudo dpkg -i ripgrep_13.0.0_amd64.deb
     - name: Run failing tests
       run: |
-        (! lein clj-test-fail) | tee /dev/tty0 | rg --quiet --multiline '25 assertions.*\n.*25 failures'
-        lein cljs-test-fail | tee /dev/tty0 | rg --quiet --multiline '25 assertions.*\n.*25 failures'
+        (! lein clj-test-fail) | sudo tee /dev/tty0 | rg --quiet --multiline '25 assertions.*\n.*25 failures'
+        lein cljs-test-fail | sudo tee /dev/tty0 | rg --quiet --multiline '25 assertions.*\n.*25 failures'
     - name: Install Lumo
       run: npm install -g --unsafe-perm lumo-cljs
     - name: Test JavaScript JS using Lumo
