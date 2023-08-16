@@ -18,9 +18,9 @@ jobs:
       with:
         ref: ${{ github.head_ref || github.ref_name }}
     - name: Run Babashka unit and integration tests
-      run: bb run test-bb
+      run: script/bb run test-bb
     - name: Create POM file for bb e2e tests
       run: lein pom
     - name: Run Babashka e2e tests
       working-directory: ${{ github.workspace }}/test/e2e/bb
-      run: bb test.clj
+      run: script/bb test.clj
