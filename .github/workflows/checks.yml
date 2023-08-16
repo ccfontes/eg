@@ -26,7 +26,7 @@ jobs:
     - name: Install Babashka
       run: bash < <(curl -s https://raw.githubusercontent.com/babashka/babashka/master/install)
     - name: Run Babashka unit and integration tests
-      run: script/bb run test-bb
+      run: bb run test-bb
     - name: Create POM file for bb e2e tests
       run: lein pom
     - name: Run Babashka e2e tests
