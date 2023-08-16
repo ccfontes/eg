@@ -1,0 +1,3 @@
+{:paths ["src" "test" "test/pass" "test/fail"]
+ :deps {org.clojure/tools.namespace {:mvn/version "0.3.0-alpha4"}}
+ :tasks {test-bb bb-runner/-main}}
