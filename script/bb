@@ -16,7 +16,6 @@ export CLJ_CACHE=/opt
 export CLJ_CONFIG=/opt
 
 export BABASHKA_CLASSPATH="/opt/.m2:var/task/src:/var/task/.m2:/var/task:/var/task/src/clj:/var/task/src/cljc:src/cljc:src/clj:/var/task/resources"
-export BABASHKA_PRELOADS='(load-file "/opt/hacks.clj")'
 
 if [ -z "$HL_ENTRYPOINT" ]; then
   echo "Environment variable \"HL_ENTRYPOINT\" is not set. See https://fierycod.github.io/holy-lambda/#/babashka-backend-tutorial"

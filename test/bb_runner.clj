@@ -3,7 +3,15 @@
     [clojure.test :as test]
     [eg.test.pass.unit]
     [eg.test.fail]
-    [eg.test.pass.integration]))
+    [eg.test.pass.integration]
+    [babashka.deps]))
+
+; source: https://jmglov.net/blog/2022-08-09-dogfooding-blambda-2.html
+(alter-var-root #'babashka.deps/add-deps
+  (fn [f]
+    (fn [m]
+      (println "[holy-lambda] Dependencies should not be added via add-deps. Move your dependencies to a layer!")
+      (System/exit 1))))
 
 (defn run-passing-tests []
   (test/run-tests
